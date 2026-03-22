@@ -52,6 +52,10 @@ try {
         require_once 'routes/payment-methods.php';
     }elseif (strpos($path, 'article') === 0) { 
         require_once 'routes/documents_review.php';
+    }elseif (strpos($path, 'gamification') === 0) { 
+        require_once 'routes/gamification.php';
+    }elseif (strpos($path, 'ranking') === 0) { 
+        require_once 'routes/gamification.php';
     } else {
         http_response_code(404);
         echo json_encode(['error' => 'Rota não encontrada']);

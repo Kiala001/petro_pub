@@ -78,7 +78,9 @@ class DocumentReviewService {
                 "id" => $doc['id'],
                 "status" => strtolower($doc['status']),
                 "cat" => $doc['category_id'],
+                "file_size" => $doc['file_size'],
                 "type" => $doc['title'],
+                "course" => $doc['course'],
                 "ico" => "📄",
                 "bg" => "ic-b",
                 "title" => $doc['title'],
@@ -93,7 +95,7 @@ class DocumentReviewService {
 
         }
         
-        return ['documents' => $result, 'success' => false, 'total' => count($documents)];
+        return ['documents' => $result, 'success' => true, 'total' => count($documents)];
     }
 
     private function mapDecision($decision){

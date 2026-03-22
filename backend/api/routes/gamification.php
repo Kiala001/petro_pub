@@ -2,6 +2,7 @@
 // backend/api/routes/gamification.php
 // Endpoint para gamificação: pontos, ranking, conquistas
 
+
 require_once '../src/Application/PointService.php';
 require_once '../src/Infrastructure/Database/PointRepositoryImpl.php';
 require_once '../src/Infrastructure/Database/UserRepositoryImpl.php';
@@ -11,9 +12,7 @@ require_once '../src/Domain/Id.php';
 header('Content-Type: application/json');
 
 $method = $_SERVER['REQUEST_METHOD'];
-$path = $_GET['path'] ?? '';
 
-session_start();
 $authHeader = $_SESSION['jwt_auth'] ?? '';
 $token = str_replace('Bearer ', '', $authHeader);
 
@@ -34,8 +33,9 @@ $pointRepo = new PointRepositoryImpl($db);
 $userRepo = new UserRepositoryImpl($db);
 $pointService = new PointService($pointRepo, $userRepo);
 
-if ($method === 'GET' && ($path === 'points' || $path === 'points/')) {
+if ($method === 'GET' && ($path === 'gamification' || $path === 'gamification/')) {
     // Retorna pontos totais do usuário
+
     $total = $pointService->getTotalPoints($userId);
     $history = $pointService->getPointsHistory($userId, 30);
     echo json_encode([
@@ -47,6 +47,7 @@ if ($method === 'GET' && ($path === 'points' || $path === 'points/')) {
 }
 
 if ($method === 'GET' && ($path === 'ranking' || $path === 'ranking/')) {
+    echo json_encode(['success' => true, 'history' => ["Kiala", "Emanuel"]]);
     // Ranking dos usuários por pontos
     $users = $userRepo->getAllOrderedByPoints();
     echo json_encode([

@@ -1,0 +1,127 @@
+/* PetroPub Notificações — Estilo dedicado, inspirado na gamificação */
+
+:root {
+  --notif-ico-bg: var(--cr-xl);
+  --notif-ico-color: var(--cr);
+  --notif-unread-bg: var(--cr-xl);
+  --notif-read-bg: #fff;
+  --notif-title-color: var(--cr);
+  --notif-msg-color: var(--tx-m);
+  --notif-meta-color: var(--tx-l);
+  --notif-btn-bg: var(--cr);
+  --notif-btn-bg-hover: var(--cr-dk);
+  --notif-btn-color: #fff;
+}
+
+.page-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(107,16,32,.08);
+  padding: 28px 24px;
+  margin-bottom: 24px;
+  animation: fadeInUp .5s cubic-bezier(.4,0,.2,1);
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cr);
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+  border-radius: 12px;
+  background: var(--notif-read-bg);
+  transition: background .18s, box-shadow .18s;
+  box-shadow: 0 1px 4px rgba(107,16,32,.04);
+  position: relative;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item.notif-unread {
+  background: var(--notif-unread-bg);
+  box-shadow: 0 2px 8px rgba(201,168,76,.10);
+}
+
+.notif-ico {
+  font-size: 22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--notif-ico-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--notif-ico-color);
+  box-shadow: 0 2px 8px rgba(201,168,76,.08);
+  flex-shrink: 0;
+}
+
+.notif-body {
+  flex: 1;
+}
+
+.notif-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--notif-title-color);
+  margin-bottom: 2px;
+}
+
+.notif-msg {
+  font-size: 13px;
+  color: var(--notif-msg-color);
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.notif-meta {
+  font-size: 11px;
+  color: var(--notif-meta-color);
+  margin-top: 2px;
+}
+
+.mark-read-btn {
+  background: var(--notif-btn-bg);
+  color: var(--notif-btn-color);
+  border: none;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background .18s, box-shadow .18s;
+  box-shadow: 0 2px 8px rgba(107,16,32,.10);
+}
+
+.mark-read-btn:hover {
+  background: var(--notif-btn-bg-hover);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

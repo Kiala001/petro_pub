@@ -7,6 +7,7 @@ interface UserRepository {
     public function update(User $user);
     public function delete(UserId $id);
     public function all();
+    public function getAllOrderedByPoints();
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -101,6 +102,21 @@ class UserRepositoryImpl implements UserRepository {
         }
         
         return $user;
+    }
+
+    public function getAllOrderedByPoints() {
+        $stmt = $this->connection->query('SELECT * FROM users ORDER BY points DESC');
+        $rows = $stmt->fetchAll();
+        return array_map(function($row) {
+            return [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'email' => $row['email'],
+                'type' => $row['type'],
+                'balance' => $row['balance'],
+                'points' => $row['points'],
+            ];
+        }, $rows);
     }
 }
 ?>

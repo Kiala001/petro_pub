@@ -2,7 +2,7 @@
 // Página de gamificação: pontos, ranking, conquistas
 session_start();
 if (!isset($_SESSION['jwt_auth'])) {
-    header('Location: /frontend/public/auth.php');
+    header('Location: auth.php');
     exit;
 }
 $jwt = $_SESSION['jwt_auth'];
@@ -17,8 +17,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PetroPub — Pontos & Ranking</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/frontend/assets/css/style.css">
-<style><?php include '../../petropub-gamificacao.html'; ?></style>
+<link rel="stylesheet" href="assets/css/gamificacao.css">
 </head>
 <body>
 <div class="app">
@@ -92,24 +91,27 @@ $userInitials = strtoupper(substr($userName, 0, 2));
     </div>
   </div>
 </div>
+
+<script src="assets/js/util.js"></script>
+<script src="assets/js/api.js"></script>
 <script>
 // Funções para buscar dados do backend
 async function fetchPoints() {
-  const res = await fetch('/backend/api/routes/gamification.php?path=points', {credentials:'same-origin'});
-  const data = await res.json();
-  if(data.success) {
-    document.getElementById('points-value').textContent = data.total_points;
-    document.getElementById('hero-points').textContent = data.total_points;
-    // Atualizar histórico
-    renderHistory(data.history);
-  }
+    const res = await apiRequest("gamification");
+    const data = await res.data;
+    if(data.success) {
+        document.getElementById('points-value').textContent = data.total_points;
+        document.getElementById('hero-points').textContent = data.total_points;
+        // Atualizar histórico
+        renderHistory(data.history);
+    }
 }
 async function fetchRanking() {
-  const res = await fetch('/backend/api/routes/gamification.php?path=ranking', {credentials:'same-origin'});
-  const data = await res.json();
-  if(data.success) {
-    renderRanking(data.ranking);
-  }
+    const res = await apiRequest("ranking");
+    const data = await res.data;
+    if(data.success) {
+        renderRanking(data.ranking);
+    }
 }
 function renderHistory(history) {
   const el = document.getElementById('points-history');

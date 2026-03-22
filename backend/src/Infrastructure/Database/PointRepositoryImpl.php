@@ -31,7 +31,7 @@ class PointRepositoryImpl implements PointRepository {
         // Atualiza total de pontos do usuário
         $stmt = $this->db->prepare("
             UPDATE users 
-            SET total_points = total_points + ?
+            SET points = points + ?
             WHERE id = ?
         ");
 
@@ -56,7 +56,7 @@ class PointRepositoryImpl implements PointRepository {
         // Atualiza total de pontos do usuário
         $stmt = $this->db->prepare("
             UPDATE users 
-            SET total_points = total_points - ?
+            SET points = points - ?
             WHERE id = ?
         ");
 
