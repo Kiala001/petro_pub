@@ -91,11 +91,53 @@ class DocumentService {
             }
             
             $newDocument = $this->instanceDocument($document);
-            
             $newDocument->approve();
             $message = "O artigo foi aprovado e será publicado em breve";
 
             $this->documentRepository->updateStatus($newDocument);
+
+            // --- INTEGRAÇÃO DE PONTOS E NOTIFICAÇÕES ---
+            // Instanciar repositórios e serviços necessários
+            require_once __DIR__ . '/PointService.php';
+            require_once __DIR__ . '/NotificationService.php';
+            require_once __DIR__ . '/../Infrastructure/Database/PointRepositoryImpl.php';
+            require_once __DIR__ . '/../Infrastructure/Database/NotificationRepositoryImpl.php';
+            require_once __DIR__ . '/../Domain/Id.php';
+            require_once __DIR__ . '/../Domain/Notificacao/Notificacao.php';
+
+            global $db;
+            $pointRepo = new PointRepositoryImpl($db);
+            $notificationRepo = new NotificationRepositoryImpl($db);
+            $pointService = new PointService($pointRepo);
+            $notificationService = new NotificationService($notificationRepo);
+
+            // Adiciona pontos ao usuário
+            $pointService->pointDocumentApproved($newDocument->getUserId(), $newDocument->getId());
+
+            // Notificação para o usuário
+            $notificationService->notify(
+                $newDocument->getUserId(),
+                'Documento aprovado',
+                'Seu documento "' . $newDocument->getTitle() . '" foi aprovado e será publicado em breve.',
+                'success',
+                'fa fa-check',
+                '/frontend/my-documents.php',
+                'private'
+            );
+
+            // Notificação para o admin (broadcast ou para todos admins, aqui exemplo simples)
+            // Supondo que o admin tem user_id = 'ADMIN' ou similar, ajuste conforme necessário
+            $notificationService->notify(
+                'ADMIN',
+                'Novo documento aprovado',
+                'O documento "' . $newDocument->getTitle() . '" do usuário ' . $newDocument->getUserId() . ' foi aprovado.',
+                'info',
+                'fa fa-file',
+                '/frontend/dashboard-admin.php',
+                'admin'
+            );
+
+            // --- FIM INTEGRAÇÃO ---
 
             return [
                 'success' => true, 
@@ -138,11 +180,50 @@ class DocumentService {
             }
             
             $newDocument = $this->instanceDocument($document);
-            
             $newDocument->reject();
-            $message = "o artigo foi rejeitado, o autor será notificado";
+            $message = "O artigo foi rejeitado, o autor será notificado";
 
             $this->documentRepository->updateStatus($newDocument);
+
+            // --- INTEGRAÇÃO DE PONTOS E NOTIFICAÇÕES ---
+            require_once __DIR__ . '/PointService.php';
+            require_once __DIR__ . '/NotificationService.php';
+            require_once __DIR__ . '/../Infrastructure/Database/PointRepositoryImpl.php';
+            require_once __DIR__ . '/../Infrastructure/Database/NotificationRepositoryImpl.php';
+            require_once __DIR__ . '/../Domain/Id.php';
+            require_once __DIR__ . '/../Domain/Notificacao/Notificacao.php';
+
+            global $db;
+            $pointRepo = new PointRepositoryImpl($db);
+            $notificationRepo = new NotificationRepositoryImpl($db);
+            $pointService = new PointService($pointRepo);
+            $notificationService = new NotificationService($notificationRepo);
+
+            // Remove pontos do usuário
+            $pointService->pointDocumentRejected($newDocument->getUserId());
+
+            // Notificação para o usuário
+            $notificationService->notify(
+                $newDocument->getUserId(),
+                'Documento rejeitado',
+                'Seu documento "' . $newDocument->getTitle() . '" foi rejeitado. Consulte os detalhes e tente novamente.',
+                'danger',
+                'fa fa-times',
+                '/frontend/my-documents.php',
+                'private'
+            );
+
+            // Notificação para o admin
+            $notificationService->notify(
+                'ADMIN',
+                'Documento rejeitado',
+                'O documento "' . $newDocument->getTitle() . '" do usuário ' . $newDocument->getUserId() . ' foi rejeitado.',
+                'warning',
+                'fa fa-file',
+                '/frontend/dashboard-admin.php',
+                'admin'
+            );
+            // --- FIM INTEGRAÇÃO ---
 
             return [
                 'success' => true, 
