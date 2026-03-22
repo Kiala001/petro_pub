@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca - Portal Acadêmico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
+</head>
+<body class="bg-gray-50">
+
+    <nav class="bg-gradient-to-r from-red-900 to-red-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="assets/img/logo.jpg" alt="" srcset="">
+                <!-- <span class="text-2xl font-bold text-amber-400">🏛️</span>
+                <span class="text-xl font-bold">Petrochamp</span> -->
+            </div>
+            <div class="flex space-x-6 items-center">
+                <a href="dashboard.html" class="hover:text-amber-400">Dashboard</a>
+                <a href="meus-documentos.html" class="hover:text-amber-400">Meus Docs</a>
+                <a href="novo-upload.html" class="bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded">
+                    <i class="fa fa-plus"></i> 
+                    Carregar
+                </a>
+                <button onclick="logout()" class="bg-red-700 hover:bg-red-600 px-4 py-2 rounded">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-red-900 mb-8">Biblioteca Académica</h1>
+
+        <!-- Filtros Avançados -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fa fa-search"></i>
+                Filtros Avançados
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Pesquisa -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Pesquisar</label>
+                    <input type="text" id="searchInput" placeholder="Título, autor..." 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                </div>
+                
+                <!-- Categoria -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Categoria</label>
+                    <select id="categoryFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                        <option value="">Todas as categorias</option>
+                    </select>
+                </div>
+
+                <!-- Intervalo de Preço -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Preço Máximo</label>
+                    <input type="number" id="priceFilter" placeholder="0 - 50000" min="0" step="100"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                </div>
+
+                <!-- Tamanho Máximo -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tamanho Máx (MB)</label>
+                    <input type="number" id="sizeFilter" placeholder="0 - 100" min="0" step="1"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                </div>
+
+                <!-- Botão Pesquisar -->
+                <div class="flex items-end">
+                    <button onclick="searchDocuments()" class="w-full bg-red-900 hover:bg-red-800 text-white font-bold py-2 rounded-lg transition">
+                        <i class="fa fa-search"></i>
+                        Pesquisar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botão Limpar Filtros -->
+            <div class="mt-4">
+                <button onclick="clearFilters()" class="text-red-900 hover:text-red-800 underline font-semibold">
+                    <i class="fa fa-close"></i>
+                    Limpar Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- Informação de Resultados -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden" id="results-info">
+            <p id="results-count" class="text-blue-900 font-semibold"></p>
+        </div>
+
+        <!-- Lista de Documentos -->
+        <div id="documentsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <p class="text-center text-gray-500 col-span-full py-8">Carregando documentos...</p>
+        </div>
+
+        <!-- Paginação -->
+        <div class="flex justify-center items-center gap-4 mt-8" id="pagination">
+            <button onclick="previousPage()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled">← Anterior</button>
+            <span id="page-info" class="font-semibold text-gray-700"></span>
+            <button onclick="nextPage()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Próximo →</button>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Documento -->
+    <div id="documentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-96 overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 id="modalTitle" class="text-2xl font-bold text-red-900"></h2>
+                    <button onclick="closeModal()" class="text-2xl text-gray-500 hover:text-gray-700">×</button>
+                </div>
+
+                <div id="modalContent" class="space-y-4">
+                    <!-- Preenchido por JS -->
+                </div>
+
+                <div class="mt-6 space-y-2">
+                    <button id="downloadBtn" onclick="downloadDocument()" 
+                        class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-2 rounded-lg hover:shadow-lg transition">
+                        Download
+                    </button>
+                    <button id="viewDetailsBtn" onclick="viewDocumentDetails()" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-2 rounded-lg hover:shadow-lg transition">
+                        Ver Detalhes e Comentários
+                    </button>
+                    <button onclick="closeModal()" class="w-full bg-gray-300 text-gray-700 font-bold py-2 rounded-lg hover:bg-gray-400">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/biblioteca.js"></script>
+    <script>
+        function viewDocumentDetails() {
+            if (currentDocumentId) {
+                window.location.href = 'detalhes.html?id=' + currentDocumentId;
+            }
+        }
+    </script>
+</body>
+</html>

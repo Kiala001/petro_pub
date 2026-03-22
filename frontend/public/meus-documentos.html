@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Documentos - Portal Acadêmico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-50">
+
+    <nav class="bg-gradient-to-r from-red-900 to-red-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold text-amber-400">🏛️</span>
+                <span class="text-xl font-bold">Petrochamp</span>
+            </div>
+            <div class="flex space-x-6 items-center">
+                <a href="dashboard.html" class="hover:text-amber-400">Dashboard</a>
+                <a href="biblioteca.html" class="hover:text-amber-400">Biblioteca</a>
+                <a href="novo-upload.html" class="bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded">+ Upload</a>
+                <button onclick="logout()" class="bg-red-700 hover:bg-red-600 px-4 py-2 rounded">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold text-red-900">Meus Documentos</h1>
+            <a href="novo-upload.html" class="bg-red-900 hover:bg-red-800 text-white px-6 py-2 rounded-lg font-bold">
+                Novo Upload
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                    <option value="">Todos os status</option>
+                    <option value="PENDING">Pendente</option>
+                    <option value="APPROVED">Aprovado</option>
+                    <option value="REJECTED">Rejeitado</option>
+                    <option value="ARCHIVED">Arquivado</option>
+                </select>
+
+                <input type="text" id="searchInput" placeholder="Pesquisar seus documentos..." 
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+
+                <button onclick="filterDocuments()" class="bg-red-900 hover:bg-red-800 text-white font-bold py-2 rounded-lg">
+                    Filtrar
+                </button>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-900">
+                <p class="text-gray-600 text-sm">Total de Documentos</p>
+                <p class="text-3xl font-bold text-red-900" id="totalDocs">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-yellow-500">
+                <p class="text-gray-600 text-sm">Pendentes de Revisão</p>
+                <p class="text-3xl font-bold text-yellow-600" id="pendingDocs">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-600">
+                <p class="text-gray-600 text-sm">Aprovados</p>
+                <p class="text-3xl font-bold text-green-600" id="approvedDocs">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-600">
+                <p class="text-gray-600 text-sm">Total de Downloads</p>
+                <p class="text-3xl font-bold text-purple-600" id="totalDownloads">0</p>
+            </div>
+        </div>
+
+        <!-- Tabela de Documentos -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-red-900 text-white">
+                    <tr>
+                        <th class="px-6 py-4 text-left">Título</th>
+                        <th class="px-6 py-4 text-left">Categoria</th>
+                        <th class="px-6 py-4 text-center">Status</th>
+                        <th class="px-6 py-4 text-right">Preço</th>
+                        <th class="px-6 py-4 text-center">Data</th>
+                        <th class="px-6 py-4 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="documentsList" class="divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 text-center text-gray-500" colspan="6">Carregando documentos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-96 overflow-y-auto">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-2xl font-bold text-red-900">Editar Documento</h2>
+                    <button onclick="closeEditModal()" class="text-2xl text-gray-500 hover:text-gray-700">×</button>
+                </div>
+
+                <form id="editForm" class="space-y-4">
+                    <input type="hidden" id="editDocId">
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Título</label>
+                        <input type="text" id="editTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Preço (Kz)</label>
+                        <input type="number" id="editPrice" step="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-900">
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-green-600 text-white font-bold py-2 rounded-lg hover:bg-green-700">
+                            Salvar
+                        </button>
+                        <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-300 text-gray-700 font-bold py-2 rounded-lg hover:bg-gray-400">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/meus-documentos.js"></script>
+</body>
+</html>

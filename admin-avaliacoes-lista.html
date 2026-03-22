@@ -1,0 +1,2645 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PetroPub Admin — Gestão de Avaliações</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --cr: #6b1020;
+        --cr-dk: #4a0b16;
+        --cr-lt: #8c1a2e;
+        --cr-xl: rgba(107, 16, 32, 0.07);
+        --cr-bdr: rgba(107, 16, 32, 0.15);
+        --gd: #c9a84c;
+        --gd-lt: #e5c97e;
+        --gd-dk: #9a7828;
+        --gd-bg: rgba(201, 168, 76, 0.11);
+        --cream: #faf7f2;
+        --warm: #fef9f3;
+        --bdr: rgba(107, 16, 32, 0.1);
+        --tx: #1a1208;
+        --tx-m: #4a3728;
+        --tx-l: #8a7060;
+        --ok: #2d7a4f;
+        --ok-bg: rgba(45, 122, 79, 0.1);
+        --wn: #c47a1a;
+        --wn-bg: rgba(196, 122, 26, 0.1);
+        --er: #c53030;
+        --er-bg: rgba(197, 48, 48, 0.1);
+        --inf: #1a5c8a;
+        --inf-bg: rgba(26, 92, 138, 0.1);
+        --pu: #5a3a8a;
+        --pu-bg: rgba(90, 58, 138, 0.1);
+        --sh0: 0 1px 3px rgba(107, 16, 32, 0.06);
+        --sh1: 0 2px 14px rgba(107, 16, 32, 0.1);
+        --sh2: 0 8px 32px rgba(107, 16, 32, 0.13);
+        --sh3: 0 20px 60px rgba(107, 16, 32, 0.18);
+        --r1: 8px;
+        --r2: 12px;
+        --r3: 16px;
+        --r4: 20px;
+        --sb: 260px;
+        --sb-ico: 66px;
+        --sb-mob: 248px;
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--cream);
+        color: var(--tx);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--cream);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--cr);
+        border-radius: 3px;
+      }
+      input,
+      select,
+      button,
+      textarea {
+        font-family: inherit;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* ─── SIDEBAR ─── */
+      .sidebar {
+        width: var(--sb);
+        flex-shrink: 0;
+        background: var(--cr-dk);
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        transition:
+          width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 200;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 3px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .sb-head {
+        padding: 22px 20px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        min-height: 70px;
+        flex-shrink: 0;
+      }
+      .sb-logo {
+        font-family: "Playfair Display", serif;
+        font-size: 21px;
+        font-weight: 900;
+        color: #fff;
+        white-space: nowrap;
+        line-height: 1;
+      }
+      .sb-logo span {
+        color: var(--gd-lt);
+      }
+      .sb-role-tag {
+        font-size: 10px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.35);
+        text-transform: uppercase;
+        letter-spacing: 1.6px;
+        margin-top: 4px;
+        white-space: nowrap;
+      }
+      .sb-tog {
+        display: none;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #fff;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r1);
+        font-size: 14px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.18s;
+        margin-top: 2px;
+      }
+      .sb-tog:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+      .sb-user {
+        padding: 13px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      .ava {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+      }
+      .ava-dk {
+        background: #1a3a4a;
+      }
+      .ava-cr {
+        background: var(--cr-lt);
+      }
+      .ava-gd {
+        background: var(--gd);
+        color: var(--cr-dk);
+      }
+      .sb-ui {
+        overflow: hidden;
+        white-space: nowrap;
+        transition:
+          opacity 0.2s,
+          max-width 0.2s;
+      }
+      .sb-un {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+      }
+      .sb-ue {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.38);
+      }
+      .nav-s {
+        padding: 12px 10px 2px;
+        overflow: hidden;
+      }
+      .nav-l {
+        font-size: 10px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.25);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 0 9px;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        transition: opacity 0.2s;
+      }
+      .nav-i {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.16s;
+      }
+      .nav-i:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+      .nav-i.act {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+      }
+      .nav-i.act::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--gd);
+        border-radius: 0 2px 2px 0;
+      }
+      .ni {
+        font-size: 15px;
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .nt {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition:
+          opacity 0.2s,
+          max-width 0.2s;
+      }
+      .nb {
+        margin-left: auto;
+        background: #e53e3e;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 100px;
+        flex-shrink: 0;
+        transition: opacity 0.2s;
+      }
+      .ng {
+        margin-left: auto;
+        background: var(--gd);
+        color: var(--cr-dk);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 100px;
+        flex-shrink: 0;
+        transition: opacity 0.2s;
+      }
+      .sb-foot {
+        margin-top: auto;
+        padding: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+      }
+
+      /* collapsed state */
+      .sidebar.collapsed {
+        width: var(--sb-ico);
+      }
+      .sidebar.collapsed .sb-logo,
+      .sidebar.collapsed .sb-role-tag,
+      .sidebar.collapsed .sb-ui,
+      .sidebar.collapsed .nav-l,
+      .sidebar.collapsed .nt,
+      .sidebar.collapsed .nb,
+      .sidebar.collapsed .ng {
+        opacity: 0;
+        max-width: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .sidebar.collapsed .nav-i {
+        justify-content: center;
+        padding: 9px;
+      }
+      .sidebar.collapsed .ni {
+        width: auto;
+      }
+      .sidebar.collapsed .sb-user {
+        justify-content: center;
+        padding: 12px;
+      }
+      .sidebar.collapsed .sb-head {
+        justify-content: center;
+        padding: 16px 10px;
+      }
+      .sidebar.collapsed .nav-i:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--cr-dk);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: var(--r1);
+        white-space: nowrap;
+        z-index: 9999;
+        box-shadow: var(--sh2);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        pointer-events: none;
+      }
+
+      .sb-ov {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.52);
+        z-index: 190;
+        backdrop-filter: blur(3px);
+        opacity: 0;
+        transition: opacity 0.28s;
+      }
+      .sb-ov.open {
+        opacity: 1;
+      }
+
+      /* ─── MAIN ─── */
+      .main {
+        flex: 1;
+        min-width: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ─── TOPBAR ─── */
+      .topbar {
+        background: #fff;
+        border-bottom: 1px solid var(--bdr);
+        padding: 0 clamp(14px, 3vw, 30px);
+        height: 62px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: var(--sh0);
+        gap: 10px;
+      }
+      .tb-l {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+      }
+      .tb-ham {
+        display: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--r1);
+        background: var(--cr-xl);
+        border: 1px solid var(--bdr);
+        color: var(--cr);
+        font-size: 18px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .tb-info {
+        min-width: 0;
+      }
+      .tb-bc {
+        font-size: 11px;
+        color: var(--tx-l);
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tb-bc span {
+        color: var(--cr);
+        font-weight: 600;
+      }
+      .tb-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(15px, 2vw, 18px);
+        font-weight: 700;
+        color: var(--cr-dk);
+      }
+      .tb-r {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .admin-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, var(--cr-dk), var(--cr-lt));
+        color: #fff;
+        padding: 5px 14px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.3px;
+      }
+      .notif-wrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+      .notif-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--r1);
+        background: var(--cream);
+        border: 1px solid var(--bdr);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .notif-dot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 8px;
+        height: 8px;
+        background: #e53e3e;
+        border-radius: 50%;
+        border: 2px solid #fff;
+      }
+
+      /* ─── BUTTONS ─── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 18px;
+        border-radius: var(--r2);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.18s;
+        white-space: nowrap;
+        line-height: 1;
+      }
+      .btn-cr {
+        background: var(--cr);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(107, 16, 32, 0.25);
+      }
+      .btn-cr:hover {
+        background: var(--cr-dk);
+        transform: translateY(-1px);
+      }
+      .btn-ok {
+        background: var(--ok);
+        color: #fff;
+      }
+      .btn-ok:hover {
+        background: #246640;
+        transform: translateY(-1px);
+      }
+      .btn-er {
+        background: var(--er);
+        color: #fff;
+      }
+      .btn-er:hover {
+        background: #a62424;
+        transform: translateY(-1px);
+      }
+      .btn-gh {
+        background: var(--cream);
+        color: var(--tx-m);
+        border: 1px solid var(--bdr);
+      }
+      .btn-gh:hover {
+        background: var(--cr-xl);
+        color: var(--cr);
+        border-color: var(--cr-bdr);
+      }
+      .btn-sm {
+        padding: 5px 13px;
+        font-size: 12px;
+        border-radius: var(--r1);
+      }
+      .btn-xs {
+        padding: 4px 10px;
+        font-size: 11px;
+        border-radius: 6px;
+      }
+
+      /* ─── BADGES ─── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 3px 9px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .bw {
+        background: rgba(0, 0, 0, 0.06);
+        color: #555;
+      }
+      .bo {
+        background: var(--wn-bg);
+        color: var(--wn);
+      }
+      .bg {
+        background: var(--ok-bg);
+        color: var(--ok);
+      }
+      .bb {
+        background: var(--inf-bg);
+        color: var(--inf);
+      }
+      .br {
+        background: var(--er-bg);
+        color: var(--er);
+      }
+      .bv {
+        background: var(--pu-bg);
+        color: var(--pu);
+      }
+      .bc {
+        background: var(--cr-xl);
+        color: var(--cr);
+      }
+      .bgd {
+        background: var(--gd-bg);
+        color: var(--gd-dk);
+      }
+
+      /* ─── PAGE WRAP ─── */
+      .page-wrap {
+        padding: clamp(16px, 3vw, 28px) clamp(14px, 3vw, 32px);
+        flex: 1;
+      }
+
+      /* ─── ADMIN BANNER ─── */
+      .admin-banner {
+        background: linear-gradient(
+          135deg,
+          var(--cr-dk) 0%,
+          var(--cr-lt) 55%,
+          #1a3860 100%
+        );
+        border-radius: var(--r4);
+        padding: clamp(16px, 2.5vw, 22px) clamp(20px, 3vw, 32px);
+        margin-bottom: clamp(18px, 2.5vw, 26px);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.4s ease both;
+      }
+      .admin-banner::after {
+        content: "⚖️";
+        position: absolute;
+        right: 28px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 72px;
+        opacity: 0.08;
+        pointer-events: none;
+      }
+      .ab-ico {
+        font-size: clamp(30px, 4.5vw, 40px);
+        flex-shrink: 0;
+      }
+      .ab-body {
+        flex: 1;
+        min-width: 220px;
+      }
+      .ab-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(15px, 2vw, 19px);
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+      .ab-desc {
+        font-size: clamp(12px, 1.3vw, 13px);
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      .ab-caps {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .ab-cap {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 100px;
+      }
+      .cap-y {
+        background: rgba(45, 122, 79, 0.3);
+        color: #9effc8;
+      }
+      .cap-n {
+        background: rgba(197, 48, 48, 0.25);
+        color: #ffb3b3;
+      }
+
+      /* ─── STATS ROW ─── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: clamp(10px, 1.5vw, 14px);
+        margin-bottom: clamp(18px, 2.5vw, 24px);
+      }
+      .sc {
+        background: #fff;
+        border-radius: var(--r3);
+        border: 1px solid var(--bdr);
+        padding: clamp(14px, 2vw, 18px);
+        box-shadow: var(--sh0);
+        animation: fadeUp 0.4s ease both;
+      }
+      .sc:nth-child(1) {
+        animation-delay: 0.04s;
+      }
+      .sc:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+      .sc:nth-child(3) {
+        animation-delay: 0.12s;
+      }
+      .sc:nth-child(4) {
+        animation-delay: 0.16s;
+      }
+      .sc:nth-child(5) {
+        animation-delay: 0.2s;
+      }
+      .sc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+      .sc-ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+      }
+      .si-cr {
+        background: var(--cr-xl);
+      }
+      .si-ok {
+        background: var(--ok-bg);
+      }
+      .si-er {
+        background: var(--er-bg);
+      }
+      .si-wn {
+        background: var(--wn-bg);
+      }
+      .si-gd {
+        background: var(--gd-bg);
+      }
+      .sc-pill {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+      }
+      .sp-ok {
+        background: var(--ok-bg);
+        color: var(--ok);
+      }
+      .sp-wn {
+        background: var(--wn-bg);
+        color: var(--wn);
+      }
+      .sp-er {
+        background: var(--er-bg);
+        color: var(--er);
+      }
+      .sc-num {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(22px, 3.5vw, 30px);
+        font-weight: 700;
+        color: var(--tx);
+        line-height: 1;
+      }
+      .sc-lbl {
+        font-size: 12px;
+        color: var(--tx-l);
+        margin-top: 4px;
+      }
+
+      /* ─── TOOLBAR ─── */
+      .toolbar {
+        background: #fff;
+        border: 1px solid var(--bdr);
+        border-radius: var(--r3);
+        padding: clamp(12px, 2vw, 16px) clamp(14px, 2vw, 22px);
+        margin-bottom: clamp(14px, 2vw, 20px);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        box-shadow: var(--sh0);
+        animation: fadeUp 0.4s ease 0.12s both;
+      }
+      .tb-search {
+        flex: 1;
+        min-width: 180px;
+        position: relative;
+      }
+      .tb-search input {
+        width: 100%;
+        padding: 9px 14px 9px 38px;
+        border: 1.5px solid var(--bdr);
+        border-radius: var(--r2);
+        font-size: 13px;
+        color: var(--tx);
+        background: var(--cream);
+        outline: none;
+        transition: all 0.2s;
+      }
+      .tb-search input:focus {
+        border-color: var(--cr);
+        box-shadow: 0 0 0 3px rgba(107, 16, 32, 0.07);
+        background: #fff;
+      }
+      .tb-search input::placeholder {
+        color: var(--tx-l);
+      }
+      .search-ico {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        pointer-events: none;
+      }
+      .f-sel {
+        padding: 9px 32px 9px 12px;
+        border: 1.5px solid var(--bdr);
+        border-radius: var(--r2);
+        font-size: 13px;
+        color: var(--tx-m);
+        background: #fff
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+          no-repeat calc(100% - 10px) center;
+        appearance: none;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .f-sel:focus {
+        border-color: var(--cr);
+      }
+      .chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        padding: 6px 13px;
+        border-radius: 100px;
+        border: 1.5px solid var(--bdr);
+        background: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--tx-l);
+        cursor: pointer;
+        transition: all 0.18s;
+        white-space: nowrap;
+      }
+      .chip.on {
+        background: var(--cr);
+        color: #fff;
+        border-color: var(--cr);
+      }
+      .chip:hover:not(.on) {
+        border-color: var(--cr-bdr);
+        color: var(--cr);
+      }
+
+      /* ─── DOC CARD ─── */
+      .doc-card {
+        background: #fff;
+        border-radius: var(--r4);
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh0);
+        margin-bottom: clamp(12px, 2vw, 16px);
+        overflow: hidden;
+        transition:
+          box-shadow 0.22s,
+          border-color 0.22s,
+          transform 0.22s;
+        animation: fadeUp 0.45s ease both;
+      }
+      .doc-card:hover {
+        box-shadow: var(--sh1);
+        border-color: rgba(107, 16, 32, 0.18);
+        transform: translateY(-1px);
+      }
+
+      /* card header grid */
+      .dc-hd {
+        padding: clamp(16px, 2vw, 22px) clamp(16px, 2vw, 26px);
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: clamp(12px, 2vw, 20px);
+        align-items: start;
+      }
+      .dc-type {
+        width: clamp(46px, 6vw, 58px);
+        height: clamp(46px, 6vw, 58px);
+        border-radius: var(--r2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(22px, 3vw, 28px);
+        flex-shrink: 0;
+      }
+      .ic-b {
+        background: var(--inf-bg);
+      }
+      .ic-o {
+        background: var(--wn-bg);
+      }
+      .ic-g {
+        background: var(--ok-bg);
+      }
+      .ic-r {
+        background: var(--er-bg);
+      }
+      .ic-gd {
+        background: var(--gd-bg);
+      }
+      .dc-info {
+        min-width: 0;
+      }
+      .dc-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .dc-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(15px, 2vw, 18px);
+        font-weight: 700;
+        color: var(--tx);
+        line-height: 1.3;
+        margin-bottom: 10px;
+      }
+      .dc-meta {
+        display: flex;
+        gap: clamp(10px, 1.8vw, 18px);
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: var(--tx-l);
+      }
+      .dc-meta strong {
+        color: var(--tx-m);
+        font-weight: 600;
+      }
+      .dc-side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        flex-shrink: 0;
+        min-width: 80px;
+      }
+      .dc-score {
+        text-align: center;
+      }
+      .dc-score-n {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(22px, 3vw, 28px);
+        font-weight: 700;
+        color: var(--tx);
+        line-height: 1;
+      }
+      .dc-score-s {
+        font-size: 13px;
+        letter-spacing: 2px;
+        margin-top: 2px;
+      }
+      .dc-score-l {
+        font-size: 11px;
+        color: var(--tx-l);
+        margin-top: 2px;
+      }
+
+      /* pending action bar */
+      .pending-bar {
+        padding: clamp(11px, 1.5vw, 14px) clamp(16px, 2vw, 26px);
+        background: linear-gradient(
+          90deg,
+          rgba(107, 16, 32, 0.05),
+          rgba(107, 16, 32, 0.02)
+        );
+        border-top: 1px solid rgba(107, 16, 32, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .pb-msg {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--tx-m);
+        flex-wrap: wrap;
+      }
+      .pb-msg strong {
+        color: var(--tx);
+      }
+      .pb-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* expand toggle */
+      .exp-tog {
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--cr);
+        padding: 10px 26px;
+        border-top: 1px solid rgba(107, 16, 32, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        transition: background 0.15s;
+      }
+      .exp-tog:hover {
+        background: var(--cr-xl);
+      }
+      .exp-body {
+        display: none;
+      }
+      .exp-body.open {
+        display: block;
+      }
+
+      /* reviews inside card */
+      .rv-wrap {
+        padding: clamp(14px, 2vw, 22px) clamp(16px, 2vw, 26px);
+      }
+      .rv-item {
+        background: var(--cream);
+        border-radius: var(--r3);
+        border: 1px solid var(--bdr);
+        padding: clamp(14px, 2vw, 18px);
+        margin-bottom: 12px;
+        position: relative;
+        overflow: hidden;
+      }
+      .rv-item:last-child {
+        margin-bottom: 0;
+      }
+      .rv-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 4px 0 0 4px;
+      }
+      .rv-ok::before {
+        background: var(--ok);
+      }
+      .rv-er::before {
+        background: var(--er);
+      }
+      .rv-wn::before {
+        background: var(--wn);
+      }
+      .rv-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .rv-num {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .rv-score {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .rv-stars {
+        font-size: 16px;
+        letter-spacing: 2px;
+      }
+      .rv-val {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--tx);
+      }
+      .rv-oof {
+        font-size: 12px;
+        color: var(--tx-l);
+      }
+      .rv-sec {
+        margin-bottom: 10px;
+      }
+      .rv-sec:last-of-type {
+        margin-bottom: 0;
+      }
+      .rv-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .rv-txt {
+        font-size: 13px;
+        color: var(--tx-m);
+        line-height: 1.65;
+      }
+      .rv-reviewer {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(107, 16, 32, 0.07);
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .rv-ava {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--cr-lt);
+        flex-shrink: 0;
+      }
+      .rv-rname {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--tx-m);
+      }
+      .rv-rrole {
+        font-size: 11px;
+        color: var(--tx-l);
+      }
+      .rv-date {
+        margin-left: auto;
+        font-size: 11px;
+        color: var(--tx-l);
+      }
+
+      /* card footer */
+      .dc-ft {
+        padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2vw, 26px);
+        border-top: 1px solid var(--bdr);
+        background: var(--warm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .avg-big {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(22px, 3vw, 28px);
+        font-weight: 700;
+        color: var(--cr);
+      }
+      .avg-meta {
+        font-size: 12px;
+        color: var(--tx-l);
+        margin-top: 2px;
+      }
+      .prog {
+        height: 6px;
+        background: var(--bdr);
+        border-radius: 6px;
+        overflow: hidden;
+        margin-top: 6px;
+        max-width: 220px;
+      }
+      .prog-f {
+        height: 100%;
+        border-radius: 6px;
+        background: var(--cr);
+        transition: width 0.8s;
+      }
+
+      /* ─── MODALS ─── */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(12px, 3vw, 20px);
+        overflow-y: auto;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: #fff;
+        border-radius: var(--r4);
+        width: 100%;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        box-shadow: var(--sh3);
+        animation: modalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .modal-sm {
+        max-width: 460px;
+      }
+      .modal-md {
+        max-width: 580px;
+      }
+      @keyframes modalIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .m-hd {
+        padding: clamp(18px, 2vw, 24px) clamp(20px, 2vw, 28px);
+        border-radius: var(--r4) var(--r4) 0 0;
+        position: relative;
+      }
+      .mh-cr {
+        background: linear-gradient(135deg, var(--cr-dk), var(--cr-lt));
+      }
+      .mh-ok {
+        background: linear-gradient(135deg, #1a4a2e, var(--ok));
+      }
+      .mh-er {
+        background: linear-gradient(135deg, #6b0808, var(--er));
+      }
+      .m-hd h3 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(17px, 2vw, 20px);
+        font-weight: 700;
+        color: #fff;
+      }
+      .m-hd p {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.58);
+        margin-top: 4px;
+      }
+      .m-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.18s;
+      }
+      .m-close:hover {
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .m-body {
+        padding: clamp(18px, 2vw, 26px) clamp(20px, 2vw, 28px);
+      }
+      .m-foot {
+        padding: clamp(12px, 1.5vw, 16px) clamp(20px, 2vw, 28px);
+        border-top: 1px solid var(--bdr);
+        background: var(--warm);
+        border-radius: 0 0 var(--r4) var(--r4);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* modal doc preview */
+      .mdp {
+        background: var(--cream);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r2);
+        padding: 13px 16px;
+        margin-bottom: 20px;
+      }
+      .mdp-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+      }
+      .mdp-title {
+        font-family: "Playfair Display", serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--tx);
+      }
+      .mdp-meta {
+        font-size: 12px;
+        color: var(--tx-l);
+        margin-top: 3px;
+      }
+
+      /* decision options */
+      .dec-opts {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .dec-opt {
+        border: 2px solid var(--bdr);
+        border-radius: var(--r2);
+        padding: 16px 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--cream);
+        transition: all 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .dec-opt:hover {
+        border-color: rgba(107, 16, 32, 0.25);
+      }
+      .dec-opt.sel-ok {
+        border-color: var(--ok);
+        background: var(--ok-bg);
+      }
+      .dec-opt.sel-er {
+        border-color: var(--er);
+        background: var(--er-bg);
+      }
+      .dec-ico {
+        font-size: 26px;
+        flex-shrink: 0;
+      }
+      .dec-radio {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--bdr);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .sel-ok .dec-radio {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .sel-ok .dec-radio::after,
+      .sel-er .dec-radio::after {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+      }
+      .sel-er .dec-radio {
+        background: var(--er);
+        border-color: var(--er);
+      }
+      .dec-tx {
+        flex: 1;
+        min-width: 0;
+      }
+      .dec-nm {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--tx);
+      }
+      .dec-ds {
+        font-size: 12px;
+        color: var(--tx-l);
+        margin-top: 3px;
+        line-height: 1.4;
+      }
+      .sel-ok .dec-nm {
+        color: var(--ok);
+      }
+      .sel-er .dec-nm {
+        color: var(--er);
+      }
+
+      .f-lbl {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 7px;
+      }
+      .f-ta {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--bdr);
+        border-radius: var(--r2);
+        font-size: 13px;
+        color: var(--tx);
+        background: var(--cream);
+        outline: none;
+        resize: vertical;
+        min-height: 88px;
+        line-height: 1.6;
+        transition: all 0.2s;
+      }
+      .f-ta:focus {
+        border-color: var(--cr);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(107, 16, 32, 0.07);
+      }
+      .f-ta::placeholder {
+        color: var(--tx-l);
+      }
+
+      /* result modal */
+      .res-center {
+        text-align: center;
+        padding: clamp(24px, 4vw, 36px) clamp(18px, 3vw, 26px);
+      }
+      .res-ico {
+        font-size: clamp(48px, 6vw, 60px);
+        margin-bottom: 14px;
+      }
+      .res-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(18px, 2.2vw, 22px);
+        margin-bottom: 8px;
+      }
+      .res-desc {
+        font-size: 14px;
+        color: var(--tx-l);
+        line-height: 1.65;
+        margin-bottom: 18px;
+      }
+      .res-sum {
+        border-radius: var(--r2);
+        padding: 13px 16px;
+        text-align: left;
+      }
+      .rs-ok {
+        background: var(--ok-bg);
+        border: 1px solid rgba(45, 122, 79, 0.2);
+      }
+      .rs-er {
+        background: var(--er-bg);
+        border: 1px solid rgba(197, 48, 48, 0.2);
+      }
+      .res-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 4px 0;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .res-row .rl {
+        color: var(--tx-l);
+      }
+      .res-row .rv {
+        font-weight: 600;
+        color: var(--tx);
+        text-align: right;
+      }
+
+      /* ─── TOAST ─── */
+      .toast {
+        position: fixed;
+        bottom: clamp(14px, 3vw, 22px);
+        left: 50%;
+        z-index: 99999;
+        transform: translateX(-50%) translateY(80px);
+        color: #fff;
+        padding: 11px clamp(16px, 3vw, 22px);
+        border-radius: var(--r3);
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: var(--sh3);
+        opacity: 0;
+        transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        max-width: calc(100vw - 28px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .t-ok {
+        background: var(--ok);
+      }
+      .t-er {
+        background: var(--er);
+      }
+      .t-wn {
+        background: var(--wn);
+      }
+      .t-def {
+        background: var(--cr-dk);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+      }
+
+      /* ─── EMPTY STATE ─── */
+      .empty {
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff;
+        border-radius: var(--r4);
+        border: 1px solid var(--bdr);
+      }
+      .empty-ico {
+        font-size: 52px;
+        opacity: 0.22;
+        margin-bottom: 14px;
+      }
+      .empty-title {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+        color: var(--tx-m);
+        margin-bottom: 6px;
+      }
+      .empty-sub {
+        font-size: 14px;
+        color: var(--tx-l);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* ═══ RESPONSIVE ═══ */
+      @media (min-width: 2000px) {
+        :root {
+          --sb: 290px;
+        }
+        html {
+          font-size: 17px;
+        }
+        .stats-row {
+          grid-template-columns: repeat(5, 1fr);
+        }
+      }
+      @media (min-width: 768px) and (max-width: 1199px) {
+        :root {
+          --sb: var(--sb-ico);
+        }
+        .sidebar .sb-logo,
+        .sidebar .sb-role-tag,
+        .sidebar .sb-ui,
+        .sidebar .nav-l,
+        .sidebar .nt,
+        .sidebar .nb,
+        .sidebar .ng {
+          opacity: 0;
+          max-width: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .sidebar .nav-i {
+          justify-content: center;
+          padding: 9px;
+        }
+        .sidebar .ni {
+          width: auto;
+        }
+        .sidebar .sb-user {
+          justify-content: center;
+          padding: 12px;
+        }
+        .sidebar .sb-head {
+          justify-content: center;
+          padding: 16px 10px;
+        }
+        .sidebar .nav-i:hover::after {
+          content: attr(data-tip);
+          position: absolute;
+          left: calc(100% + 10px);
+          top: 50%;
+          transform: translateY(-50%);
+          background: var(--cr-dk);
+          color: #fff;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 5px 12px;
+          border-radius: var(--r1);
+          white-space: nowrap;
+          z-index: 9999;
+          box-shadow: var(--sh2);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          pointer-events: none;
+        }
+        .sb-tog {
+          display: none !important;
+        }
+        .stats-row {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 767px) {
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: var(--sb-mob) !important;
+          height: 100vh;
+          z-index: 300;
+          transform: translateX(-100%);
+          box-shadow: var(--sh3);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar .sb-logo,
+        .sidebar .sb-role-tag,
+        .sidebar .sb-ui,
+        .sidebar .nav-l,
+        .sidebar .nt,
+        .sidebar .nb,
+        .sidebar .ng {
+          opacity: 1 !important;
+          max-width: unset !important;
+          pointer-events: auto !important;
+        }
+        .sidebar .nav-i {
+          justify-content: flex-start;
+          padding: 8px 10px;
+          gap: 9px;
+        }
+        .sidebar .ni {
+          width: 18px;
+        }
+        .sidebar .sb-user {
+          justify-content: flex-start;
+          padding: 13px 20px;
+        }
+        .sidebar .sb-head {
+          justify-content: space-between;
+          padding: 18px 20px;
+        }
+        .sb-ov {
+          display: block;
+        }
+        .sb-tog {
+          display: flex !important;
+        }
+        .tb-ham {
+          display: flex;
+        }
+        .stats-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .dc-hd {
+          grid-template-columns: auto 1fr;
+        }
+        .dc-side {
+          display: none;
+        }
+        .pending-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .pb-actions {
+          justify-content: stretch;
+        }
+        .pb-actions .btn {
+          flex: 1;
+          justify-content: center;
+        }
+        .toolbar {
+          padding: 12px;
+        }
+        .chips {
+          width: 100%;
+        }
+        .topbar {
+          padding: 0 14px;
+          height: 56px;
+        }
+        .tb-bc {
+          display: none;
+        }
+        .admin-badge .ab-txt {
+          display: none;
+        }
+        .m-foot {
+          justify-content: stretch;
+        }
+        .m-foot .btn {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+      @media (max-width: 480px) {
+        .stats-row {
+          grid-template-columns: 1fr 1fr;
+        }
+        .dc-tags .badge:nth-child(n + 4) {
+          display: none;
+        }
+        .dc-meta span:nth-child(n + 4) {
+          display: none;
+        }
+        .rv-reviewer {
+          flex-wrap: wrap;
+        }
+        .rv-date {
+          margin-left: 0;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast t-def" id="toast"></div>
+    <div class="sb-ov" id="sb-ov" onclick="closeSB()"></div>
+
+    <div class="app">
+      <!-- ════════ SIDEBAR ════════ -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sb-head">
+          <div>
+            <div class="sb-logo">PETRO<span>PUB</span></div>
+            <div class="sb-role-tag">Administração</div>
+          </div>
+          <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
+          <button class="sb-tog" id="sb-col" onclick="toggleCol()">◀</button>
+        </div>
+        <div class="sb-user">
+          <div class="ava ava-dk">AD</div>
+          <div class="sb-ui">
+            <div class="sb-un">Ana Domingos</div>
+            <div class="sb-ue">admin@petropub.ao</div>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Visão Geral</div>
+          <div class="nav-i" data-tip="Dashboard">
+            <span class="ni">📊</span><span class="nt">Dashboard</span>
+          </div>
+          <div class="nav-i" data-tip="Utilizadores">
+            <span class="ni">👥</span><span class="nt">Utilizadores</span>
+          </div>
+          <div class="nav-i" data-tip="Documentos">
+            <span class="ni">📚</span><span class="nt">Documentos</span>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Editorial</div>
+          <div class="nav-i act" data-tip="Avaliações">
+            <span class="ni">🔍</span
+            ><span class="nt">Gestão de Avaliações</span
+            ><span class="nb">2</span>
+          </div>
+          <div class="nav-i" data-tip="Publicação">
+            <span class="ni">📤</span><span class="nt">Publicação</span>
+          </div>
+          <div class="nav-i" data-tip="Categorias">
+            <span class="ni">🗂️</span><span class="nt">Categorias</span>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Financeiro</div>
+          <div class="nav-i" data-tip="Receitas">
+            <span class="ni">💰</span><span class="nt">Receitas</span>
+          </div>
+          <div class="nav-i" data-tip="Comprovantes">
+            <span class="ni">📜</span><span class="nt">Comprovantes</span
+            ><span class="nb">12</span>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Sistema</div>
+          <div class="nav-i" data-tip="Alertas">
+            <span class="ni">🚨</span><span class="nt">Alertas</span
+            ><span class="nb">3</span>
+          </div>
+          <div class="nav-i" data-tip="Gamificação">
+            <span class="ni">⭐</span
+            ><span class="nt">Gamificação & Ranking</span>
+          </div>
+          <div class="nav-i" data-tip="Configurações">
+            <span class="ni">⚙️</span><span class="nt">Configurações</span>
+          </div>
+        </div>
+        <div class="sb-foot">
+          <div class="nav-i" data-tip="Sair">
+            <span class="ni">🚪</span><span class="nt">Sair da Sessão</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ════════ MAIN ════════ -->
+      <div class="main">
+        <div class="topbar">
+          <div class="tb-l">
+            <button class="tb-ham" onclick="openSB()">☰</button>
+            <div class="tb-info">
+              <div class="tb-bc">
+                PetroPub <span>/ Admin / Gestão de Avaliações</span>
+              </div>
+              <div class="tb-title">Gestão de Avaliações</div>
+            </div>
+          </div>
+          <div class="tb-r">
+            <div class="admin-badge">
+              ⚙️ <span class="ab-txt">Administrador</span>
+            </div>
+            <div class="notif-wrap">
+              <div class="notif-btn">🔔</div>
+              <div class="notif-dot"></div>
+            </div>
+            <div
+              class="ava ava-dk"
+              style="
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+                cursor: pointer;
+                flex-shrink: 0;
+              "
+            >
+              AD
+            </div>
+          </div>
+        </div>
+
+        <div class="page-wrap">
+          <!-- ADMIN BANNER -->
+          <div class="admin-banner">
+            <div class="ab-ico">⚖️</div>
+            <div class="ab-body">
+              <div class="ab-title">
+                Painel de Decisão Editorial — Administrador
+              </div>
+              <div class="ab-desc">
+                Visualiza todas as avaliações dos pares com identidade completa
+                dos avaliadores. Cabe ao administrador tomar a decisão final de
+                aprovar ou rejeitar cada documento.
+              </div>
+              <div class="ab-caps">
+                <span class="ab-cap cap-y">✓ Ver todas as avaliações</span>
+                <span class="ab-cap cap-y">✓ Identidade dos avaliadores</span>
+                <span class="ab-cap cap-y">✓ Histórico completo</span>
+                <span class="ab-cap cap-y"
+                  >✓ Decisão final (Aprovar / Rejeitar)</span
+                >
+                <span class="ab-cap cap-n">✗ Não avalia documentos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- STATS -->
+          <div class="stats-row" id="stats-row">
+            <div class="sc">
+              <div class="sc-top">
+                <div class="sc-ico si-wn">⏳</div>
+                <span class="sc-pill sp-wn">Urgente</span>
+              </div>
+              <div class="sc-num" id="st-pending">2</div>
+              <div class="sc-lbl">Aguardam decisão</div>
+            </div>
+            <div class="sc">
+              <div class="sc-top">
+                <div class="sc-ico si-cr">🔍</div>
+                <span class="sc-pill sp-ok">Total</span>
+              </div>
+              <div class="sc-num">14</div>
+              <div class="sc-lbl">Avaliações recebidas</div>
+            </div>
+            <div class="sc">
+              <div class="sc-top">
+                <div class="sc-ico si-ok">✅</div>
+                <span class="sc-pill sp-ok" id="st-app-pill">+3 hoje</span>
+              </div>
+              <div class="sc-num" id="st-approved">8</div>
+              <div class="sc-lbl">Aprovados pelo admin</div>
+            </div>
+            <div class="sc">
+              <div class="sc-top">
+                <div class="sc-ico si-er">❌</div>
+                <span class="sc-pill sp-er">Total</span>
+              </div>
+              <div class="sc-num" id="st-rejected">3</div>
+              <div class="sc-lbl">Rejeitados pelo admin</div>
+            </div>
+            <div class="sc">
+              <div class="sc-top">
+                <div class="sc-ico si-gd">⭐</div>
+                <span class="sc-pill sp-ok">Global</span>
+              </div>
+              <div class="sc-num">3.9</div>
+              <div class="sc-lbl">Média das avaliações</div>
+            </div>
+          </div>
+
+          <!-- TOOLBAR -->
+          <div class="toolbar">
+            <div class="tb-search">
+              <span class="search-ico">🔍</span>
+              <input
+                type="text"
+                id="q"
+                placeholder="Pesquisar por título, autor, avaliador…"
+                oninput="applyFilters()"
+              />
+            </div>
+            <select class="f-sel" id="cat-sel" onchange="applyFilters()">
+              <option value="">Todas as categorias</option>
+              <option>Eng. Informática</option>
+              <option>Eng. do Petróleo</option>
+              <option>Gestão</option>
+              <option>Medicina</option>
+            </select>
+            <select class="f-sel" id="sort-sel" onchange="applyFilters()">
+              <option value="recent">Mais recentes</option>
+              <option value="score-asc">Menor pontuação</option>
+              <option value="score-desc">Maior pontuação</option>
+              <option value="reviews">Mais avaliações</option>
+            </select>
+            <div class="chips" id="status-chips">
+              <button class="chip on" onclick="setChip('all', this)">
+                Todos
+              </button>
+              <button class="chip" onclick="setChip('pending', this)">
+                ⏳ Aguardam
+              </button>
+              <button class="chip" onclick="setChip('approved', this)">
+                ✅ Aprovados
+              </button>
+              <button class="chip" onclick="setChip('rejected', this)">
+                ❌ Rejeitados
+              </button>
+            </div>
+          </div>
+
+          <!-- DOCUMENT LIST -->
+          <div id="doc-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MODAL: DECISÃO ═══ -->
+    <div
+      class="overlay"
+      id="modal-decide"
+      onclick="ovClose(event, 'modal-decide')"
+    >
+      <div class="modal modal-md">
+        <div class="m-hd mh-cr">
+          <h3>⚖️ Decisão Editorial</h3>
+          <p>Aprovar ou rejeitar a publicação do documento na plataforma</p>
+          <button class="m-close" onclick="closeModal('modal-decide')">
+            ✕
+          </button>
+        </div>
+        <div class="m-body">
+          <div class="mdp">
+            <div class="mdp-lbl">Documento em análise</div>
+            <div class="mdp-title" id="dec-title">—</div>
+            <div class="mdp-meta" id="dec-meta">—</div>
+          </div>
+          <label class="f-lbl"
+            >Decisão <span style="color: var(--cr)">*</span></label
+          >
+          <div class="dec-opts">
+            <div class="dec-opt" id="dec-approve" onclick="selDec('approve')">
+              <div class="dec-radio" id="dr-a"></div>
+              <span class="dec-ico">✅</span>
+              <div class="dec-tx">
+                <div class="dec-nm">Aprovar Publicação</div>
+                <div class="dec-ds">
+                  O documento cumpre os critérios e será publicado e
+                  disponibilizado para download pelos utilizadores.
+                </div>
+              </div>
+            </div>
+            <div class="dec-opt" id="dec-reject" onclick="selDec('reject')">
+              <div class="dec-radio" id="dr-r"></div>
+              <span class="dec-ico">❌</span>
+              <div class="dec-tx">
+                <div class="dec-nm">Rejeitar Documento</div>
+                <div class="dec-ds">
+                  O documento não cumpre os critérios mínimos de qualidade e não
+                  será publicado na plataforma.
+                </div>
+              </div>
+            </div>
+          </div>
+          <label class="f-lbl"
+            >Nota para o Autor
+            <span
+              style="font-weight: 400; text-transform: none; color: var(--tx-l)"
+              >(opcional)</span
+            ></label
+          >
+          <textarea
+            class="f-ta"
+            id="dec-note"
+            placeholder="Explique os motivos, pontos a melhorar ou felicitações…"
+          ></textarea>
+        </div>
+        <div class="m-foot">
+          <button class="btn btn-gh" onclick="closeModal('modal-decide')">
+            Cancelar
+          </button>
+          <button class="btn btn-cr" onclick="confirmDecision()">
+            ⚖️ Confirmar Decisão
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MODAL: RESULTADO ═══ -->
+    <div
+      class="overlay"
+      id="modal-result"
+      onclick="ovClose(event, 'modal-result')"
+    >
+      <div class="modal modal-sm">
+        <div class="m-hd" id="res-mhd">
+          <h3 id="res-htitle">—</h3>
+          <p id="res-hsub">—</p>
+          <button class="m-close" onclick="closeModal('modal-result')">
+            ✕
+          </button>
+        </div>
+        <div class="res-center">
+          <div class="res-ico" id="res-ico">🎉</div>
+          <div class="res-title" id="res-title">—</div>
+          <div class="res-desc" id="res-desc">—</div>
+          <div class="res-sum" id="res-sum">
+            <div class="res-row">
+              <span class="rl">Documento</span
+              ><span class="rv" id="rs-doc">—</span>
+            </div>
+            <div class="res-row">
+              <span class="rl">Decisão</span
+              ><span class="rv" id="rs-dec">—</span>
+            </div>
+            <div class="res-row">
+              <span class="rl">Administrador</span
+              ><span class="rv">Ana Domingos</span>
+            </div>
+            <div class="res-row">
+              <span class="rl">Data</span><span class="rv" id="rs-date">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="m-foot" style="justify-content: center">
+          <button class="btn btn-gh" onclick="closeModal('modal-result')">
+            Fechar
+          </button>
+          <button class="btn btn-cr" onclick="closeModal('modal-result')">
+            ← Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ═══ DATA ═══ */
+      const S = (n) => "⭐".repeat(n) + "☆".repeat(5 - n);
+
+      const docs = [
+        {
+          id: 1,
+          status: "pending",
+          cat: "Eng. Informática",
+          type: "Dissertação",
+          ico: "💻",
+          bg: "ic-b",
+          title: "Sistema de Gestão Hospitalar Distribuído",
+          author: "João Manuel",
+          inst: "ISPTEC",
+          year: 2025,
+          pages: 128,
+          avg: 3.5,
+          reviews: [
+            {
+              n: 1,
+              score: 4,
+              dcls: "rv-wn",
+              dLbl: "Pedido de Revisão",
+              dbdg: "bv",
+              comment:
+                "O trabalho apresenta boa estrutura mas precisa melhorar a metodologia. A revisão bibliográfica está incompleta relativamente a trabalhos recentes na área.",
+              suggestion:
+                "Adicionar referências actualizadas (2022–2025). Rever e expandir a secção 3.2 sobre arquitectura de microserviços.",
+              rev: {
+                ini: "AP",
+                name: "Prof. Ana Paula",
+                role: "Professora Eng. Informática — ISPTEC",
+              },
+              date: "10 Mar 2025",
+            },
+            {
+              n: 2,
+              score: 3,
+              dcls: "rv-wn",
+              dLbl: "Pedido de Revisão",
+              dbdg: "bv",
+              comment:
+                "O tema é relevante porém a implementação não foi detalhada nas secções 3 e 4. Os testes carecem de maior rigor estatístico.",
+              suggestion:
+                "Explicar melhor o algoritmo de escalonamento distribuído. Incluir métricas de desempenho comparativas.",
+              rev: {
+                ini: "MB",
+                name: "Prof. Mário Braga",
+                role: "Professor Sistemas Distribuídos — UAN",
+              },
+              date: "12 Mar 2025",
+            },
+          ],
+        },
+        {
+          id: 2,
+          status: "pending",
+          cat: "Eng. do Petróleo",
+          type: "Monografia",
+          ico: "⚙️",
+          bg: "ic-o",
+          title:
+            "Optimização de Redes Neurais para Detecção de Falhas em Equipamentos Petrolíferos",
+          author: "Filomena Ngunga",
+          inst: "UAN",
+          year: 2025,
+          pages: 94,
+          avg: 4.0,
+          reviews: [
+            {
+              n: 1,
+              score: 5,
+              dcls: "rv-ok",
+              dLbl: "Aprovado",
+              dbdg: "bg",
+              comment:
+                "Excelente abordagem técnica com fundamentação teórica sólida e resultados convincentes. A metodologia é rigorosa.",
+              suggestion:
+                "Expandir a análise comparativa com outros algoritmos de detecção de anomalias.",
+              rev: {
+                ini: "RD",
+                name: "Prof. Ricardo Dias",
+                role: "Professor Machine Learning — ISPTEC",
+              },
+              date: "8 Mar 2025",
+            },
+            {
+              n: 2,
+              score: 4,
+              dcls: "rv-wn",
+              dLbl: "Pedido de Revisão",
+              dbdg: "bv",
+              comment:
+                "Trabalho bem estruturado. A metodologia é clara e os resultados são pertinentes para o sector petrolífero angolano.",
+              suggestion:
+                "Melhorar os gráficos de resultados. Adicionar tabelas comparativas de desempenho.",
+              rev: {
+                ini: "CL",
+                name: "Prof. Catarina Lopes",
+                role: "Professora Eng. Petróleo — UAN",
+              },
+              date: "9 Mar 2025",
+            },
+            {
+              n: 3,
+              score: 3,
+              dcls: "rv-wn",
+              dLbl: "Pedido de Revisão",
+              dbdg: "bv",
+              comment:
+                "O conteúdo é pertinente mas a escrita académica precisa de revisão profunda. Algumas secções são superficiais.",
+              suggestion:
+                "Rever estrutura dos capítulos 3 e 4. Melhorar o rigor das conclusões com dados quantitativos.",
+              rev: {
+                ini: "JP",
+                name: "Prof. João Pinto",
+                role: "Professor Eng. Petróleo — ISPTEC",
+              },
+              date: "11 Mar 2025",
+            },
+          ],
+        },
+        {
+          id: 3,
+          status: "approved",
+          cat: "Eng. Electrotécnica",
+          type: "PAP",
+          ico: "⚡",
+          bg: "ic-gd",
+          title:
+            "Impacto das Energias Renováveis no Sistema Eléctrico de Angola",
+          author: "Sónia Pimentel",
+          inst: "Univ. Metodista",
+          year: 2024,
+          pages: 112,
+          avg: 4.7,
+          reviews: [
+            {
+              n: 1,
+              score: 5,
+              dcls: "rv-ok",
+              dLbl: "Aprovado",
+              dbdg: "bg",
+              comment:
+                "Trabalho excepcionalmente bem desenvolvido. Contribuição significativa para as energias renováveis em Angola.",
+              suggestion:
+                "Publicar os resultados num artigo científico indexado — qualidade para isso.",
+              rev: {
+                ini: "AP",
+                name: "Prof. Ana Paula",
+                role: "Professora de Engenharia — ISPTEC",
+              },
+              date: "5 Mar 2025",
+            },
+            {
+              n: 2,
+              score: 5,
+              dcls: "rv-ok",
+              dLbl: "Aprovado",
+              dbdg: "bg",
+              comment:
+                "Boa metodologia e resultados relevantes. A revisão bibliográfica é abrangente e actualizada.",
+              suggestion:
+                "Considerar submeter a conferências internacionais de energia renovável.",
+              rev: {
+                ini: "HL",
+                name: "Prof. Helena Lima",
+                role: "Directora de Departamento — UAN",
+              },
+              date: "6 Mar 2025",
+            },
+            {
+              n: 3,
+              score: 4,
+              dcls: "rv-ok",
+              dLbl: "Aprovado",
+              dbdg: "bg",
+              comment:
+                "Contribuição inovadora e bem fundamentada. Os dados recolhidos são rigorosos.",
+              suggestion:
+                "Adicionar secção de análise económica das propostas energéticas.",
+              rev: {
+                ini: "RD",
+                name: "Prof. Ricardo Dias",
+                role: "Investigador Sénior — ISPTEC",
+              },
+              date: "7 Mar 2025",
+            },
+          ],
+        },
+        {
+          id: 4,
+          status: "rejected",
+          cat: "Gestão",
+          type: "Monografia",
+          ico: "📊",
+          bg: "ic-r",
+          title:
+            "Análise do Mercado de Capitais em Angola: Perspectivas 2024–2030",
+          author: "Carlos Neto",
+          inst: "UCAN",
+          year: 2024,
+          pages: 67,
+          avg: 2.0,
+          reviews: [
+            {
+              n: 1,
+              score: 2,
+              dcls: "rv-er",
+              dLbl: "Rejeitado",
+              dbdg: "br",
+              comment:
+                "Lacunas metodológicas graves. Os dados não são suportados por fontes fiáveis ou identificadas.",
+              suggestion:
+                "Refazer revisão de literatura usando exclusivamente fontes académicas primárias.",
+              rev: {
+                ini: "LM",
+                name: "Prof. Luísa Martins",
+                role: "Professora de Finanças — UCAN",
+              },
+              date: "3 Mar 2025",
+            },
+            {
+              n: 2,
+              score: 2,
+              dcls: "rv-er",
+              dLbl: "Rejeitado",
+              dbdg: "br",
+              comment:
+                "Conclusões não sustentadas pelos dados apresentados. Análise superficial sem profundidade académica.",
+              suggestion:
+                "Reescrever capítulos 3 e 4 com maior rigor analítico e suporte bibliográfico.",
+              rev: {
+                ini: "FG",
+                name: "Prof. Fernando Gonçalves",
+                role: "Professor de Economia — UAN",
+              },
+              date: "4 Mar 2025",
+            },
+          ],
+        },
+      ];
+
+      /* ═══ STATE ═══ */
+      let statusFilter = "all",
+        decideId = null,
+        selectedDec = "";
+      const sCfg = {
+        pending: { cls: "bo", lbl: "⏳ Aguarda Admin" },
+        approved: { cls: "bg", lbl: "✅ Aprovado" },
+        rejected: { cls: "br", lbl: "❌ Rejeitado" },
+      };
+
+      /* ═══ RENDER ═══ */
+      function render(data) {
+        const el = document.getElementById("doc-list");
+        if (!data.length) {
+          el.innerHTML = `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title">Nenhum documento encontrado</div><div class="empty-sub">Tente ajustar os filtros aplicados.</div></div>`;
+          return updateStats();
+        }
+        el.innerHTML = data
+          .map((d, i) => {
+            const sc = sCfg[d.status] || sCfg.pending;
+            const pend = d.status === "pending";
+            const nOk = d.reviews.filter((r) => r.dLbl === "Aprovado").length;
+            const nRev = d.reviews.filter(
+              (r) => r.dLbl === "Pedido de Revisão",
+            ).length;
+            const nEr = d.reviews.filter((r) => r.dLbl === "Rejeitado").length;
+            const pct = Math.round((d.avg / 5) * 100);
+            return `
+<div class="doc-card" style="animation-delay:${(i * 0.06).toFixed(2)}s">
+  <div class="dc-hd">
+    <div class="dc-type ${d.bg}">${d.ico}</div>
+    <div class="dc-info">
+      <div class="dc-tags">
+        <span class="badge ${sc.cls}">${sc.lbl}</span>
+        <span class="badge bc">${d.type}</span>
+        <span class="badge bw">${d.cat}</span>
+        ${pend ? '<span class="badge bo">🔥 Urgente</span>' : ""}
+      </div>
+      <div class="dc-title">${d.title}</div>
+      <div class="dc-meta">
+        <span>👤 <strong>${d.author}</strong></span>
+        <span>🏛️ <strong>${d.inst}</strong></span>
+        <span>📅 <strong>${d.year}</strong></span>
+        <span>📄 <strong>${d.pages} págs.</strong></span>
+        <span>🔍 <strong>${d.reviews.length} avaliações</strong></span>
+      </div>
+    </div>
+    <div class="dc-side">
+      <div class="dc-score">
+        <div class="dc-score-n">${d.avg.toFixed(1)}</div>
+        <div class="dc-score-s">${S(Math.round(d.avg))}</div>
+        <div class="dc-score-l">${d.reviews.length} aval.</div>
+      </div>
+      ${pend ? `<button class="btn btn-cr btn-sm" onclick="openDecide(${d.id})">⚖️ Decidir</button>` : ""}
+    </div>
+  </div>
+
+  ${
+    pend
+      ? `
+  <div class="pending-bar">
+    <div class="pb-msg">⚠️ <span>Aguarda decisão &nbsp;·&nbsp; Média: <strong>${d.avg.toFixed(1)}/5</strong> &nbsp;·&nbsp; ${nOk} ✅ aprovados &nbsp;·&nbsp; ${nRev} 🔄 revisões &nbsp;·&nbsp; ${nEr} ❌ rejeitados</span></div>
+    <div class="pb-actions">
+      <button class="btn btn-ok btn-sm" onclick="quickDecide(${d.id},'approve')">✅ Aprovar</button>
+      <button class="btn btn-er btn-sm" onclick="quickDecide(${d.id},'reject')">❌ Rejeitar</button>
+      <button class="btn btn-gh btn-sm" onclick="openDecide(${d.id})">⚖️ Ver e decidir</button>
+    </div>
+  </div>`
+      : ""
+  }
+
+  <button class="exp-tog" onclick="toggleExp(this)">▼ Ver ${d.reviews.length} avaliações detalhadas com identidade dos avaliadores</button>
+
+  <div class="exp-body">
+    <div class="rv-wrap">
+      ${d.reviews
+        .map(
+          (rv, ri) => `
+      <div class="rv-item ${rv.dcls}" style="animation-delay:${(ri * 0.06).toFixed(2)}s">
+        <div class="rv-top">
+          <span class="rv-num">Avaliação #${rv.n}</span>
+          <span class="badge ${rv.dbdg}">${rv.dLbl}</span>
+        </div>
+        <div class="rv-score">
+          <span class="rv-stars">${S(rv.score)}</span>
+          <span class="rv-val">${rv.score}</span>
+          <span class="rv-oof">/ 5</span>
+        </div>
+        <div class="rv-sec"><div class="rv-lbl">💬 Comentário</div><div class="rv-txt">${rv.comment}</div></div>
+        <div class="rv-sec"><div class="rv-lbl">💡 Sugestões</div><div class="rv-txt">${rv.suggestion}</div></div>
+        <div class="rv-reviewer">
+          <div class="rv-ava">${rv.rev.ini}</div>
+          <div><div class="rv-rname">${rv.rev.name}</div><div class="rv-rrole">${rv.rev.role}</div></div>
+          <div class="rv-date">${rv.date}</div>
+        </div>
+      </div>`,
+        )
+        .join("")}
+    </div>
+
+    <div class="dc-ft">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px">Média das Avaliações</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span class="avg-big">${d.avg.toFixed(1)}</span>
+          <div>
+            <div style="font-size:18px;letter-spacing:2px">${S(Math.round(d.avg))}</div>
+            <div class="avg-meta">${d.reviews.length} avaliações · ${nOk} aprovadas · ${nRev} revisões · ${nEr} rejeitadas</div>
+          </div>
+        </div>
+        <div class="prog"><div class="prog-f" style="width:${pct}%"></div></div>
+      </div>
+      ${
+        pend
+          ? `<div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-ok btn-sm" onclick="quickDecide(${d.id},'approve')">✅ Aprovar</button>
+            <button class="btn btn-er btn-sm" onclick="quickDecide(${d.id},'reject')">❌ Rejeitar</button>
+          </div>`
+          : `<span class="badge ${sc.cls}" style="font-size:13px;padding:7px 16px">${sc.lbl}</span>`
+      }
+    </div>
+  </div>
+</div>`;
+          })
+          .join("");
+        updateStats();
+      }
+
+      function updateStats() {
+        document.getElementById("st-pending").textContent = docs.filter(
+          (d) => d.status === "pending",
+        ).length;
+        document.getElementById("st-approved").textContent = docs.filter(
+          (d) => d.status === "approved",
+        ).length;
+        document.getElementById("st-rejected").textContent = docs.filter(
+          (d) => d.status === "rejected",
+        ).length;
+      }
+
+      /* ═══ FILTERS ═══ */
+      function applyFilters() {
+        const q = (document.getElementById("q").value || "").toLowerCase();
+        let data = docs.filter((d) => {
+          const ms = statusFilter === "all" || d.status === statusFilter;
+          const mq =
+            !q ||
+            d.title.toLowerCase().includes(q) ||
+            d.author.toLowerCase().includes(q) ||
+            d.cat.toLowerCase().includes(q) ||
+            d.reviews.some((r) => r.rev.name.toLowerCase().includes(q));
+          return ms && mq;
+        });
+        const sort = document.getElementById("sort-sel").value;
+        if (sort === "score-asc")
+          data = [...data].sort((a, b) => a.avg - b.avg);
+        if (sort === "score-desc")
+          data = [...data].sort((a, b) => b.avg - a.avg);
+        if (sort === "reviews")
+          data = [...data].sort((a, b) => b.reviews.length - a.reviews.length);
+        render(data);
+      }
+
+      function setChip(s, btn) {
+        statusFilter = s;
+        document
+          .querySelectorAll("#status-chips .chip")
+          .forEach((c) => c.classList.remove("on"));
+        btn.classList.add("on");
+        applyFilters();
+      }
+
+      /* ═══ EXPAND ═══ */
+      function toggleExp(btn) {
+        const body = btn.nextElementSibling;
+        const open = body.classList.toggle("open");
+        const n = body.querySelectorAll(".rv-item").length;
+        btn.textContent = open
+          ? "▲ Ocultar avaliações"
+          : `▼ Ver ${n} avaliações detalhadas com identidade dos avaliadores`;
+      }
+
+      /* ═══ DECIDE ═══ */
+      function openDecide(id) {
+        decideId = id;
+        selectedDec = "";
+        const d = docs.find((x) => x.id === id);
+        document.getElementById("dec-title").textContent = d.title;
+        document.getElementById("dec-meta").textContent =
+          `${d.author} · ${d.inst} · ${d.year} · Média: ${d.avg.toFixed(1)}/5 · ${d.reviews.length} avaliações`;
+        document.getElementById("dec-note").value = "";
+        document.getElementById("dec-approve").className = "dec-opt";
+        document.getElementById("dec-reject").className = "dec-opt";
+        openModal("modal-decide");
+      }
+
+      function quickDecide(id, dec) {
+        decideId = id;
+        applyDecision(dec);
+      }
+
+      function selDec(d) {
+        selectedDec = d;
+        document.getElementById("dec-approve").className =
+          "dec-opt" + (d === "approve" ? " sel-ok" : "");
+        document.getElementById("dec-reject").className =
+          "dec-opt" + (d === "reject" ? " sel-er" : "");
+      }
+
+      function confirmDecision() {
+        if (!selectedDec) {
+          showToast("⚠️ Seleccione uma decisão", "t-wn");
+          return;
+        }
+        applyDecision(selectedDec);
+        closeModal("modal-decide");
+      }
+
+      function applyDecision(dec) {
+        const d = docs.find((x) => x.id === decideId);
+        if (!d) return;
+        const ok = dec === "approve";
+        d.status = ok ? "approved" : "rejected";
+        document.getElementById("res-mhd").className =
+          "m-hd " + (ok ? "mh-ok" : "mh-er");
+        document.getElementById("res-htitle").textContent = ok
+          ? "✅ Publicação Aprovada"
+          : "❌ Documento Rejeitado";
+        document.getElementById("res-hsub").textContent = ok
+          ? "O documento será publicado na plataforma"
+          : "O autor será notificado";
+        document.getElementById("res-ico").textContent = ok ? "🎉" : "🚫";
+        document.getElementById("res-title").textContent = ok
+          ? "Decisão registada!"
+          : "Rejeição registada.";
+        document.getElementById("res-desc").textContent = ok
+          ? "O documento foi aprovado e ficará disponível para download após processamento."
+          : "O documento foi rejeitado. O autor receberá uma notificação com os motivos indicados.";
+        document.getElementById("res-sum").className =
+          "res-sum " + (ok ? "rs-ok" : "rs-er");
+        document.getElementById("rs-doc").textContent =
+          d.title.slice(0, 44) + (d.title.length > 44 ? "…" : "");
+        document.getElementById("rs-dec").textContent = ok
+          ? "✅ Aprovado"
+          : "❌ Rejeitado";
+        document.getElementById("rs-date").textContent =
+          new Date().toLocaleDateString("pt-PT");
+        openModal("modal-result");
+        applyFilters();
+        showToast(
+          ok ? "✅ Documento aprovado!" : "❌ Documento rejeitado.",
+          ok ? "t-ok" : "t-er",
+        );
+      }
+
+      /* ═══ MODAL ═══ */
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+        document.body.style.overflow = "";
+      }
+      function ovClose(e, id) {
+        if (e.target.id === id) closeModal(id);
+      }
+
+      /* ═══ TOAST ═══ */
+      function showToast(msg, cls = "t-def") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = "toast " + cls;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3500);
+      }
+
+      /* ═══ SIDEBAR ═══ */
+      const sidebar = document.getElementById("sidebar"),
+        sbOv = document.getElementById("sb-ov");
+      const sbClose = document.getElementById("sb-close"),
+        sbCol = document.getElementById("sb-col");
+      let collapsed = false;
+      function checkBP() {
+        const w = window.innerWidth;
+        if (w < 768) {
+          sbClose.style.display = sidebar.classList.contains("open")
+            ? "flex"
+            : "none";
+          sbCol.style.display = "none";
+          sidebar.classList.remove("collapsed");
+        } else if (w < 1200) {
+          sbClose.style.display = "none";
+          sbCol.style.display = "none";
+          sidebar.classList.remove("open");
+          sbOv.classList.remove("open");
+          document.body.style.overflow = "";
+        } else {
+          sbClose.style.display = "none";
+          sbCol.style.display = "flex";
+          sbCol.textContent = collapsed ? "▶" : "◀";
+        }
+      }
+      function openSB() {
+        sidebar.classList.add("open");
+        sbOv.style.display = "block";
+        setTimeout(() => sbOv.classList.add("open"), 10);
+        sbClose.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+      function closeSB() {
+        sidebar.classList.remove("open");
+        sbOv.classList.remove("open");
+        setTimeout(() => (sbOv.style.display = "none"), 300);
+        sbClose.style.display = "none";
+        document.body.style.overflow = "";
+      }
+      function toggleCol() {
+        collapsed = !collapsed;
+        sidebar.classList.toggle("collapsed", collapsed);
+        sbCol.textContent = collapsed ? "▶" : "◀";
+      }
+      document.querySelectorAll(".nav-i").forEach((i) =>
+        i.addEventListener("click", () => {
+          if (window.innerWidth < 768) closeSB();
+        }),
+      );
+      window.addEventListener("resize", checkBP);
+      checkBP();
+      render(docs);
+    </script>
+  </body>
+</html>

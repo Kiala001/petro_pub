@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Documento - Petrochamp</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-8">
+                <h1 class="text-xl font-bold text-red-700">📚 Petrochamp</h1>
+                <a href="biblioteca.html" class="text-gray-600 hover:text-red-700">← Voltar para Biblioteca</a>
+            </div>
+            <div id="user-nav">
+                <a href="login.html" class="text-red-700 font-semibold">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Carregando -->
+        <div id="loading" class="text-center py-8">
+            <p class="text-gray-600">Carregando documento...</p>
+        </div>
+
+        <!-- Conteúdo do Documento -->
+        <div id="document-content" class="hidden">
+            <!-- Informações Principais -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h1 id="doc-title" class="text-3xl font-bold text-gray-800 mb-2"></h1>
+                        <div id="doc-meta" class="text-gray-600 space-y-1"></div>
+                    </div>
+                    <div class="text-right">
+                        <p id="doc-price" class="text-2xl font-bold text-red-700 mb-2"></p>
+                        <button id="download-btn" class="bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-800 transition">
+                            📥 Baixar Documento
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4 mt-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Resumo</h3>
+                    <p id="doc-summary" class="text-gray-700 leading-relaxed"></p>
+                </div>
+
+                <div class="border-t pt-4 mt-4 flex gap-4 flex-wrap">
+                    <div>
+                        <strong class="text-gray-700">Autores:</strong>
+                        <p id="doc-authors" class="text-gray-600"></p>
+                    </div>
+                    <div>
+                        <strong class="text-gray-700">Instituição:</strong>
+                        <p id="doc-institution" class="text-gray-600"></p>
+                    </div>
+                    <div>
+                        <strong class="text-gray-700">Curso:</strong>
+                        <p id="doc-course" class="text-gray-600"></p>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4 mt-4">
+                    <strong class="text-gray-700">Palavras-chave:</strong>
+                    <div id="doc-keywords" class="flex flex-wrap gap-2 mt-2"></div>
+                </div>
+
+                <div class="border-t pt-4 mt-4 flex gap-6">
+                    <div>
+                        <p class="text-gray-600">Downloads: <strong id="doc-downloads">0</strong></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Avaliação: <strong id="doc-rating">—</strong></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Adicionado: <strong id="doc-date">—</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Comentários -->
+            <div id="comments-section" class="bg-white rounded-lg shadow-md p-6">
+                <div class="comments-header">
+                    <h3>💬 Comentários</h3>
+                    <button class="add-comment-btn" id="add-comment-btn">+ Adicionar Comentário</button>
+                </div>
+
+                <!-- Formulário de Novo Comentário (oculto por padrão) -->
+                <form id="comment-form" class="hidden">
+                    <textarea id="comment-content" placeholder="Compartilhe sua opinião sobre este documento..." 
+                              required minlength="3" maxlength="5000"></textarea>
+                    <div class="form-actions">
+                        <button type="submit" class="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800">
+                            Postar Comentário
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Lista de Comentários -->
+                <div class="comments-list"></div>
+            </div>
+        </div>
+
+        <!-- Erro -->
+        <div id="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4">
+            <p id="error-message"></p>
+        </div>
+    </main>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/comments.js"></script>
+    <script>
+        // Inicializar página de detalhes do documento
+        let documentId = new URLSearchParams(window.location.search).get('id');
+        
+        if (!documentId) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = 'ID do documento não fornecido';
+            throw new Error('Document ID is required');
+        }
+
+        // Carregamento inicial
+        async function loadDocumentDetails() {
+            try {
+                const response = await getComments(documentId, 1000, 0);
+                
+                if (response.status === 200) {
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('document-content').classList.remove('hidden');
+                    
+                    // Aqui você pode adicionar lógica para carregar detalhes do documento
+                    // Por enquanto, os comentários são carregados automaticamente
+                } else {
+                    throw new Error(response.data.error || 'Erro ao carregar documento');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('error-message').textContent = error.message;
+            }
+        }
+
+        // Actualizar navegação do usuário
+        function updateUserNav() {
+            const userData = getUserData();
+            const userNav = document.getElementById('user-nav');
+            
+            if (userData) {
+                userNav.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="text-gray-600">Olá, <strong>${userData.name}</strong></span>
+                        <button onclick="logout()" class="text-red-700 hover:text-red-800 font-semibold">
+                            Sair
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Manipulador do botão de download
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserNav();
+            loadDocumentDetails();
+            
+            const downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    if (!checkAuth()) {
+                        alert('Você precisa estar logado para baixar este documento');
+                        window.location.href = 'login.html?redirect=detalhes.html?id=' + documentId;
+                        return;
+                    }
+                    
+                    // Implementar lógica de download
+                    alert('Abrindo página de pagamento...');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

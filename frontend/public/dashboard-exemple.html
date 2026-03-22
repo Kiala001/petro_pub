@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Portal Acadêmico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
+</head>
+<body class="bg-gray-50">
+
+    <nav class="bg-gradient-to-r from-red-900 to-red-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="assets/img/logo.jpg" alt="logotipo petrochamp sistema acadêmico">
+                <!-- <span class="text-2xl font-bold text-amber-400">📚</span>
+                <span class="text-xl font-bold">Petrochamp</span> -->
+            </div>
+            <div class="flex space-x-6 items-center">
+                <a href="index.html" class="hover:text-amber-300 transition">Home</a>
+                <a href="biblioteca.html" class="hover:text-amber-300 transition">Biblioteca</a>
+                <a href="meus-documentos.html" class="hover:text-amber-300 transition">Meus Docs</a>
+                <a href="novo-upload.html" class="bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded transition">+ Upload</a>
+                <a href="perfil.html" class="hover:text-amber-300 transition">
+                    <i class="fa fa-user"></i>
+                    Perfil
+                </a>
+                <button onclick="logout()" class="bg-red-700 hover:bg-red-600 px-4 py-2 rounded transition">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Informações do Usuário -->
+        <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg shadow-lg p-8 mb-8 border-l-4 border-red-900">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-lg p-4">
+                    <p class="text-gray-600 text-sm font-semibold"><i class="fa fa-user"></i> Bem-vindo</p>
+                    <h2 class="text-2xl font-bold text-red-900" id="userName">-</h2>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                    <p class="text-gray-600 text-sm font-semibold">
+                        <i class="fa fa-money"></i>    
+                        Saldo na Conta
+                    </p>
+                    <p class="text-3xl font-bold text-green-600" id="userBalance">0,00 Kz</p>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                    <p class="text-gray-600 text-sm font-semibold">
+                        <i class="fa fa-file"></i>
+                        Documentos Enviados
+                    </p>
+                    <p class="text-3xl font-bold text-blue-600" id="documentCount">0</p>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                    <p class="text-gray-600 text-sm font-semibold">
+                        <i class="fa fa-file"></i>
+                        Downloads Realizados
+                    </p>
+                    <p class="text-3xl font-bold text-purple-600" id="downloadCount">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <a href="novo-upload.html" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                <p class="text-4xl mb-2">
+                    <i class="fa fa-file"></i>
+                </p>
+                <h3 class="font-bold text-lg">Enviar Documento</h3>
+                <p class="text-sm opacity-90">Compartilhe seu trabalho académico</p>
+            </a>
+
+            <a href="biblioteca.html" class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                <p class="text-4xl mb-2">
+                    <i class="fa fa-book"></i>
+                </p>
+                <h3 class="font-bold text-lg">Biblioteca</h3>
+                <p class="text-sm opacity-90">Explore documentos académicos</p>
+            </a>
+
+            <a href="meus-documentos.html" class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                <p class="text-4xl mb-2">
+                    <i class="fa fa-file"></i>
+                </p>
+                <h3 class="font-bold text-lg">Meus Documentos</h3>
+                <p class="text-sm opacity-90">Gerencie seus carregamentos</p>
+            </a>
+        </div>
+
+        <!-- Últimos Documentos -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-red-900 mb-6">Documentos Recentes</h3>
+            <div id="recentDocs" class="space-y-4">
+                <p class="text-gray-500 text-center py-8">Carregando documentos...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

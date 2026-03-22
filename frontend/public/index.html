@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-ao">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Acadêmico - Petrochamp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
+</head>
+<body class="bg-white">
+
+    <!-- Navegação -->
+    <nav class="bg-gradient-to-r from-red-900 to-red-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="assets/img/logo/8.png" alt="Petrochamp Logotipo" srcset="assets/img/logo/8.png">
+                <!-- <span class="text-2xl font-bold text-amber-400">🏛️</span> -->
+                <!-- <span class="text-xl font-bold">Petrochamp</span> -->
+            </div>
+            <div class="flex space-x-4 items-center" id="navButtons">
+                <a href="login.html" class="hover:bg-red-700 px-4 py-2 rounded">Login</a>
+                <a href="register.html" class="btn-secondary">Registrar</a>
+            </div>
+            <div class="flex space-x-4 items-center hidden" id="navLogged">
+                <span id="userNameNav" class=""></span>
+                <button onclick="logout()" class="bg-red-700 hover:bg-red-600 px-4 py-2 rounded">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section bg-gradient-to-b from-red-900 to-red-800 text-white py-20 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-5xl font-bold mb-4">Portal Acadêmico Petrochamp</h1>
+            <p class="text-xl mb-8 opacity-90">Repositório Inteligente de Conhecimento Científico</p>
+            <p class="text-lg mb-8">Partilhe, encontre e monetize o seu conhecimento académico</p>
+        </div>
+    </section>
+
+    <!-- Categorias -->
+    <section class="py-12 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center text-red-900">Categorias Académicas</h2>
+            <div id="categoriesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Preenchido por JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Últimos Documentos -->
+    <section class="py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center text-red-900">Últimos Documentos</h2>
+            <div id="recentDocuments" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Preenchido por JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2026 Petrochamp - Sistema de Base de Dados Académica Integrada</p>
+            <p class="text-sm mt-2">Todos Direitos Reservados | Luanda</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

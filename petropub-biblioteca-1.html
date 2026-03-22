@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetroPub — Biblioteca</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cr:#6B1020;--cr-dk:#4A0B16;--cr-lt:#8C1A2E;--cr-xl:rgba(107,16,32,.07);--cr-bdr:rgba(107,16,32,.14);
+  --gd:#C9A84C;--gd-lt:#E5C97E;--gd-dk:#9A7828;--gd-bg:rgba(201,168,76,.11);
+  --cream:#FAF7F2;--warm:#FEF9F3;--white:#FFFFFF;
+  --bdr:rgba(107,16,32,.10);--bdr2:rgba(107,16,32,.07);
+  --tx:#1A1208;--tx-m:#4A3728;--tx-l:#8A7060;--tx-xl:#B8A898;
+  --ok:#2D7A4F;--ok-bg:rgba(45,122,79,.10);
+  --sh0:0 1px 4px rgba(107,16,32,.07);--sh1:0 3px 14px rgba(107,16,32,.10);
+  --sh2:0 8px 32px rgba(107,16,32,.13);--sh3:0 24px 64px rgba(107,16,32,.18);
+  --r1:8px;--r2:12px;--r3:16px;--r4:20px;--r5:28px;
+  --sb-w:280px;
+  --hdr:62px;
+  --transition:.22s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--cream)}::-webkit-scrollbar-thumb{background:var(--cr);border-radius:3px}
+input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ─── HEADER ─── */
+.header{position:sticky;top:0;z-index:300;background:#fff;border-bottom:1px solid var(--bdr);box-shadow:var(--sh0)}
+.hdr-top{display:flex;align-items:center;gap:12px;padding:0 clamp(14px,3vw,32px);height:var(--hdr)}
+.logo{font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:var(--cr-dk);white-space:nowrap;flex-shrink:0}
+.logo span{color:var(--gd)}
+.search-bar{flex:1;position:relative;max-width:640px;margin:0 auto}
+.search-input{width:100%;padding:11px 16px 11px 44px;border:1.5px solid var(--bdr);border-radius:var(--r3);font-size:14px;color:var(--tx);background:var(--cream);outline:none;transition:all var(--transition)}
+.search-input:focus{border-color:var(--cr);background:#fff;box-shadow:0 0 0 3px var(--cr-xl)}
+.search-input::placeholder{color:var(--tx-l)}
+.search-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;pointer-events:none}
+.search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;background:var(--tx-l);color:#fff;border:none;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:background .18s}
+.search-clear.show{display:flex}
+.search-clear:hover{background:var(--cr)}
+.hdr-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.hdr-btn{height:38px;padding:0 14px;border-radius:var(--r2);border:1.5px solid var(--bdr);background:#fff;font-size:13px;font-weight:600;color:var(--tx-m);cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all var(--transition)}
+.hdr-btn:hover{border-color:var(--cr-bdr);color:var(--cr);background:var(--cr-xl)}
+.hdr-btn-cr{background:var(--cr);color:#fff;border-color:var(--cr);box-shadow:0 3px 10px rgba(107,16,32,.22)}
+.hdr-btn-cr:hover{background:var(--cr-dk);color:#fff;border-color:var(--cr-dk)}
+.ava-sm{width:34px;height:34px;border-radius:50%;background:var(--cr-lt);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:2px solid rgba(107,16,32,.15)}
+
+/* quick filters bar */
+.hdr-filters{border-top:1px solid var(--bdr2);padding:0 clamp(14px,3vw,32px);height:44px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none}
+.hdr-filters::-webkit-scrollbar{display:none}
+.qf-lbl{font-size:12px;font-weight:700;color:var(--tx-l);white-space:nowrap;margin-right:4px;flex-shrink:0}
+.qf{padding:5px 14px;border-radius:100px;border:1.5px solid var(--bdr);background:#fff;font-size:12px;font-weight:600;color:var(--tx-m);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all var(--transition)}
+.qf:hover{border-color:var(--cr-bdr);color:var(--cr)}
+.qf.on{background:var(--cr);color:#fff;border-color:var(--cr)}
+.qf-sep{width:1px;height:18px;background:var(--bdr);flex-shrink:0;margin:0 4px}
+
+/* ─── LAYOUT ─── */
+.layout{display:flex;min-height:calc(100vh - var(--hdr) - 44px)}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:var(--sb-w);flex-shrink:0;background:#fff;border-right:1px solid var(--bdr);padding:20px 0;position:sticky;top:calc(var(--hdr) + 44px);height:calc(100vh - var(--hdr) - 44px);overflow-y:auto;transition:transform var(--transition)}
+.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:var(--bdr)}
+.sb-section{padding:0 20px 20px;border-bottom:1px solid var(--bdr2);margin-bottom:4px}
+.sb-section:last-child{border-bottom:none}
+.sb-title{font-size:11px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.sb-clear-lnk{font-size:11px;font-weight:600;color:var(--cr);cursor:pointer;text-transform:none;letter-spacing:0}
+.sb-clear-lnk:hover{text-decoration:underline}
+
+/* price range */
+.price-range{margin-bottom:8px}
+.price-labels{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--tx-m);margin-bottom:10px}
+.range-wrap{position:relative;height:24px;display:flex;align-items:center}
+.range-track{position:absolute;left:0;right:0;height:4px;border-radius:4px;background:var(--bdr)}
+.range-fill{position:absolute;height:4px;border-radius:4px;background:var(--cr);pointer-events:none}
+input[type=range]{-webkit-appearance:none;appearance:none;position:absolute;width:100%;height:4px;background:transparent;outline:none;pointer-events:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--cr);border:3px solid #fff;box-shadow:0 2px 6px rgba(107,16,32,.30);cursor:pointer;pointer-events:auto;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--cr);border:3px solid #fff;box-shadow:0 2px 6px rgba(107,16,32,.30);cursor:pointer;pointer-events:auto}
+
+/* checkbox list */
+.cb-list{display:flex;flex-direction:column;gap:8px}
+.cb-item{display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cb-item:hover .cb-box{border-color:var(--cr)}
+.cb-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--bdr);background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.cb-item.checked .cb-box{background:var(--cr);border-color:var(--cr)}
+.cb-item.checked .cb-box::after{content:'✓';color:#fff;font-size:10px;font-weight:700}
+.cb-lbl{font-size:13px;color:var(--tx-m);flex:1}
+.cb-count{font-size:11px;color:var(--tx-l)}
+
+/* radio options */
+.rb-list{display:flex;flex-direction:column;gap:8px}
+.rb-item{display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rb-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--bdr);background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.rb-item:hover .rb-dot{border-color:var(--cr)}
+.rb-item.sel .rb-dot{border-color:var(--cr);background:var(--cr)}
+.rb-item.sel .rb-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+.rb-lbl{font-size:13px;color:var(--tx-m)}
+
+/* star filter */
+.star-opts{display:flex;flex-direction:column;gap:7px}
+.star-opt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 8px;border-radius:var(--r1);transition:background .16s;-webkit-tap-highlight-color:transparent}
+.star-opt:hover{background:var(--cr-xl)}
+.star-opt.sel{background:var(--gd-bg)}
+.star-opt .stars{font-size:13px;letter-spacing:1px}
+.star-opt .star-lbl{font-size:12px;color:var(--tx-m);font-weight:500}
+
+/* sort select */
+.f-sel{width:100%;padding:9px 32px 9px 12px;border:1.5px solid var(--bdr);border-radius:var(--r2);font-size:13px;color:var(--tx-m);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center;appearance:none;outline:none;cursor:pointer;transition:border-color .2s}
+.f-sel:focus{border-color:var(--cr)}
+
+/* toggle chips (type/date) */
+.toggle-chips{display:flex;gap:6px;flex-wrap:wrap}
+.t-chip{padding:5px 13px;border-radius:100px;border:1.5px solid var(--bdr);background:#fff;font-size:12px;font-weight:600;color:var(--tx-l);cursor:pointer;transition:all .18s;white-space:nowrap}
+.t-chip:hover{border-color:var(--cr-bdr);color:var(--cr)}
+.t-chip.on{background:var(--cr);color:#fff;border-color:var(--cr)}
+
+.sb-apply{width:100%;padding:10px;border-radius:var(--r2);background:var(--cr);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;transition:background .18s;box-shadow:0 3px 10px rgba(107,16,32,.22)}
+.sb-apply:hover{background:var(--cr-dk)}
+
+/* ─── MAIN CONTENT ─── */
+.main{flex:1;min-width:0;padding:clamp(16px,2.5vw,28px) clamp(14px,3vw,28px)}
+
+/* results bar */
+.results-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.results-count{font-size:14px;color:var(--tx-l)}
+.results-count strong{color:var(--tx);font-weight:700}
+.view-toggle{display:flex;gap:4px}
+.vt-btn{width:34px;height:34px;border-radius:var(--r1);border:1.5px solid var(--bdr);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .16s;color:var(--tx-l)}
+.vt-btn.on{background:var(--cr);color:#fff;border-color:var(--cr)}
+.vt-btn:hover:not(.on){border-color:var(--cr-bdr);color:var(--cr)}
+.mob-filter-btn{display:none;padding:7px 14px;border-radius:var(--r2);border:1.5px solid var(--bdr);background:#fff;font-size:13px;font-weight:600;color:var(--tx-m);cursor:pointer;align-items:center;gap:6px;transition:all .18s}
+.mob-filter-btn:hover{border-color:var(--cr-bdr);color:var(--cr)}
+.filter-badge{background:var(--cr);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px}
+
+/* active filter tags */
+.active-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;min-height:0}
+.af-tag{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;background:var(--cr-xl);border:1px solid var(--cr-bdr);font-size:12px;font-weight:600;color:var(--cr)}
+.af-tag button{background:none;border:none;color:var(--cr);cursor:pointer;font-size:13px;padding:0;line-height:1;display:flex;align-items:center}
+
+/* ─── DOCUMENT GRID ─── */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(200px,22vw,240px),1fr));gap:clamp(12px,2vw,18px)}
+.doc-grid.list-view{grid-template-columns:1fr;gap:10px}
+
+/* ─── DOC CARD ─── */
+.doc-card{background:#fff;border-radius:var(--r3);border:1px solid var(--bdr);overflow:hidden;transition:box-shadow var(--transition),transform var(--transition),border-color var(--transition);cursor:pointer;animation:fadeUp .4s ease both;position:relative}
+.doc-card:hover{box-shadow:var(--sh2);transform:translateY(-3px);border-color:rgba(107,16,32,.20)}
+.doc-card:nth-child(1){animation-delay:.03s}.doc-card:nth-child(2){animation-delay:.06s}.doc-card:nth-child(3){animation-delay:.09s}.doc-card:nth-child(4){animation-delay:.12s}.doc-card:nth-child(5){animation-delay:.15s}.doc-card:nth-child(6){animation-delay:.18s}.doc-card:nth-child(7){animation-delay:.21s}.doc-card:nth-child(8){animation-delay:.24s}.doc-card:nth-child(9){animation-delay:.27s}.doc-card:nth-child(10){animation-delay:.30s}.doc-card:nth-child(11){animation-delay:.33s}.doc-card:nth-child(12){animation-delay:.36s}
+
+/* thumbnail */
+.dc-thumb{position:relative;aspect-ratio:3/4;overflow:hidden;background:linear-gradient(135deg,var(--cream),#EDE4DC)}
+.dc-thumb-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:10px;transition:transform .3s}
+.doc-card:hover .dc-thumb-inner{transform:scale(1.04)}
+.dc-doc-ico{font-size:clamp(36px,5vw,48px);opacity:.7}
+.dc-doc-lines{width:60%;display:flex;flex-direction:column;gap:5px}
+.dc-doc-line{height:5px;background:rgba(107,16,32,.12);border-radius:3px}
+.dc-doc-line:nth-child(2){width:80%}.dc-doc-line:nth-child(3){width:60%}.dc-doc-line:nth-child(4){width:70%}
+.dc-badge-free{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,var(--ok),#3D9B64);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:100px;letter-spacing:.5px;box-shadow:0 2px 8px rgba(45,122,79,.35)}
+.dc-badge-cat{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.90);backdrop-filter:blur(4px);color:var(--tx-m);font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;border:1px solid var(--bdr)}
+/* hover overlay */
+.dc-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(74,11,22,.85));opacity:0;transition:opacity .25s;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:14px;gap:6px}
+.doc-card:hover .dc-overlay{opacity:1}
+.dc-ov-btn{width:100%;padding:8px;border-radius:var(--r1);font-size:12px;font-weight:700;cursor:pointer;border:none;text-align:center;transition:background .18s}
+.dc-ov-detail{background:#fff;color:var(--cr-dk)}
+.dc-ov-detail:hover{background:var(--cream)}
+.dc-ov-buy{background:var(--gd);color:var(--cr-dk)}
+.dc-ov-buy:hover{background:var(--gd-lt)}
+
+/* card body */
+.dc-body{padding:clamp(10px,1.5vw,14px)}
+.dc-title{font-family:'Playfair Display',serif;font-size:clamp(13px,1.4vw,15px);font-weight:700;color:var(--tx);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
+.dc-author{font-size:12px;color:var(--tx-l);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px}
+.dc-rating{display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.dc-stars{font-size:12px;letter-spacing:1px;color:var(--gd)}
+.dc-rating-n{font-size:12px;font-weight:700;color:var(--tx-m)}
+.dc-rating-c{font-size:11px;color:var(--tx-l)}
+.dc-footer{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.dc-pages{font-size:11px;color:var(--tx-l);display:flex;align-items:center;gap:3px}
+.dc-price{font-family:'Playfair Display',serif;font-size:clamp(14px,1.5vw,16px);font-weight:700;color:var(--cr)}
+.dc-price-free{color:var(--ok);font-size:13px;font-weight:700}
+
+/* ─── LIST VIEW card ─── */
+.doc-grid.list-view .doc-card{display:flex;gap:0}
+.doc-grid.list-view .dc-thumb{width:80px;aspect-ratio:unset;height:auto;flex-shrink:0;border-radius:var(--r3) 0 0 var(--r3)}
+.doc-grid.list-view .dc-body{flex:1;padding:14px 16px;display:flex;flex-direction:column;justify-content:center}
+.doc-grid.list-view .dc-overlay{border-radius:0 var(--r3) var(--r3) 0}
+.doc-grid.list-view .dc-footer{margin-top:auto}
+
+/* ─── SKELETON ─── */
+@keyframes shimmer{0%{background-position:-800px 0}100%{background-position:800px 0}}
+.skeleton{background:linear-gradient(90deg,#f0e8e0 25%,#e4d8ce 50%,#f0e8e0 75%);background-size:800px 100%;animation:shimmer 1.5s infinite}
+.skel-card{background:#fff;border-radius:var(--r3);border:1px solid var(--bdr);overflow:hidden}
+.skel-thumb{aspect-ratio:3/4}.skel-body{padding:12px}.skel-line{height:10px;border-radius:4px;margin-bottom:8px}
+.skel-line.sm{height:8px;width:60%}.skel-line.xs{height:8px;width:40%}
+
+/* ─── PAGINATION ─── */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:clamp(24px,4vw,36px);flex-wrap:wrap}
+.pg-btn{width:38px;height:38px;border-radius:var(--r1);border:1.5px solid var(--bdr);background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--tx-m);cursor:pointer;transition:all .18s}
+.pg-btn:hover:not(.on):not(:disabled){border-color:var(--cr-bdr);color:var(--cr);background:var(--cr-xl)}
+.pg-btn.on{background:var(--cr);color:#fff;border-color:var(--cr)}
+.pg-btn:disabled{opacity:.35;cursor:not-allowed}
+.pg-ellipsis{font-size:13px;color:var(--tx-l);padding:0 4px}
+
+/* ─── MODAL SIDEBAR (MOBILE) ─── */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:500;backdrop-filter:blur(3px);opacity:0;transition:opacity .28s}
+.sb-overlay.open{opacity:1}
+.sidebar-modal{position:fixed;left:0;top:0;bottom:0;width:min(320px,90vw);background:#fff;z-index:600;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:20px 0}
+.sidebar-modal.open{transform:translateX(0)}
+.sb-modal-head{display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;border-bottom:1px solid var(--bdr);margin-bottom:4px}
+.sb-modal-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cr-dk)}
+.sb-modal-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--bdr);background:#fff;font-size:15px;color:var(--tx-m);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.sb-modal-close:hover{background:var(--cr-xl);color:var(--cr);border-color:var(--cr-bdr)}
+
+/* ─── EMPTY ─── */
+.empty{text-align:center;padding:80px 20px;background:#fff;border-radius:var(--r4);border:1px solid var(--bdr)}
+.empty-ico{font-size:56px;opacity:.18;margin-bottom:16px}
+.empty-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--tx-m);margin-bottom:8px}
+.empty-sub{font-size:14px;color:var(--tx-l);margin-bottom:20px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:20px;left:50%;z-index:9999;transform:translateX(-50%) translateY(80px);background:var(--cr-dk);color:#fff;padding:11px 22px;border-radius:var(--r3);font-size:13px;font-weight:500;box-shadow:var(--sh3);opacity:0;transition:all .32s cubic-bezier(.22,1,.36,1);max-width:calc(100vw - 28px);white-space:nowrap;border:1px solid rgba(201,168,76,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){:root{--sb-w:240px}}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .mob-filter-btn{display:flex}
+  .hdr-actions .hdr-btn:not(.hdr-btn-cr){display:none}
+  .doc-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .hdr-top{height:54px;padding:0 14px}
+  .logo{font-size:19px}
+  .search-input{font-size:13px;padding:9px 12px 9px 38px}
+}
+@media(max-width:480px){
+  .doc-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .hdr-filters{padding:0 14px}
+  .main{padding:12px}
+  .dc-thumb{aspect-ratio:2/3}
+}
+@media(max-width:360px){
+  .doc-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="sb-overlay" id="sb-ov" onclick="closeMobSB()"></div>
+<div class="sidebar-modal" id="sidebar-modal">
+  <div class="sb-modal-head">
+    <div class="sb-modal-title">Filtros</div>
+    <button class="sb-modal-close" onclick="closeMobSB()">✕</button>
+  </div>
+  <div id="mob-sb-content"></div>
+</div>
+
+<!-- ════ HEADER ════ -->
+<header class="header">
+  <div class="hdr-top">
+    <div class="logo">PETRO<span>PUB</span></div>
+    <div class="search-bar">
+      <span class="search-ico">🔍</span>
+      <input class="search-input" id="search-input" type="text" placeholder="Pesquisar por título, autor, tema…" oninput="onSearch(this.value)">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn">📤 Submeter</button>
+      <button class="hdr-btn hdr-btn-cr">+ Publicar</button>
+      <div class="ava-sm">MK</div>
+    </div>
+  </div>
+  <div class="hdr-filters">
+    <span class="qf-lbl">Mostrar:</span>
+    <button class="qf on" onclick="setQF('recent',this)">🕐 Recentes</button>
+    <button class="qf" onclick="setQF('downloads',this)">📥 Mais baixados</button>
+    <button class="qf" onclick="setQF('rated',this)">⭐ Melhor avaliados</button>
+    <button class="qf" onclick="setQF('free',this)">🆓 Gratuitos</button>
+    <div class="qf-sep"></div>
+    <button class="qf" onclick="setQF('cat-eng',this)">💻 Eng. Informática</button>
+    <button class="qf" onclick="setQF('cat-oil',this)">⚙️ Eng. Petróleo</button>
+    <button class="qf" onclick="setQF('cat-gest',this)">📊 Gestão</button>
+    <button class="qf" onclick="setQF('cat-med',this)">🏥 Medicina</button>
+    <button class="qf" onclick="setQF('cat-dir',this)">⚖️ Direito</button>
+  </div>
+</header>
+
+<!-- ════ LAYOUT ════ -->
+<div class="layout">
+
+  <!-- SIDEBAR DESKTOP -->
+  <aside class="sidebar" id="sidebar-desktop">
+    <div id="sidebar-inner"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="results-bar">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="mob-filter-btn" onclick="openMobSB()">⚙️ Filtros <span class="filter-badge" id="filter-badge" style="display:none">0</span></button>
+        <div class="results-count">A mostrar <strong id="results-num">12</strong> documentos</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="view-toggle">
+          <button class="vt-btn on" id="vt-grid" onclick="setView('grid',this)" title="Grelha">⊞</button>
+          <button class="vt-btn" id="vt-list" onclick="setView('list',this)" title="Lista">☰</button>
+        </div>
+      </div>
+    </div>
+    <div class="active-tags" id="active-tags"></div>
+    <div class="doc-grid" id="doc-grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </main>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const cats=['Eng. Informática','Eng. Petróleo','Gestão','Medicina','Direito','Electrotécnica','Arquitectura','Matemática'];
+const insts=['ISPTEC','UAN','UCAN','Metodista','Jean Piaget','Lusíada'];
+const titles=[
+  'Algoritmos de Aprendizagem Profunda para Detecção de Falhas em Sistemas Petrolíferos',
+  'Gestão Estratégica de Projectos em Angola: Métodos e Ferramentas',
+  'Redes Neurais Convolucionais Aplicadas à Diagnose Médica',
+  'Sistemas Distribuídos e Computação em Nuvem para Grandes Empresas',
+  'Direito Empresarial Angolano: Contratos e Responsabilidade',
+  'Análise de Dados com Python para Engenharia de Petróleo',
+  'Energias Renováveis e Sustentabilidade no Sistema Eléctrico de Angola',
+  'Fundamentos de Cibersegurança para Infraestruturas Críticas',
+  'Arquitectura de Microserviços e DevOps: Práticas Modernas',
+  'Macroeconomia Angolana: Petróleo, Diversificação e Desenvolvimento',
+  'Cirurgia Minimamente Invasiva: Técnicas Avançadas e Protocolos',
+  'Computação Quântica: Princípios, Algoritmos e Aplicações Futuras',
+  'Gestão de Recursos Humanos em Contexto Multicultural Africano',
+  'Processamento de Linguagem Natural com Modelos Transformers',
+  'Estruturas de Betão Armado: Cálculo e Dimensionamento',
+  'Finanças Corporativas e Mercados de Capitais em Angola',
+  'Inteligência Artificial na Medicina: Da Teoria à Prática Clínica',
+  'Sistemas de Informação Geográfica para Engenharia Civil',
+  'Marketing Digital e E-commerce no Mercado Angolano',
+  'Física Computacional: Simulação de Sistemas Complexos',
+  'Direito Internacional Privado: Casos e Soluções Actuais',
+  'Bioinformática e Genómica Computacional: Fundamentos',
+  'Contabilidade Financeira para Empresas Petrolíferas',
+  'Robótica Industrial: Programação e Integração de Sistemas',
+];
+const authors=['Kiala Emanuel','Filomena Luvualu','João Manuel','Sónia Pimentel','Carlos Neto','Ana Rodrigues','Prof. Ricardo Dias','Dr. Marta Costa','Rui Ferreira','Pedro Matos','Luísa Baptista','Prof. Helena Lima'];
+const prices=[0,0,0,500,800,1200,1500,2000,2500,3000,3500,0,600,1800,2200,0,900,1400,2800,0,3200,1100,700,1600];
+
+const allDocs=Array.from({length:24},(_,i)=>({
+  id:i+1,
+  title:titles[i]||`Documento Académico #${i+1}`,
+  author:authors[i%authors.length],
+  inst:insts[i%insts.length],
+  cat:cats[i%cats.length],
+  rating:+Math.min(5,Math.max(3,(3.2+(Math.sin(i)*1.4+1)))).toFixed(1),
+  ratingCount:12+i*7,
+  pages:[12,25,48,67,94,112,128,45,33,78,55,102][i%12],
+  price:prices[i]||0,
+  isFree:prices[i]===0,
+  downloads:120+i*83,
+  date: new Date(2025, i%12, (i%28)+1),
+  color:`hsl(${(i*37)%360},45%,60%)`,
+  ico:['💻','⚙️','📊','🏥','⚖️','⚡','🏗️','🔬','📱','📈','🧬','🤖'][i%12],
+}));
+
+/* ══ STATE ══ */
+let state={
+  query:'',qf:'recent',
+  priceMin:0,priceMax:10000,
+  cats:[],pages:'',rating:'',type:'',date:'',sort:'recent',
+  view:'grid',page:1,
+};
+const PER_PAGE=12;
+let debTimer;
+
+/* ══ FILTER ENGINE ══ */
+function getFiltered(){
+  let d=[...allDocs];
+  if(state.query){const q=state.query.toLowerCase();d=d.filter(x=>x.title.toLowerCase().includes(q)||x.author.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q));}
+  if(state.qf==='free'||state.type==='free') d=d.filter(x=>x.isFree);
+  if(state.type==='paid') d=d.filter(x=>!x.isFree);
+  if(state.cats.length) d=d.filter(x=>state.cats.includes(x.cat));
+  if(state.rating==='3') d=d.filter(x=>x.rating>=3);
+  if(state.rating==='4') d=d.filter(x=>x.rating>=4);
+  if(state.rating==='5') d=d.filter(x=>x.rating>=4.5);
+  d=d.filter(x=>x.price>=state.priceMin&&x.price<=state.priceMax);
+  if(state.pages==='1-10')  d=d.filter(x=>x.pages<=10);
+  if(state.pages==='10-30') d=d.filter(x=>x.pages>10&&x.pages<=30);
+  if(state.pages==='30-100')d=d.filter(x=>x.pages>30&&x.pages<=100);
+  if(state.pages==='100+')  d=d.filter(x=>x.pages>100);
+  const sort=state.sort||state.qf;
+  if(sort==='downloads')  d.sort((a,b)=>b.downloads-a.downloads);
+  else if(sort==='rated') d.sort((a,b)=>b.rating-a.rating);
+  else if(sort==='price-asc') d.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc')d.sort((a,b)=>b.price-a.price);
+  else d.sort((a,b)=>b.date-a.date);
+  return d;
+}
+
+/* ══ RENDER GRID ══ */
+function stars(r){const f=Math.min(5,Math.max(0,Math.round(r)));return'★'.repeat(f)+'☆'.repeat(5-f);}
+
+function renderCard(d,list=false){
+  const grad=`linear-gradient(135deg,${d.color}22,${d.color}44)`;
+  return`<div class="doc-card" onclick="goDoc(${d.id})">
+  <div class="dc-thumb" style="background:${grad}">
+    <div class="dc-thumb-inner">
+      <div class="dc-doc-ico">${d.ico}</div>
+      <div class="dc-doc-lines"><div class="dc-doc-line"></div><div class="dc-doc-line"></div><div class="dc-doc-line"></div><div class="dc-doc-line"></div></div>
+    </div>
+    ${d.isFree?'<span class="dc-badge-free">GRÁTIS</span>':''}
+    <span class="dc-badge-cat">${d.cat}</span>
+    <div class="dc-overlay">
+      <button class="dc-ov-btn dc-ov-detail" onclick="goDoc(${d.id})">📄 Ver detalhes</button>
+      ${!d.isFree?`<button class="dc-ov-btn dc-ov-buy" onclick="goCheckout(event,${d.id})">🛒 Comprar · ${d.price.toLocaleString('pt-PT')} Kz</button>`:''}
+    </div>
+  </div>
+  <div class="dc-body">
+    <div class="dc-title">${d.title}</div>
+    <div class="dc-author">👤 ${d.author} · ${d.inst}</div>
+    <div class="dc-rating">
+      <span class="dc-stars">${stars(d.rating)}</span>
+      <span class="dc-rating-n">${d.rating.toFixed(1)}</span>
+      <span class="dc-rating-c">(${d.ratingCount})</span>
+    </div>
+    <div class="dc-footer">
+      <span class="dc-pages">📄 ${d.pages} págs.</span>
+      ${d.isFree?'<span class="dc-price-free">Grátis</span>':`<span class="dc-price">${d.price.toLocaleString('pt-PT')} Kz</span>`}
+    </div>
+  </div>
+</div>`;
+}
+
+function renderSkeleton(n=8){
+  return Array.from({length:n},()=>`<div class="skel-card"><div class="skel-thumb skeleton"></div><div class="skel-body"><div class="skel-line skeleton"></div><div class="skel-line sm skeleton"></div><div class="skel-line xs skeleton"></div></div></div>`).join('');
+}
+
+function renderPagination(total,page){
+  const pages=Math.ceil(total/PER_PAGE);
+  if(pages<=1)return'';
+  let h='';
+  h+=`<button class="pg-btn" onclick="setPage(${page-1})" ${page<=1?'disabled':''}>‹</button>`;
+  for(let i=1;i<=pages;i++){
+    if(i===1||i===pages||Math.abs(i-page)<=1)
+      h+=`<button class="pg-btn${i===page?' on':''}" onclick="setPage(${i})">${i}</button>`;
+    else if(Math.abs(i-page)===2)
+      h+=`<span class="pg-ellipsis">…</span>`;
+  }
+  h+=`<button class="pg-btn" onclick="setPage(${page+1})" ${page>=pages?'disabled':''}>›</button>`;
+  return h;
+}
+
+function renderActiveTags(){
+  const tags=[];
+  if(state.query)tags.push({lbl:`"${state.query}"`,rm:()=>{state.query='';document.getElementById('search-input').value='';document.getElementById('search-clear').classList.remove('show');}});
+  state.cats.forEach(c=>tags.push({lbl:c,rm:()=>{state.cats=state.cats.filter(x=>x!==c);buildSidebar();}}));
+  if(state.type)tags.push({lbl:state.type==='free'?'Gratuitos':'Pagos',rm:()=>{state.type='';}});
+  if(state.rating)tags.push({lbl:`⭐ ${state.rating}+`,rm:()=>{state.rating='';}});
+  if(state.pages)tags.push({lbl:`📄 ${state.pages} págs`,rm:()=>{state.pages='';}});
+  const wrap=document.getElementById('active-tags');
+  wrap.innerHTML=tags.map((t,i)=>`<span class="af-tag">${t.lbl}<button onclick="removeTag(${i})">✕</button></span>`).join('');
+  window._tagRm=tags.map(t=>t.rm);
+  // badge
+  const badge=document.getElementById('filter-badge');
+  const n=state.cats.length+(state.type?1:0)+(state.rating?1:0)+(state.pages?1:0)+(state.priceMax<10000?1:0);
+  if(n>0){badge.textContent=n;badge.style.display='inline-flex';}else{badge.style.display='none';}
+}
+
+function removeTag(i){window._tagRm[i]&&window._tagRm[i]();applyFilters();}
+
+let _loading=false;
+function applyFilters(skipSkeleton=false){
+  renderActiveTags();
+  if(!skipSkeleton){
+    document.getElementById('doc-grid').innerHTML=renderSkeleton(8);
+    document.getElementById('pagination').innerHTML='';
+    document.getElementById('results-num').textContent='…';
+    _loading=true;
+    setTimeout(()=>{_loading=false;_doRender();},320);
+  } else {
+    _doRender();
+  }
+}
+function _doRender(){
+  const data=getFiltered();
+  const total=data.length;
+  const page=state.page=Math.min(state.page,Math.max(1,Math.ceil(total/PER_PAGE)));
+  const slice=data.slice((page-1)*PER_PAGE,page*PER_PAGE);
+  const grid=document.getElementById('doc-grid');
+  grid.className='doc-grid'+(state.view==='list'?' list-view':'');
+  if(!slice.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🔍</div><div class="empty-title">Nenhum documento encontrado</div><div class="empty-sub">Tente ajustar os filtros ou use termos diferentes.</div><button class="hdr-btn hdr-btn-cr" onclick="resetAll()" style="margin:0 auto">Limpar filtros</button></div>`;
+  } else {
+    grid.innerHTML=slice.map(d=>renderCard(d,state.view==='list')).join('');
+  }
+  document.getElementById('results-num').textContent=total;
+  document.getElementById('pagination').innerHTML=renderPagination(total,page);
+}
+
+/* ══ SIDEBAR BUILD ══ */
+function sidebarHTML(){
+  return`
+<div class="sb-section">
+  <div class="sb-title">Ordenar por</div>
+  <select class="f-sel" id="sort-sel" onchange="setSortSel(this.value)">
+    <option value="recent" ${state.sort==='recent'?'selected':''}>🕐 Mais recentes</option>
+    <option value="downloads" ${state.sort==='downloads'?'selected':''}>📥 Mais baixados</option>
+    <option value="rated" ${state.sort==='rated'?'selected':''}>⭐ Melhor avaliados</option>
+    <option value="price-asc" ${state.sort==='price-asc'?'selected':''}>💰 Preço (baixo → alto)</option>
+    <option value="price-desc" ${state.sort==='price-desc'?'selected':''}>💸 Preço (alto → baixo)</option>
+  </select>
+</div>
+<div class="sb-section">
+  <div class="sb-title">Preço (Kz) <span class="sb-clear-lnk" onclick="clearPrice()">Limpar</span></div>
+  <div class="price-range">
+    <div class="price-labels"><span id="pl-min">${state.priceMin.toLocaleString('pt-PT')} Kz</span><span id="pl-max">${state.priceMax.toLocaleString('pt-PT')} Kz</span></div>
+    <div class="range-wrap">
+      <div class="range-track"></div>
+      <div class="range-fill" id="range-fill"></div>
+      <input type="range" id="range-min" min="0" max="10000" step="100" value="${state.priceMin}" oninput="onRangeMin(this.value)">
+      <input type="range" id="range-max" min="0" max="10000" step="100" value="${state.priceMax}" oninput="onRangeMax(this.value)">
+    </div>
+  </div>
+</div>
+<div class="sb-section">
+  <div class="sb-title">Categoria <span class="sb-clear-lnk" onclick="clearCats()">Limpar</span></div>
+  <div class="cb-list">
+    ${cats.map(c=>`<label class="cb-item${state.cats.includes(c)?' checked':''}" onclick="toggleCat('${c}',this)">
+      <div class="cb-box"></div><span class="cb-lbl">${c}</span>
+      <span class="cb-count">${allDocs.filter(d=>d.cat===c).length}</span>
+    </label>`).join('')}
+  </div>
+</div>
+<div class="sb-section">
+  <div class="sb-title">Páginas</div>
+  <div class="rb-list">
+    ${['','1-10','10-30','30-100','100+'].map((v,i)=>
+      `<div class="rb-item${state.pages===v?' sel':''}" onclick="setPagesFilter('${v}',this)">
+        <div class="rb-dot"></div><span class="rb-lbl">${v||'Qualquer'}</span>
+      </div>`).join('')}
+  </div>
+</div>
+<div class="sb-section">
+  <div class="sb-title">Avaliação mínima</div>
+  <div class="star-opts">
+    ${[['','Qualquer'],['3','3+ ★★★☆☆'],['4','4+ ★★★★☆'],['5','5 ★★★★★']].map(([v,l])=>
+      `<div class="star-opt${state.rating===v?' sel':''}" onclick="setRating('${v}',this)">
+        <span class="star-lbl">${l}</span>
+      </div>`).join('')}
+  </div>
+</div>
+<div class="sb-section">
+  <div class="sb-title">Tipo</div>
+  <div class="toggle-chips">
+    <span class="t-chip${state.type===''?' on':''}" onclick="setType('',this)">Todos</span>
+    <span class="t-chip${state.type==='free'?' on':''}" onclick="setType('free',this)">🆓 Gratuito</span>
+    <span class="t-chip${state.type==='paid'?' on':''}" onclick="setType('paid',this)">💳 Pago</span>
+  </div>
+</div>
+<div class="sb-section">
+  <div class="sb-title">Data de publicação</div>
+  <div class="toggle-chips">
+    ${[['','Qualquer'],['today','Hoje'],['week','Esta semana'],['month','Este mês']].map(([v,l])=>
+      `<span class="t-chip${state.date===v?' on':''}" onclick="setDate('${v}',this)">${l}</span>`).join('')}
+  </div>
+</div>
+<div class="sb-section">
+  <button class="sb-apply" onclick="closeMobSB()">✓ Aplicar filtros</button>
+</div>`;
+}
+
+function buildSidebar(){
+  const html=sidebarHTML();
+  document.getElementById('sidebar-inner').innerHTML=html;
+  document.getElementById('mob-sb-content').innerHTML=html;
+  updateRangeFill();
+  applyFilters();
+}
+
+function updateRangeFill(){
+  ['','mob-sb-content '].forEach(pfx=>{
+    const f=document.querySelector((pfx?'#mob-sb-content ':'')+' #range-fill')||document.getElementById('range-fill');
+    if(f){const pMin=state.priceMin/10000*100;const pMax=state.priceMax/10000*100;f.style.left=pMin+'%';f.style.width=(pMax-pMin)+'%';}
+  });
+}
+
+/* ══ FILTER HANDLERS ══ */
+function setSortSel(v){state.sort=v;applyFilters();}
+function onRangeMin(v){v=+v;if(v>state.priceMax-100)v=state.priceMax-100;state.priceMin=v;document.getElementById('pl-min').textContent=v.toLocaleString('pt-PT')+' Kz';updateRangeFill();applyFilters();}
+function onRangeMax(v){v=+v;if(v<state.priceMin+100)v=state.priceMin+100;state.priceMax=v;document.getElementById('pl-max').textContent=v.toLocaleString('pt-PT')+' Kz';updateRangeFill();applyFilters();}
+function clearPrice(){state.priceMin=0;state.priceMax=10000;buildSidebar();}
+function toggleCat(c,el){
+  el.classList.toggle('checked');
+  if(state.cats.includes(c))state.cats=state.cats.filter(x=>x!==c);else state.cats.push(c);
+  applyFilters();
+}
+function clearCats(){state.cats=[];buildSidebar();}
+function setPagesFilter(v){state.pages=v;document.querySelectorAll('.rb-item').forEach(el=>{el.classList.toggle('sel',el.getAttribute('onclick').includes(`'${v}'`));});applyFilters();}
+function setRating(v){state.rating=v;document.querySelectorAll('.star-opt').forEach(el=>{el.classList.toggle('sel',el.getAttribute('onclick').includes(`'${v}'`));});applyFilters();}
+function setType(v,el){state.type=v;document.querySelectorAll('.t-chip').forEach(e=>e.classList.remove('on'));if(el)el.classList.add('on');applyFilters();}
+function setDate(v){state.date=v;applyFilters();}
+
+function setQF(v,btn){
+  state.qf=v;state.sort=v;state.page=1;
+  document.querySelectorAll('.qf').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(v.startsWith('cat-')){
+    const map={'cat-eng':'Eng. Informática','cat-oil':'Eng. Petróleo','cat-gest':'Gestão','cat-med':'Medicina','cat-dir':'Direito'};
+    state.cats=[map[v]];state.sort='recent';
+  } else {state.cats=[];}
+  buildSidebar();
+}
+
+function onSearch(v){
+  clearTimeout(debTimer);
+  document.getElementById('search-clear').classList.toggle('show',v.length>0);
+  debTimer=setTimeout(()=>{state.query=v;state.page=1;applyFilters();},300);
+}
+function clearSearch(){state.query='';document.getElementById('search-input').value='';document.getElementById('search-clear').classList.remove('show');applyFilters();}
+function resetAll(){state={...state,query:'',cats:[],pages:'',rating:'',type:'',date:'',sort:'recent',priceMin:0,priceMax:10000,page:1};buildSidebar();}
+
+function setPage(p){state.page=p;applyFilters(true);window.scrollTo({top:0,behavior:'smooth'});}
+function setView(v,btn){state.view=v;document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');applyFilters(true);}
+
+/* ══ MOBILE SIDEBAR ══ */
+function openMobSB(){const o=document.getElementById('sb-ov'),s=document.getElementById('sidebar-modal');o.style.display='block';setTimeout(()=>o.classList.add('open'),10);s.classList.add('open');document.body.style.overflow='hidden';}
+function closeMobSB(){const o=document.getElementById('sb-ov'),s=document.getElementById('sidebar-modal');o.classList.remove('open');s.classList.remove('open');setTimeout(()=>{o.style.display='none';},300);document.body.style.overflow='';}
+
+/* ══ NAVIGATION ══ */
+function goDoc(id){showToast('📄 A abrir documento #'+id+'…');setTimeout(()=>{window.location.href='petropub-detalhe-doc.html?id='+id;},800);}
+function goCheckout(e,id){e.stopPropagation();showToast('🛒 A ir para checkout do doc #'+id+'…');setTimeout(()=>{window.location.href='petropub-checkout.html?id='+id;},800);}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* ══ INIT ══ */
+buildSidebar();
+</script>
+</body>
+</html>

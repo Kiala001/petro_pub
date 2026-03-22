@@ -1,0 +1,2653 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PetroPub Admin — Detalhe de Avaliação</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --cr: #6b1020;
+        --cr-dk: #4a0b16;
+        --cr-lt: #8c1a2e;
+        --cr-xl: rgba(107, 16, 32, 0.07);
+        --cr-bdr: rgba(107, 16, 32, 0.15);
+        --gd: #c9a84c;
+        --gd-lt: #e5c97e;
+        --gd-bg: rgba(201, 168, 76, 0.1);
+        --cream: #faf7f2;
+        --warm: #fef9f3;
+        --bdr: rgba(107, 16, 32, 0.1);
+        --tx: #1a1208;
+        --tx-m: #4a3728;
+        --tx-l: #8a7060;
+        --ok: #2d7a4f;
+        --ok-bg: rgba(45, 122, 79, 0.1);
+        --wn: #c47a1a;
+        --wn-bg: rgba(196, 122, 26, 0.1);
+        --er: #c53030;
+        --er-bg: rgba(197, 48, 48, 0.1);
+        --inf: #1a5c8a;
+        --inf-bg: rgba(26, 92, 138, 0.1);
+        --pu: #5a3a8a;
+        --pu-bg: rgba(90, 58, 138, 0.1);
+        --sh0: 0 1px 3px rgba(107, 16, 32, 0.06);
+        --sh1: 0 2px 12px rgba(107, 16, 32, 0.09);
+        --sh2: 0 8px 32px rgba(107, 16, 32, 0.13);
+        --sh3: 0 20px 60px rgba(107, 16, 32, 0.18);
+        --r1: 8px;
+        --r2: 12px;
+        --r3: 16px;
+        --r4: 20px;
+        --sb: 258px;
+        --sb-ico: 64px;
+        --sb-mob: 244px;
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--cream);
+        color: var(--tx);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--cream);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--cr);
+        border-radius: 3px;
+      }
+      input,
+      select,
+      button,
+      textarea {
+        font-family: inherit;
+      }
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* ══ SIDEBAR ══ */
+      .sidebar {
+        width: var(--sb);
+        flex-shrink: 0;
+        background: var(--cr-dk);
+        min-height: 100vh;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        transition:
+          width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 200;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 3px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .sb-head {
+        padding: 20px 20px 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 66px;
+        flex-shrink: 0;
+      }
+      .sb-logo {
+        font-family: "Playfair Display", serif;
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+        white-space: nowrap;
+      }
+      .sb-logo span {
+        color: var(--gd-lt);
+      }
+      .sb-role {
+        font-size: 10px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.36);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 3px;
+        white-space: nowrap;
+      }
+      .sb-tog {
+        display: none;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #fff;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r1);
+        font-size: 14px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.18s;
+      }
+      .sb-tog:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+      .sb-user {
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      .ava {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.18);
+        flex-shrink: 0;
+      }
+      .ava-dk {
+        background: #1a3a4a;
+      }
+      .sb-ui {
+        overflow: hidden;
+        white-space: nowrap;
+        transition:
+          opacity 0.2s,
+          max-width 0.2s;
+      }
+      .sb-un {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+      }
+      .sb-ue {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .nav-s {
+        padding: 11px 10px 2px;
+        overflow: hidden;
+      }
+      .nav-l {
+        font-size: 10px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.26);
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        padding: 0 8px;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        transition: opacity 0.2s;
+      }
+      .nav-i {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.16s;
+      }
+      .nav-i:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+      .nav-i.act {
+        background: var(--cr-lt);
+        color: #fff;
+      }
+      .ni {
+        font-size: 15px;
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .nt {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition:
+          opacity 0.2s,
+          max-width 0.2s;
+      }
+      .nb {
+        margin-left: auto;
+        background: #e53e3e;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 100px;
+        flex-shrink: 0;
+        transition: opacity 0.2s;
+      }
+      .ng {
+        margin-left: auto;
+        background: var(--gd);
+        color: var(--cr-dk);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 100px;
+        flex-shrink: 0;
+        transition: opacity 0.2s;
+      }
+      .sb-foot {
+        margin-top: auto;
+        padding: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+      }
+      .sidebar.collapsed {
+        width: var(--sb-ico);
+      }
+      .sidebar.collapsed .sb-logo,
+      .sidebar.collapsed .sb-role,
+      .sidebar.collapsed .sb-ui,
+      .sidebar.collapsed .nav-l,
+      .sidebar.collapsed .nt,
+      .sidebar.collapsed .nb,
+      .sidebar.collapsed .ng {
+        opacity: 0;
+        max-width: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .sidebar.collapsed .nav-i {
+        justify-content: center;
+        padding: 9px;
+      }
+      .sidebar.collapsed .ni {
+        width: auto;
+      }
+      .sidebar.collapsed .sb-user {
+        justify-content: center;
+        padding: 11px;
+      }
+      .sidebar.collapsed .sb-head {
+        justify-content: center;
+        padding: 15px 10px;
+      }
+      .sidebar.collapsed .nav-i:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: calc(100% + 8px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--cr-dk);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: var(--r1);
+        white-space: nowrap;
+        z-index: 9999;
+        box-shadow: var(--sh2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+      }
+      .sb-ov {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.52);
+        z-index: 190;
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 0.28s;
+      }
+      .sb-ov.open {
+        opacity: 1;
+      }
+
+      /* ══ MAIN ══ */
+      .main {
+        flex: 1;
+        min-width: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* ══ TOPBAR ══ */
+      .topbar {
+        background: #fff;
+        border-bottom: 1px solid var(--bdr);
+        padding: 0 clamp(14px, 3vw, 28px);
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: var(--sh0);
+        gap: 10px;
+      }
+      .tb-l {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+      }
+      .tb-ham {
+        display: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--r1);
+        background: var(--cr-xl);
+        border: 1px solid var(--bdr);
+        color: var(--cr);
+        font-size: 18px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .tb-info {
+        min-width: 0;
+      }
+      .tb-bc {
+        font-size: 11px;
+        color: var(--tx-l);
+        margin-bottom: 1px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tb-bc span {
+        color: var(--cr);
+      }
+      .tb-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(14px, 2vw, 17px);
+        font-weight: 700;
+        color: var(--cr-dk);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tb-r {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .admin-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, var(--cr-dk), var(--cr-lt));
+        color: #fff;
+        padding: 5px 14px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .notif-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--r1);
+        background: var(--cream);
+        border: 1px solid var(--bdr);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        cursor: pointer;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .notif-btn::after {
+        content: "";
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 7px;
+        height: 7px;
+        background: #e53e3e;
+        border-radius: 50%;
+        border: 2px solid #fff;
+      }
+      .btn-back {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 14px;
+        border: 1.5px solid var(--bdr);
+        border-radius: var(--r2);
+        background: var(--cream);
+        color: var(--tx-m);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.18s;
+        flex-shrink: 0;
+      }
+      .btn-back:hover {
+        background: var(--cr-xl);
+        color: var(--cr);
+        border-color: var(--cr-bdr);
+      }
+      .btn-back-txt {
+        display: inline;
+      }
+
+      /* ══ BUTTONS ══ */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 18px;
+        border-radius: var(--r2);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.18s;
+        white-space: nowrap;
+      }
+      .btn-cr {
+        background: var(--cr);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(107, 16, 32, 0.22);
+      }
+      .btn-cr:hover {
+        background: var(--cr-dk);
+        transform: translateY(-1px);
+      }
+      .btn-ok {
+        background: var(--ok);
+        color: #fff;
+      }
+      .btn-ok:hover {
+        background: #246640;
+        transform: translateY(-1px);
+      }
+      .btn-er {
+        background: var(--er);
+        color: #fff;
+      }
+      .btn-er:hover {
+        background: #a82626;
+        transform: translateY(-1px);
+      }
+      .btn-gh {
+        background: var(--cream);
+        color: var(--tx-m);
+        border: 1px solid var(--bdr);
+      }
+      .btn-gh:hover {
+        background: var(--cr-xl);
+        color: var(--cr);
+      }
+      .btn-sm {
+        padding: 6px 14px;
+        font-size: 12px;
+        border-radius: var(--r1);
+      }
+      .btn-lg {
+        padding: 13px 24px;
+        font-size: 15px;
+      }
+      .btn-full {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* ══ BADGES ══ */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 3px 9px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .bw {
+        background: rgba(0, 0, 0, 0.06);
+        color: #555;
+      }
+      .bo {
+        background: var(--wn-bg);
+        color: var(--wn);
+      }
+      .bg {
+        background: var(--ok-bg);
+        color: var(--ok);
+      }
+      .bb {
+        background: var(--inf-bg);
+        color: var(--inf);
+      }
+      .br {
+        background: var(--er-bg);
+        color: var(--er);
+      }
+      .bv {
+        background: var(--pu-bg);
+        color: var(--pu);
+      }
+      .bc {
+        background: var(--cr-xl);
+        color: var(--cr);
+      }
+      .bgd {
+        background: var(--gd-bg);
+        color: #7a5a10;
+      }
+      .bwh {
+        background: rgba(255, 255, 255, 0.18);
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      /* ══ PAGE ══ */
+      .page-wrap {
+        padding: clamp(14px, 3vw, 26px) clamp(14px, 3vw, 30px);
+        max-width: 1800px;
+        margin: 0 auto;
+      }
+
+      /* ══ TWO-COLUMN ══ */
+      .doc-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: clamp(14px, 2vw, 24px);
+        align-items: start;
+      }
+
+      /* ══ DOC HEADER CARD ══ */
+      .doc-header {
+        background: #fff;
+        border-radius: var(--r4);
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh0);
+        overflow: hidden;
+        margin-bottom: clamp(14px, 2vw, 20px);
+        animation: fadeUp 0.4s ease both;
+      }
+      .dhc-banner {
+        background: linear-gradient(
+          135deg,
+          var(--cr-dk) 0%,
+          var(--cr-lt) 60%,
+          #1a3a4a 100%
+        );
+        padding: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 32px);
+        position: relative;
+        overflow: hidden;
+      }
+      .dhc-banner::after {
+        content: "💻";
+        position: absolute;
+        right: clamp(16px, 3vw, 32px);
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(40px, 6vw, 72px);
+        opacity: 0.1;
+        pointer-events: none;
+      }
+      .dhc-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .dhc-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(18px, 3vw, 26px);
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.25;
+        margin-bottom: 14px;
+        padding-right: clamp(0px, 8vw, 80px);
+      }
+      .dhc-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(10px, 2vw, 18px);
+      }
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .meta-ico {
+        font-size: 14px;
+      }
+      .meta-lbl {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 1px;
+      }
+      .meta-val {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .dhc-body {
+        padding: clamp(14px, 2vw, 20px) clamp(18px, 3vw, 32px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--bdr);
+      }
+      .doc-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .btn-da {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px clamp(12px, 2vw, 20px);
+        border-radius: var(--r2);
+        font-size: clamp(12px, 1.5vw, 14px);
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .bda-view {
+        background: var(--cr-xl);
+        color: var(--cr);
+        border: 1.5px solid var(--cr-bdr);
+      }
+      .bda-view:hover {
+        background: var(--cr);
+        color: #fff;
+      }
+      .bda-dl {
+        background: var(--cream);
+        color: var(--tx-m);
+        border: 1.5px solid var(--bdr);
+      }
+      .bda-dl:hover {
+        background: var(--cr-xl);
+        color: var(--cr);
+      }
+      .doc-qs {
+        display: flex;
+        gap: clamp(12px, 2vw, 22px);
+      }
+      .qs-item {
+        text-align: center;
+      }
+      .qs-n {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(16px, 2vw, 20px);
+        font-weight: 700;
+        color: var(--tx);
+      }
+      .qs-l {
+        font-size: 11px;
+        color: var(--tx-l);
+        margin-top: 1px;
+      }
+
+      /* ══ SECTION CARD ══ */
+      .sc {
+        background: #fff;
+        border-radius: var(--r4);
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh0);
+        overflow: hidden;
+        margin-bottom: clamp(14px, 2vw, 20px);
+        animation: fadeUp 0.45s ease both;
+      }
+      .sc-head {
+        padding: clamp(14px, 2vw, 18px) clamp(16px, 2vw, 24px);
+        border-bottom: 1px solid var(--bdr);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .sc-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(14px, 1.5vw, 16px);
+        font-weight: 700;
+        color: var(--cr-dk);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .sc-sub {
+        font-size: 12px;
+        color: var(--tx-l);
+        margin-top: 2px;
+      }
+      .sc-body {
+        padding: clamp(14px, 2vw, 22px) clamp(16px, 2vw, 24px);
+      }
+      .sc-footer {
+        padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2vw, 24px);
+        border-top: 1px solid var(--bdr);
+        background: var(--warm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      /* ══ ABSTRACT ══ */
+      .abstract-text {
+        font-size: clamp(13px, 1.2vw, 14px);
+        color: var(--tx-m);
+        line-height: 1.75;
+      }
+
+      /* ══ REVIEW CARDS ══ */
+      .review-card {
+        background: var(--cream);
+        border-radius: var(--r3);
+        border: 1px solid var(--bdr);
+        overflow: hidden;
+        margin-bottom: 14px;
+        transition: all 0.2s;
+      }
+      .review-card:hover {
+        box-shadow: var(--sh1);
+        border-color: var(--cr-bdr);
+      }
+      .review-card:last-child {
+        margin-bottom: 0;
+      }
+      .rv-ok::before,
+      .rv-er::before,
+      .rv-wn::before {
+        content: "";
+        display: block;
+        height: 0;
+      }
+      .rc-strip {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 4px 0 0 4px;
+      }
+      .review-card {
+        position: relative;
+      }
+      .rv-ok .rc-strip {
+        background: var(--ok);
+      }
+      .rv-er .rc-strip {
+        background: var(--er);
+      }
+      .rv-wn .rc-strip {
+        background: var(--wn);
+      }
+      /* Using border-left instead of pseudo-element */
+      .rv-ok {
+        border-left: 4px solid var(--ok);
+      }
+      .rv-er {
+        border-left: 4px solid var(--er);
+      }
+      .rv-wn {
+        border-left: 4px solid var(--wn);
+      }
+      .rc-head {
+        padding: clamp(10px, 1.5vw, 14px) clamp(14px, 2vw, 18px) 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(107, 16, 32, 0.07);
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .rc-num-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .rc-num {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .rc-body {
+        padding: clamp(12px, 1.5vw, 16px) clamp(14px, 2vw, 18px);
+      }
+      .rc-score {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .rc-stars {
+        font-size: clamp(16px, 2vw, 20px);
+        letter-spacing: 2px;
+      }
+      .rc-val {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--tx);
+      }
+      .rc-outof {
+        font-size: 13px;
+        color: var(--tx-l);
+      }
+      .rc-sec {
+        margin-bottom: 12px;
+      }
+      .rc-sec:last-of-type {
+        margin-bottom: 0;
+      }
+      .rc-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .rc-txt {
+        font-size: clamp(12px, 1.2vw, 13px);
+        color: var(--tx-m);
+        line-height: 1.65;
+      }
+      .rc-reviewer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(107, 16, 32, 0.07);
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .rc-rev-ava {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--cr-lt);
+        flex-shrink: 0;
+      }
+      .rc-rev-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--tx-m);
+      }
+      .rc-rev-role {
+        font-size: 11px;
+        color: var(--tx-l);
+      }
+      .rc-date {
+        margin-left: auto;
+        font-size: 11px;
+        color: var(--tx-l);
+      }
+
+      /* ══ HISTORY TABLE ══ */
+      .history-scroll {
+        overflow-x: auto;
+        margin-top: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 540px;
+      }
+      thead th {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 10px 14px;
+        text-align: left;
+        background: var(--cream);
+        border-bottom: 1px solid var(--bdr);
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(107, 16, 32, 0.05);
+        transition: background 0.15s;
+      }
+      tbody tr:hover {
+        background: var(--warm);
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      td {
+        padding: 10px 14px;
+        font-size: 13px;
+        color: var(--tx-m);
+        vertical-align: middle;
+      }
+      td strong {
+        color: var(--tx);
+      }
+
+      /* ══ PROGRESS BAR ══ */
+      .prog {
+        height: 6px;
+        background: var(--bdr);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .prog-f {
+        height: 100%;
+        border-radius: 6px;
+        background: var(--cr);
+        transition: width 0.8s;
+      }
+
+      /* ══ RIGHT PANEL ══ */
+      .right-panel {
+        position: sticky;
+        top: clamp(70px, 8vw, 80px);
+      }
+
+      /* ══ AVG BLOCK ══ */
+      .avg-block {
+        background: linear-gradient(135deg, var(--cr-dk), var(--cr-lt));
+        border-radius: var(--r4);
+        padding: clamp(18px, 2vw, 24px);
+        text-align: center;
+        margin-bottom: clamp(14px, 2vw, 20px);
+        animation: fadeUp 0.5s ease 0.1s both;
+      }
+      .avg-t {
+        font-size: 11px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.55);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 12px;
+      }
+      .avg-score {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(44px, 5.5vw, 60px);
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+      }
+      .avg-outof {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .avg-stars {
+        font-size: clamp(20px, 3vw, 26px);
+        letter-spacing: 3px;
+        margin: 10px 0;
+      }
+      .avg-count {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .avg-prog-wrap {
+        margin-top: 16px;
+      }
+      .avg-prog-lbl {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 5px;
+      }
+      .avg-prog-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .avg-prog-fill {
+        height: 100%;
+        border-radius: 8px;
+        background: var(--gd);
+        transition: width 1s ease;
+      }
+
+      /* summary chips in avg block */
+      .avg-chips {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .avg-chip {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .avg-chip-ok {
+        background: rgba(45, 122, 79, 0.35);
+        color: #9effc8;
+      }
+      .avg-chip-wn {
+        background: rgba(196, 122, 26, 0.35);
+        color: #ffd98e;
+      }
+      .avg-chip-er {
+        background: rgba(197, 48, 48, 0.3);
+        color: #ffb3b3;
+      }
+
+      /* ══ DECISION CARD ══ */
+      .decision-card {
+        background: #fff;
+        border-radius: var(--r4);
+        border: 2px solid var(--cr);
+        box-shadow: var(--sh2);
+        overflow: hidden;
+        animation: fadeUp 0.45s ease 0.08s both;
+      }
+      .dc-head {
+        background: linear-gradient(135deg, var(--cr-dk), var(--cr-lt));
+        padding: clamp(16px, 2vw, 20px) clamp(16px, 2vw, 24px);
+      }
+      .dc-head h3 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(16px, 1.8vw, 18px);
+        font-weight: 700;
+        color: #fff;
+      }
+      .dc-head p {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 3px;
+      }
+      .dc-body {
+        padding: clamp(16px, 2vw, 22px) clamp(16px, 2vw, 24px);
+      }
+
+      /* decision options */
+      .dec-opt {
+        border: 2px solid var(--bdr);
+        border-radius: var(--r2);
+        padding: 14px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--cream);
+        transition: all 0.2s;
+        margin-bottom: 10px;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .dec-opt:last-of-type {
+        margin-bottom: 0;
+      }
+      .dec-opt:hover {
+        border-color: rgba(107, 16, 32, 0.25);
+        transform: translateX(2px);
+      }
+      .dec-opt.sel-ok {
+        border-color: var(--ok);
+        background: var(--ok-bg);
+      }
+      .dec-opt.sel-er {
+        border-color: var(--er);
+        background: var(--er-bg);
+      }
+      .dec-radio {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--bdr);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .sel-ok .dec-radio {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .sel-ok .dec-radio::after,
+      .sel-er .dec-radio::after {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+      }
+      .sel-er .dec-radio {
+        background: var(--er);
+        border-color: var(--er);
+      }
+      .dec-ico {
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+      .dec-txt {
+        flex: 1;
+        min-width: 0;
+      }
+      .dec-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--tx);
+      }
+      .dec-desc {
+        font-size: 11px;
+        color: var(--tx-l);
+        margin-top: 2px;
+        line-height: 1.4;
+      }
+      .sel-ok .dec-name {
+        color: var(--ok);
+      }
+      .sel-er .dec-name {
+        color: var(--er);
+      }
+
+      /* note field */
+      .note-wrap {
+        margin-top: 16px;
+      }
+      .f-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--tx-l);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 7px;
+      }
+      .f-textarea {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--bdr);
+        border-radius: var(--r2);
+        font-size: 13px;
+        color: var(--tx);
+        background: var(--cream);
+        outline: none;
+        transition: all 0.2s;
+        resize: vertical;
+        min-height: 90px;
+        line-height: 1.6;
+      }
+      .f-textarea:focus {
+        border-color: var(--cr);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(107, 16, 32, 0.07);
+      }
+      .f-textarea::placeholder {
+        color: var(--tx-l);
+      }
+
+      .dc-footer {
+        padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2vw, 24px);
+        border-top: 1px solid var(--bdr);
+        background: var(--warm);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .dec-btns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .dec-btns .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      /* confirmed state */
+      .decision-confirmed {
+        display: none;
+        padding: clamp(22px, 3vw, 30px) clamp(16px, 2vw, 24px);
+        text-align: center;
+        animation: fadeUp 0.4s ease;
+      }
+      .conf-ico {
+        font-size: clamp(44px, 5vw, 56px);
+        margin-bottom: 14px;
+      }
+      .conf-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(17px, 2vw, 20px);
+        margin-bottom: 8px;
+      }
+      .conf-desc {
+        font-size: 13px;
+        color: var(--tx-l);
+        line-height: 1.6;
+        margin-bottom: 18px;
+      }
+      .conf-sum {
+        border-radius: var(--r2);
+        padding: 13px 16px;
+        text-align: left;
+        margin-bottom: 16px;
+      }
+      .cs-ok {
+        background: var(--ok-bg);
+        border: 1px solid rgba(45, 122, 79, 0.2);
+      }
+      .cs-er {
+        background: var(--er-bg);
+        border: 1px solid rgba(197, 48, 48, 0.2);
+      }
+      .conf-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 3px 0;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .conf-row .cl {
+        color: var(--tx-l);
+      }
+      .conf-row .cv {
+        font-weight: 600;
+        color: var(--tx);
+        text-align: right;
+      }
+
+      /* already decided banner */
+      .decided-banner {
+        border-radius: var(--r2);
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .db-ok {
+        background: var(--ok-bg);
+        border: 1px solid rgba(45, 122, 79, 0.2);
+      }
+      .db-er {
+        background: var(--er-bg);
+        border: 1px solid rgba(197, 48, 48, 0.2);
+      }
+      .db-ico {
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+      .db-title {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .db-title-ok {
+        color: var(--ok);
+      }
+      .db-title-er {
+        color: var(--er);
+      }
+      .db-desc {
+        font-size: 12px;
+        color: var(--tx-l);
+        margin-top: 2px;
+      }
+
+      /* ══ TOAST ══ */
+      .toast {
+        position: fixed;
+        bottom: clamp(14px, 3vw, 22px);
+        left: 50%;
+        z-index: 99999;
+        transform: translateX(-50%) translateY(80px);
+        color: #fff;
+        padding: 11px clamp(16px, 3vw, 22px);
+        border-radius: var(--r3);
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: var(--sh3);
+        opacity: 0;
+        transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        max-width: calc(100vw - 28px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .t-ok {
+        background: var(--ok);
+        border: 1px solid rgba(45, 122, 79, 0.3);
+      }
+      .t-er {
+        background: var(--er);
+        border: 1px solid rgba(197, 48, 48, 0.3);
+      }
+      .t-def {
+        background: var(--cr-dk);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+      }
+      .t-wn {
+        background: var(--wn);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(13px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* ══ MODAL ══ */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.52);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(12px, 3vw, 20px);
+        overflow-y: auto;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: #fff;
+        border-radius: var(--r4);
+        width: 100%;
+        max-width: 500px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        box-shadow: var(--sh3);
+        animation: modalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      @keyframes modalIn {
+        from {
+          opacity: 0;
+          transform: translateY(18px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .m-head-ok {
+        background: linear-gradient(135deg, #1a4a30, var(--ok));
+      }
+      .m-head-er {
+        background: linear-gradient(135deg, #6b0a0a, var(--er));
+      }
+      .m-head {
+        padding: clamp(18px, 2vw, 24px) clamp(18px, 2vw, 26px);
+        border-radius: var(--r4) var(--r4) 0 0;
+        position: relative;
+      }
+      .m-head h3 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(17px, 2vw, 20px);
+        font-weight: 700;
+        color: #fff;
+      }
+      .m-head p {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.58);
+        margin-top: 4px;
+      }
+      .m-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.18s;
+      }
+      .m-close:hover {
+        background: rgba(255, 255, 255, 0.26);
+      }
+      .m-body {
+        padding: clamp(22px, 3vw, 32px) clamp(18px, 2vw, 26px);
+        text-align: center;
+      }
+      .m-ico {
+        font-size: clamp(48px, 6vw, 60px);
+        margin-bottom: 14px;
+      }
+      .m-title {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(17px, 2vw, 21px);
+        margin-bottom: 8px;
+      }
+      .m-desc {
+        font-size: 14px;
+        color: var(--tx-l);
+        line-height: 1.65;
+        margin-bottom: 20px;
+      }
+      .m-sum {
+        border-radius: var(--r2);
+        padding: 14px 16px;
+        text-align: left;
+      }
+      .m-foot {
+        padding: clamp(12px, 1.5vw, 16px) clamp(18px, 2vw, 26px);
+        border-top: 1px solid var(--bdr);
+        background: var(--warm);
+        border-radius: 0 0 var(--r4) var(--r4);
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* ══ RESPONSIVE ══ */
+      @media (min-width: 2000px) {
+        :root {
+          --sb: 290px;
+        }
+        html {
+          font-size: 17px;
+        }
+        .doc-layout {
+          grid-template-columns: 1fr 420px;
+        }
+      }
+      @media (min-width: 1400px) and (max-width: 1999px) {
+        .doc-layout {
+          grid-template-columns: 1fr 400px;
+        }
+      }
+      @media (min-width: 768px) and (max-width: 1199px) {
+        :root {
+          --sb: var(--sb-ico);
+        }
+        .sidebar .sb-logo,
+        .sidebar .sb-role,
+        .sidebar .sb-ui,
+        .sidebar .nav-l,
+        .sidebar .nt,
+        .sidebar .nb,
+        .sidebar .ng {
+          opacity: 0;
+          max-width: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .sidebar .nav-i {
+          justify-content: center;
+          padding: 9px;
+        }
+        .sidebar .ni {
+          width: auto;
+        }
+        .sidebar .sb-user {
+          justify-content: center;
+          padding: 11px;
+        }
+        .sidebar .sb-head {
+          justify-content: center;
+          padding: 15px 10px;
+        }
+        .sidebar .nav-i:hover::after {
+          content: attr(data-tip);
+          position: absolute;
+          left: calc(100% + 8px);
+          top: 50%;
+          transform: translateY(-50%);
+          background: var(--cr-dk);
+          color: #fff;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 5px 12px;
+          border-radius: var(--r1);
+          white-space: nowrap;
+          z-index: 9999;
+          box-shadow: var(--sh2);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          pointer-events: none;
+        }
+        .sb-tog {
+          display: none !important;
+        }
+        .doc-layout {
+          grid-template-columns: 1fr 320px;
+        }
+      }
+      @media (max-width: 767px) {
+        .sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: var(--sb-mob) !important;
+          height: 100vh;
+          z-index: 300;
+          transform: translateX(-100%);
+          box-shadow: var(--sh3);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar .sb-logo,
+        .sidebar .sb-role,
+        .sidebar .sb-ui,
+        .sidebar .nav-l,
+        .sidebar .nt,
+        .sidebar .nb,
+        .sidebar .ng {
+          opacity: 1 !important;
+          max-width: unset !important;
+          pointer-events: auto !important;
+        }
+        .sidebar .nav-i {
+          justify-content: flex-start;
+          padding: 8px 10px;
+          gap: 9px;
+        }
+        .sidebar .ni {
+          width: 18px;
+        }
+        .sidebar .sb-user {
+          justify-content: flex-start;
+          padding: 12px 20px;
+        }
+        .sidebar .sb-head {
+          justify-content: space-between;
+          padding: 18px 20px;
+        }
+        .sb-ov {
+          display: block;
+        }
+        .sb-tog {
+          display: flex !important;
+        }
+        .tb-ham {
+          display: flex;
+        }
+        .doc-layout {
+          grid-template-columns: 1fr;
+        }
+        .right-panel {
+          position: static;
+        }
+        .topbar {
+          padding: 0 14px;
+          height: 54px;
+        }
+        .tb-bc {
+          display: none;
+        }
+        .btn-back-txt {
+          display: none;
+        }
+        .dhc-banner::after {
+          display: none;
+        }
+        .dhc-title {
+          padding-right: 0;
+        }
+        .dhc-body {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .doc-actions {
+          justify-content: stretch;
+        }
+        .btn-da {
+          flex: 1;
+          justify-content: center;
+        }
+        .doc-qs {
+          justify-content: space-around;
+        }
+        .sc-footer {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .sc-footer .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .rc-head {
+          flex-wrap: wrap;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 6px;
+        }
+        .rc-date {
+          margin-left: 0;
+        }
+        .rc-reviewer {
+          flex-wrap: wrap;
+        }
+        .rc-date {
+          width: 100%;
+          margin-left: 0;
+        }
+        .dec-btns {
+          flex-direction: column;
+        }
+        .admin-pill .ap-txt {
+          display: none;
+        }
+      }
+      @media (max-width: 480px) {
+        .tb-r .btn-back {
+          display: none;
+        }
+        .dhc-title {
+          font-size: 17px;
+        }
+        .rc-stars {
+          font-size: 14px;
+        }
+      }
+      @media (max-width: 399px) {
+        .dhc-tags .badge:nth-child(n + 4) {
+          display: none;
+        }
+        .avg-score {
+          font-size: 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast t-def" id="toast"></div>
+    <div class="sb-ov" id="sb-ov" onclick="closeSB()"></div>
+
+    <div class="app">
+      <!-- ══════ SIDEBAR ══════ -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sb-head">
+          <div>
+            <div class="sb-logo">PETRO<span>PUB</span></div>
+            <div class="sb-role">Administração</div>
+          </div>
+          <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
+          <button class="sb-tog" id="sb-col" onclick="toggleCol()">◀</button>
+        </div>
+        <div class="sb-user">
+          <div class="ava ava-dk">AD</div>
+          <div class="sb-ui">
+            <div class="sb-un">Ana Domingos</div>
+            <div class="sb-ue">admin@petropub.ao</div>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Visão Geral</div>
+          <div class="nav-i" data-tip="Dashboard">
+            <span class="ni">📊</span><span class="nt">Dashboard</span>
+          </div>
+          <div class="nav-i" data-tip="Utilizadores">
+            <span class="ni">👥</span><span class="nt">Utilizadores</span>
+          </div>
+          <div class="nav-i" data-tip="Documentos">
+            <span class="ni">📚</span><span class="nt">Documentos</span>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Editorial</div>
+          <div class="nav-i act" data-tip="Avaliações">
+            <span class="ni">🔍</span
+            ><span class="nt">Gestão de Avaliações</span
+            ><span class="nb">5</span>
+          </div>
+          <div class="nav-i" data-tip="Publicação">
+            <span class="ni">📤</span><span class="nt">Publicação</span>
+          </div>
+          <div class="nav-i" data-tip="Categorias">
+            <span class="ni">🗂️</span><span class="nt">Categorias</span>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Financeiro</div>
+          <div class="nav-i" data-tip="Receitas">
+            <span class="ni">💰</span><span class="nt">Receitas</span>
+          </div>
+          <div class="nav-i" data-tip="Comprovantes">
+            <span class="ni">📜</span><span class="nt">Comprovantes</span
+            ><span class="nb">12</span>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Sistema</div>
+          <div class="nav-i" data-tip="Alertas">
+            <span class="ni">🚨</span><span class="nt">Alertas do Sistema</span
+            ><span class="nb">3</span>
+          </div>
+          <div class="nav-i" data-tip="Configurações">
+            <span class="ni">⚙️</span><span class="nt">Configurações</span>
+          </div>
+        </div>
+        <div class="sb-foot">
+          <div class="nav-i" data-tip="Sair">
+            <span class="ni">🚪</span><span class="nt">Sair da Sessão</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ══════ MAIN ══════ -->
+      <div class="main">
+        <div class="topbar">
+          <div class="tb-l">
+            <button class="tb-ham" onclick="openSB()">☰</button>
+            <div class="tb-info">
+              <div class="tb-bc">
+                PetroPub
+                <span
+                  >/ Admin / Avaliações /
+                  <span id="bc-doc">Sistema de Gestão Hospitalar…</span></span
+                >
+              </div>
+              <div class="tb-title">Detalhe da Avaliação</div>
+            </div>
+          </div>
+          <div class="tb-r">
+            <button
+              class="btn-back"
+              onclick="showToast('← A voltar à lista…', 't-def')"
+            >
+              ← <span class="btn-back-txt">Voltar à lista</span>
+            </button>
+            <div class="admin-pill">
+              ⚙️ <span class="ap-txt">Administrador</span>
+            </div>
+            <div class="notif-btn">🔔</div>
+            <div
+              class="ava ava-dk"
+              style="
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+                cursor: pointer;
+                flex-shrink: 0;
+              "
+            >
+              AD
+            </div>
+          </div>
+        </div>
+
+        <div class="page-wrap">
+          <div class="doc-layout">
+            <!-- ════ LEFT COLUMN ════ -->
+            <div>
+              <!-- DOC HEADER -->
+              <div class="doc-header">
+                <div class="dhc-banner">
+                  <div class="dhc-tags">
+                    <span class="badge bo">⏳ Em Avaliação</span>
+                    <span class="badge bb">Dissertação</span>
+                    <span class="badge bc">Eng. Informática</span>
+                    <span class="badge bwh">🔥 Urgente</span>
+                  </div>
+                  <div class="dhc-title">
+                    Sistema de Gestão Hospitalar Distribuído
+                  </div>
+                  <div class="dhc-meta">
+                    <div class="meta-item">
+                      <span class="meta-ico">👤</span>
+                      <div>
+                        <div class="meta-lbl">Autor</div>
+                        <div class="meta-val">João Manuel</div>
+                      </div>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-ico">📅</span>
+                      <div>
+                        <div class="meta-lbl">Ano</div>
+                        <div class="meta-val">2025</div>
+                      </div>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-ico">🏛️</span>
+                      <div>
+                        <div class="meta-lbl">Instituição</div>
+                        <div class="meta-val">ISPTEC</div>
+                      </div>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-ico">📄</span>
+                      <div>
+                        <div class="meta-lbl">Páginas</div>
+                        <div class="meta-val">128 págs.</div>
+                      </div>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-ico">🔍</span>
+                      <div>
+                        <div class="meta-lbl">Avaliações</div>
+                        <div class="meta-val">2 recebidas</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="dhc-body">
+                  <div class="doc-actions">
+                    <button
+                      class="btn-da bda-view"
+                      onclick="
+                        showToast('👁 A abrir pré-visualização…', 't-def')
+                      "
+                    >
+                      👁 Ver Documento
+                    </button>
+                    <button
+                      class="btn-da bda-dl"
+                      onclick="showToast('📥 A iniciar download…', 't-def')"
+                    >
+                      📥 Download
+                    </button>
+                  </div>
+                  <div class="doc-qs">
+                    <div class="qs-item">
+                      <div class="qs-n">3.5</div>
+                      <div class="qs-l">Média</div>
+                    </div>
+                    <div class="qs-item">
+                      <div class="qs-n">2</div>
+                      <div class="qs-l">Avaliações</div>
+                    </div>
+                    <div class="qs-item">
+                      <div class="qs-n">128</div>
+                      <div class="qs-l">Páginas</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RESUMO -->
+              <div class="sc" style="animation-delay: 0.05s">
+                <div class="sc-head">
+                  <div>
+                    <div class="sc-title">📝 Resumo do Trabalho</div>
+                    <div class="sc-sub">Abstract académico</div>
+                  </div>
+                </div>
+                <div class="sc-body">
+                  <p class="abstract-text">
+                    Este trabalho apresenta uma abordagem inovadora para o
+                    desenvolvimento de sistemas de gestão hospitalar em
+                    ambientes distribuídos, com foco na interoperabilidade entre
+                    unidades sanitárias e na consistência de dados clínicos em
+                    tempo real. A arquitectura proposta baseia-se em
+                    microserviços comunicantes via protocolo gRPC, com
+                    persistência híbrida combinando bases de dados relacionais e
+                    não-relacionais para optimização de desempenho.
+                    <br /><br />
+                    O sistema foi desenvolvido e testado no contexto do sistema
+                    de saúde angolano, considerando as limitações de
+                    conectividade e a diversidade de infraestrutura tecnológica
+                    existente. Os resultados demonstram uma redução de 40% no
+                    tempo de acesso a registos clínicos e uma disponibilidade de
+                    99.2% durante os testes realizados.
+                  </p>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      flex-wrap: wrap;
+                      margin-top: 16px;
+                    "
+                  >
+                    <span class="badge bb">microserviços</span>
+                    <span class="badge bc">gestão hospitalar</span>
+                    <span class="badge bw">sistemas distribuídos</span>
+                    <span class="badge bgd">angola</span>
+                    <span class="badge bw">gRPC</span>
+                    <span class="badge bw">interoperabilidade</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AVALIAÇÕES DOS PARES -->
+              <div class="sc" style="animation-delay: 0.1s">
+                <div class="sc-head">
+                  <div>
+                    <div class="sc-title">🔍 Avaliações dos Pares</div>
+                    <div class="sc-sub">
+                      2 avaliações realizadas por professores avaliadores —
+                      identidade sempre visível para o admin
+                    </div>
+                  </div>
+                  <span class="badge bo">⏳ Aguarda Decisão Admin</span>
+                </div>
+                <div class="sc-body" style="padding-top: 16px">
+                  <!-- Review #1 -->
+                  <div class="review-card rv-wn">
+                    <div class="rc-head">
+                      <div class="rc-num-row">
+                        <span class="rc-num">Avaliação #1</span>
+                        <span class="badge bv">🔄 Pedido de Revisão</span>
+                      </div>
+                      <span style="font-size: 12px; color: var(--tx-l)"
+                        >10 Mar 2025</span
+                      >
+                    </div>
+                    <div class="rc-body">
+                      <div class="rc-score">
+                        <span class="rc-stars">⭐⭐⭐⭐☆</span>
+                        <span class="rc-val">4</span
+                        ><span class="rc-outof">/ 5</span>
+                      </div>
+                      <div class="rc-sec">
+                        <div class="rc-lbl">💬 Comentário</div>
+                        <div class="rc-txt">
+                          O trabalho apresenta uma boa estrutura, mas precisa
+                          melhorar a secção de metodologia. A revisão
+                          bibliográfica está incompleta relativamente a
+                          trabalhos recentes na área de sistemas distribuídos.
+                        </div>
+                      </div>
+                      <div class="rc-sec">
+                        <div class="rc-lbl">💡 Sugestão de Melhoria</div>
+                        <div class="rc-txt">
+                          Adicionar mais referências científicas actualizadas
+                          (2022–2025). Rever e expandir a secção 3.2 sobre
+                          arquitectura de microserviços.
+                        </div>
+                      </div>
+                      <div class="rc-reviewer">
+                        <div class="rc-rev-ava">AP</div>
+                        <div>
+                          <div class="rc-rev-name">Prof. Ana Paula</div>
+                          <div class="rc-rev-role">
+                            Professora de Eng. Informática — ISPTEC
+                          </div>
+                        </div>
+                        <div class="rc-date">10 Mar 2025</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Review #2 -->
+                  <div class="review-card rv-wn">
+                    <div class="rc-head">
+                      <div class="rc-num-row">
+                        <span class="rc-num">Avaliação #2</span>
+                        <span class="badge bv">🔄 Pedido de Revisão</span>
+                      </div>
+                      <span style="font-size: 12px; color: var(--tx-l)"
+                        >12 Mar 2025</span
+                      >
+                    </div>
+                    <div class="rc-body">
+                      <div class="rc-score">
+                        <span class="rc-stars">⭐⭐⭐☆☆</span>
+                        <span class="rc-val">3</span
+                        ><span class="rc-outof">/ 5</span>
+                      </div>
+                      <div class="rc-sec">
+                        <div class="rc-lbl">💬 Comentário</div>
+                        <div class="rc-txt">
+                          O tema é relevante e actual, porém a implementação não
+                          foi bem detalhada nas secções 3 e 4. Os testes
+                          realizados carecem de maior rigor estatístico para
+                          validar as conclusões apresentadas.
+                        </div>
+                      </div>
+                      <div class="rc-sec">
+                        <div class="rc-lbl">💡 Sugestão de Melhoria</div>
+                        <div class="rc-txt">
+                          Explicar melhor o funcionamento do algoritmo de
+                          escalonamento distribuído. Incluir métricas de
+                          avaliação de desempenho mais robustas e comparação com
+                          soluções existentes.
+                        </div>
+                      </div>
+                      <div class="rc-reviewer">
+                        <div class="rc-rev-ava">MB</div>
+                        <div>
+                          <div class="rc-rev-name">Prof. Mário Braga</div>
+                          <div class="rc-rev-role">
+                            Professor de Sistemas Distribuídos — UAN
+                          </div>
+                        </div>
+                        <div class="rc-date">12 Mar 2025</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="sc-footer">
+                  <div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        font-weight: 700;
+                        color: var(--tx-l);
+                        text-transform: uppercase;
+                        letter-spacing: 0.8px;
+                        margin-bottom: 5px;
+                      "
+                    >
+                      Média das Avaliações
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        flex-wrap: wrap;
+                      "
+                    >
+                      <span
+                        style="
+                          font-family: &quot;Playfair Display&quot;, serif;
+                          font-size: clamp(22px, 3vw, 28px);
+                          font-weight: 700;
+                          color: var(--cr);
+                        "
+                        >3.5</span
+                      >
+                      <div>
+                        <div
+                          style="
+                            font-size: clamp(14px, 2vw, 18px);
+                            letter-spacing: 2px;
+                          "
+                        >
+                          ⭐⭐⭐⭐☆
+                        </div>
+                        <div
+                          style="
+                            font-size: 12px;
+                            color: var(--tx-l);
+                            margin-top: 1px;
+                          "
+                        >
+                          2 avaliações · 0 aprovados · 2 pedidos de revisão
+                        </div>
+                      </div>
+                    </div>
+                    <div class="prog" style="max-width: 220px; margin-top: 8px">
+                      <div class="prog-f" style="width: 70%"></div>
+                    </div>
+                  </div>
+                  <button class="btn btn-cr" onclick="scrollToDecision()">
+                    ⚖️ Tomar Decisão
+                  </button>
+                </div>
+              </div>
+
+              <!-- HISTÓRICO ADMIN -->
+              <div class="sc" style="animation-delay: 0.15s">
+                <div class="sc-head">
+                  <div>
+                    <div class="sc-title">📋 Histórico de Decisões Admin</div>
+                    <div class="sc-sub">
+                      Registo completo de todas as acções administrativas
+                    </div>
+                  </div>
+                </div>
+                <div class="sc-body">
+                  <div class="history-scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Data</th>
+                          <th>Acção</th>
+                          <th>Administrador</th>
+                          <th>Nota</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>08 Mar 2025</td>
+                          <td><strong>Submetido para avaliação</strong></td>
+                          <td>Sistema</td>
+                          <td>Submetido automaticamente após upload</td>
+                          <td><span class="badge bb">🔄 Em avaliação</span></td>
+                        </tr>
+                        <tr>
+                          <td>10 Mar 2025</td>
+                          <td><strong>Avaliação #1 recebida</strong></td>
+                          <td>Prof. Ana Paula</td>
+                          <td>Pedido de revisão — 4/5</td>
+                          <td><span class="badge bv">📋 Parcial</span></td>
+                        </tr>
+                        <tr>
+                          <td>12 Mar 2025</td>
+                          <td><strong>Avaliação #2 recebida</strong></td>
+                          <td>Prof. Mário Braga</td>
+                          <td>Pedido de revisão — 3/5</td>
+                          <td><span class="badge bv">📋 Parcial</span></td>
+                        </tr>
+                        <tr>
+                          <td>11 Mar 2025</td>
+                          <td><strong>Enviado ao Admin</strong></td>
+                          <td>Sistema</td>
+                          <td>Aguarda decisão editorial final</td>
+                          <td><span class="badge bo">⏳ Pendente</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ════ END LEFT ════ -->
+
+            <!-- ════ RIGHT PANEL ════ -->
+            <div class="right-panel">
+              <!-- AVG VISUAL BLOCK -->
+              <div class="avg-block">
+                <div class="avg-t">Média das Avaliações</div>
+                <div>
+                  <span class="avg-score">3.5</span>
+                  <span class="avg-outof"> / 5</span>
+                </div>
+                <div class="avg-stars">⭐⭐⭐⭐☆</div>
+                <div class="avg-count">2 avaliações de pares recebidas</div>
+                <div class="avg-prog-wrap">
+                  <div class="avg-prog-lbl">
+                    <span>Progresso de avaliação</span><span>70%</span>
+                  </div>
+                  <div class="avg-prog-bar">
+                    <div class="avg-prog-fill" style="width: 70%"></div>
+                  </div>
+                </div>
+                <div class="avg-chips">
+                  <span class="avg-chip avg-chip-ok">0 ✅ Aprovados</span>
+                  <span class="avg-chip avg-chip-wn">2 🔄 Revisões</span>
+                  <span class="avg-chip avg-chip-er">0 ❌ Rejeitados</span>
+                </div>
+              </div>
+
+              <!-- DECISION CARD -->
+              <div class="decision-card" id="decision-card">
+                <div class="dc-head">
+                  <h3>⚖️ Decisão Editorial</h3>
+                  <p>
+                    Apenas o administrador pode aprovar ou rejeitar a publicação
+                  </p>
+                </div>
+
+                <!-- Form state -->
+                <div id="decision-form">
+                  <div class="dc-body">
+                    <div
+                      style="
+                        background: var(--wn-bg);
+                        border: 1px solid rgba(196, 122, 26, 0.2);
+                        border-radius: var(--r2);
+                        padding: 12px 14px;
+                        margin-bottom: 18px;
+                        font-size: 13px;
+                        color: var(--tx-m);
+                        line-height: 1.5;
+                      "
+                    >
+                      ⚠️ <strong>Atenção:</strong> Esta decisão notificará o
+                      autor e tornará o documento público (se aprovado) ou
+                      arquivado (se rejeitado). Não pode ser revertida sem
+                      contactar o suporte.
+                    </div>
+
+                    <div style="margin-bottom: 16px">
+                      <label class="f-label"
+                        >Decisão Final
+                        <span style="color: var(--cr)">*</span></label
+                      >
+                      <div
+                        class="dec-opt"
+                        id="dec-approve"
+                        onclick="selDec('approve')"
+                      >
+                        <div class="dec-radio" id="dr-a"></div>
+                        <span class="dec-ico">✅</span>
+                        <div class="dec-txt">
+                          <div class="dec-name">Aprovar Publicação</div>
+                          <div class="dec-desc">
+                            O documento cumpre os critérios. Será publicado e
+                            disponibilizado para download.
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="dec-opt"
+                        id="dec-reject"
+                        onclick="selDec('reject')"
+                      >
+                        <div class="dec-radio" id="dr-r"></div>
+                        <span class="dec-ico">❌</span>
+                        <div class="dec-txt">
+                          <div class="dec-name">Rejeitar Documento</div>
+                          <div class="dec-desc">
+                            O documento não cumpre os critérios mínimos. Será
+                            arquivado e o autor notificado.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="note-wrap">
+                      <label class="f-label"
+                        >Nota para o Autor
+                        <span
+                          style="
+                            font-weight: 400;
+                            text-transform: none;
+                            color: var(--tx-l);
+                          "
+                          >(opcional)</span
+                        ></label
+                      >
+                      <textarea
+                        class="f-textarea"
+                        id="dec-note"
+                        placeholder="Explique os motivos da decisão, pontos a melhorar ou felicitações pelo trabalho académico…"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="dc-footer">
+                    <div class="dec-btns">
+                      <button
+                        class="btn btn-ok"
+                        onclick="confirmDecision('approve')"
+                      >
+                        ✅ Aprovar
+                      </button>
+                      <button
+                        class="btn btn-er"
+                        onclick="confirmDecision('reject')"
+                      >
+                        ❌ Rejeitar
+                      </button>
+                    </div>
+                    <button
+                      class="btn btn-gh btn-full"
+                      onclick="confirmDecision(null)"
+                    >
+                      ⚖️ Confirmar Decisão Seleccionada
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Confirmed state (hidden initially) -->
+                <div class="decision-confirmed" id="decision-confirmed">
+                  <div class="conf-ico" id="cf-ico">🎉</div>
+                  <div class="conf-title" id="cf-title">
+                    Publicação Aprovada!
+                  </div>
+                  <div class="conf-desc" id="cf-desc">
+                    A decisão foi registada e o autor será notificado
+                    automaticamente.
+                  </div>
+                  <div class="conf-sum" id="cf-sum">
+                    <div class="conf-row">
+                      <span class="cl">Documento</span
+                      ><span class="cv">Sistema de Gestão Hospitalar…</span>
+                    </div>
+                    <div class="conf-row">
+                      <span class="cl">Decisão</span
+                      ><span class="cv" id="cf-dec">—</span>
+                    </div>
+                    <div class="conf-row">
+                      <span class="cl">Admin</span
+                      ><span class="cv">Ana Domingos</span>
+                    </div>
+                    <div class="conf-row">
+                      <span class="cl">Data</span
+                      ><span class="cv" id="cf-date">—</span>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      margin-top: 16px;
+                      display: flex;
+                      gap: 8px;
+                      justify-content: center;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <button class="btn btn-gh btn-sm" onclick="undoDecision()">
+                      ↩ Reverter
+                    </button>
+                    <button
+                      class="btn btn-cr btn-sm"
+                      onclick="showToast('← A voltar à lista…', 't-def')"
+                    >
+                      ← Ver Lista
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ════ END RIGHT ════ -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CONFIRMAÇÃO -->
+    <div
+      class="overlay"
+      id="modal-confirm"
+      onclick="ovClose(event, 'modal-confirm')"
+    >
+      <div class="modal">
+        <div class="m-head" id="mc-head">
+          <h3 id="mc-title">—</h3>
+          <p id="mc-sub">—</p>
+          <button class="m-close" onclick="closeModal('modal-confirm')">
+            ✕
+          </button>
+        </div>
+        <div class="m-body">
+          <div class="m-ico" id="mc-ico">🎉</div>
+          <div class="m-title" id="mc-mt">—</div>
+          <div class="m-desc" id="mc-desc">—</div>
+          <div class="m-sum conf-sum" id="mc-sum">
+            <div class="conf-row">
+              <span class="cl">Documento</span
+              ><span class="cv">Sistema de Gestão Hospitalar…</span>
+            </div>
+            <div class="conf-row">
+              <span class="cl">Decisão</span
+              ><span class="cv" id="mc-dec">—</span>
+            </div>
+            <div class="conf-row">
+              <span class="cl">Administrador</span
+              ><span class="cv">Ana Domingos</span>
+            </div>
+            <div class="conf-row">
+              <span class="cl">Data/Hora</span
+              ><span class="cv" id="mc-date">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="m-foot">
+          <button class="btn btn-gh" onclick="closeModal('modal-confirm')">
+            Fechar
+          </button>
+          <button
+            class="btn btn-cr"
+            onclick="
+              closeModal('modal-confirm');
+              showToast('← A voltar à lista…', 't-def');
+            "
+          >
+            ← Ver Lista
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ── STATE ── */
+      let selectedDec = "";
+      let decisionMade = false;
+
+      /* ── DECISION SELECTION ── */
+      function selDec(d) {
+        selectedDec = d;
+        document.getElementById("dec-approve").className =
+          "dec-opt" + (d === "approve" ? " sel-ok" : "");
+        document.getElementById("dec-reject").className =
+          "dec-opt" + (d === "reject" ? " sel-er" : "");
+      }
+
+      /* ── CONFIRM DECISION ── */
+      function confirmDecision(forcedDec) {
+        const dec = forcedDec || selectedDec;
+        if (!dec) {
+          showToast("⚠️ Seleccione uma decisão antes de confirmar", "t-wn");
+          return;
+        }
+
+        const isOk = dec === "approve";
+        const note = document.getElementById("dec-note").value.trim();
+        const now = new Date();
+        const dateStr =
+          now.toLocaleDateString("pt-PT") +
+          " " +
+          now.toLocaleTimeString("pt-PT", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+        decisionMade = true;
+
+        /* Update right panel → confirmed state */
+        document.getElementById("decision-form").style.display = "none";
+        const cfEl = document.getElementById("decision-confirmed");
+        cfEl.style.display = "block";
+        cfEl.classList.add("cs-" + (isOk ? "ok" : "er"));
+        document.getElementById("cf-ico").textContent = isOk ? "🎉" : "🚫";
+        document.getElementById("cf-title").textContent = isOk
+          ? "Publicação Aprovada!"
+          : "Documento Rejeitado.";
+        document.getElementById("cf-desc").textContent = isOk
+          ? "O documento foi aprovado. O autor será notificado e o documento ficará disponível para download."
+          : "O documento foi rejeitado. O autor será notificado com os motivos indicados.";
+        document.getElementById("cf-sum").className =
+          "conf-sum " + (isOk ? "cs-ok" : "cs-er");
+        document.getElementById("cf-dec").textContent = isOk
+          ? "✅ Aprovado"
+          : "❌ Rejeitado";
+        document.getElementById("cf-date").textContent = dateStr;
+
+        /* Update header badge */
+        const tagsEl = document.querySelector(".dhc-tags");
+        const firstBadge = tagsEl.firstElementChild;
+        if (firstBadge) {
+          firstBadge.className = isOk ? "badge bg" : "badge br";
+          firstBadge.textContent = isOk ? "✅ Aprovado" : "❌ Rejeitado";
+        }
+
+        /* Show confirmation modal */
+        document.getElementById("mc-head").className =
+          "m-head " + (isOk ? "m-head-ok" : "m-head-er");
+        document.getElementById("mc-title").textContent = isOk
+          ? "✅ Publicação Autorizada"
+          : "❌ Documento Rejeitado";
+        document.getElementById("mc-sub").textContent = isOk
+          ? "O documento será publicado na plataforma"
+          : "O autor será notificado";
+        document.getElementById("mc-ico").textContent = isOk ? "🎉" : "🚫";
+        document.getElementById("mc-mt").textContent = isOk
+          ? "Decisão registada com sucesso!"
+          : "Rejeição registada.";
+        document.getElementById("mc-desc").textContent = isOk
+          ? "O documento foi aprovado pelo administrador e ficará disponível para download após processamento."
+          : "O documento foi rejeitado. O autor receberá uma notificação com os motivos desta decisão.";
+        document.getElementById("mc-sum").className =
+          "m-sum conf-sum " + (isOk ? "cs-ok" : "cs-er");
+        document.getElementById("mc-dec").textContent = isOk
+          ? "✅ Aprovado"
+          : "❌ Rejeitado";
+        document.getElementById("mc-date").textContent = dateStr;
+        openModal("modal-confirm");
+
+        showToast(
+          isOk
+            ? "✅ Documento aprovado para publicação!"
+            : "❌ Documento rejeitado.",
+          isOk ? "t-ok" : "t-er",
+        );
+      }
+
+      /* ── UNDO / REVERTER ── */
+      function undoDecision() {
+        decisionMade = false;
+        selectedDec = "";
+        document.getElementById("decision-form").style.display = "block";
+        document.getElementById("decision-confirmed").style.display = "none";
+        document.getElementById("decision-confirmed").className =
+          "decision-confirmed";
+        document.getElementById("dec-approve").className = "dec-opt";
+        document.getElementById("dec-reject").className = "dec-opt";
+        document.getElementById("dec-note").value = "";
+        /* Restore badge */
+        const firstBadge =
+          document.querySelector(".dhc-tags").firstElementChild;
+        if (firstBadge) {
+          firstBadge.className = "badge bo";
+          firstBadge.textContent = "⏳ Em Avaliação";
+        }
+        showToast("↩ Decisão revertida — aguardando nova decisão", "t-wn");
+      }
+
+      /* ── SCROLL TO DECISION ── */
+      function scrollToDecision() {
+        const el = document.getElementById("decision-card");
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.style.boxShadow =
+          "0 0 0 3px rgba(201,168,76,.5), " + el.style.boxShadow;
+        setTimeout(() => (el.style.boxShadow = ""), 1800);
+      }
+
+      /* ── MODAL ── */
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+        document.body.style.overflow = "";
+      }
+      function ovClose(e, id) {
+        if (e.target.id === id) closeModal(id);
+      }
+
+      /* ── TOAST ── */
+      function showToast(msg, cls = "t-def") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = "toast " + cls;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3500);
+      }
+
+      /* ── SIDEBAR ── */
+      const sidebar = document.getElementById("sidebar");
+      const sbOv = document.getElementById("sb-ov");
+      const sbClose = document.getElementById("sb-close");
+      const sbCol = document.getElementById("sb-col");
+      let collapsed = false;
+
+      function checkBP() {
+        const w = window.innerWidth;
+        if (w < 768) {
+          sbClose.style.display = sidebar.classList.contains("open")
+            ? "flex"
+            : "none";
+          sbCol.style.display = "none";
+          sidebar.classList.remove("collapsed");
+        } else if (w < 1200) {
+          sbClose.style.display = "none";
+          sbCol.style.display = "none";
+          sidebar.classList.remove("open");
+          sbOv.classList.remove("open");
+          document.body.style.overflow = "";
+        } else {
+          sbClose.style.display = "none";
+          sbCol.style.display = "flex";
+          sbCol.textContent = collapsed ? "▶" : "◀";
+        }
+      }
+      function openSB() {
+        sidebar.classList.add("open");
+        sbOv.style.display = "block";
+        setTimeout(() => sbOv.classList.add("open"), 10);
+        sbClose.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+      function closeSB() {
+        sidebar.classList.remove("open");
+        sbOv.classList.remove("open");
+        setTimeout(() => (sbOv.style.display = "none"), 300);
+        sbClose.style.display = "none";
+        document.body.style.overflow = "";
+      }
+      function toggleCol() {
+        collapsed = !collapsed;
+        sidebar.classList.toggle("collapsed", collapsed);
+        sbCol.textContent = collapsed ? "▶" : "◀";
+      }
+      document.querySelectorAll(".nav-i").forEach((i) =>
+        i.addEventListener("click", () => {
+          if (window.innerWidth < 768) closeSB();
+        }),
+      );
+      window.addEventListener("resize", checkBP);
+      checkBP();
+    </script>
+  </body>
+</html>
