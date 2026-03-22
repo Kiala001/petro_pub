@@ -196,7 +196,7 @@ class Document {
     }
 
     public function published() {
-        if ($this->status !== self::STATUS_PAID && $this->status !== self::STATUS_APPROVED && $this->status !== self::STATUS_PROGRAMMING) {
+        if ($this->status !== self::STATUS_APPROVED && $this->status !== self::STATUS_PROGRAMMING) {
             throw new DomainException('Apenas documentos pagos, programados ou aprovados podem ser publicados');
         }
         $this->status = self::STATUS_PUBLISHED;

@@ -1,39 +1,28 @@
-
+<!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sb-head">
-      <div>
-        <div class="sb-logo">PETRO<span>PUB</span></div>
-        <div class="sb-role-tag">Portal do Professor</div>
-      </div>
-      <!-- Close button (inside sidebar, visible when drawer is open on mobile) -->
-      <button class="sb-toggle" onclick="closeSidebar()" id="sb-close-btn" style="display:none">✕</button>
-      <!-- Collapse toggle (visible on desktop) -->
-      <button class="sb-toggle" onclick="toggleCollapse()" id="sb-collapse-btn">◀</button>
+      <div><div class="sb-logo">PETRO<span>PUB</span></div><div class="sb-role">Portal do Estudante</div></div>
+      <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
+      <button class="sb-tog" id="sb-col"   onclick="toggleCol()">◀</button>
     </div>
-
     <div class="sb-user">
-      <div class="ava ava-gold">JP</div>
-      <div class="sb-user-info">
-        <div class="sb-name">Prof. João Pinto</div>
-        <div class="sb-email">j.pinto@isptec.ao</div>
-      </div>
+      <div class="ava ava-cr"><?php echo $userInitials; ?></div>
+      <div class="sb-ui"><div class="sb-un"><?php echo $userName; ?></div><div class="sb-ue"><?php echo $userEmail; ?></div></div>
     </div>
-
-    <div class="nav-sec">
-      <div class="nav-lbl">Principal</div>
-      <div class="nav-it" data-label="Início"><span class="nav-ico"><i class="fa fa-home"></i></span><span class="nav-txt">Início</span></div>
-      <div class="nav-it act" data-label="Para Avaliar"><span class="nav-ico"><i class="fa fa-book"></i></span><span class="nav-txt">Para Avaliar</span><span class="nav-bdg-red">5</span></div>
-      <div class="nav-it" data-label="Minhas Avaliações"><span class="nav-ico"><i class="fa fa-check"></i></span><span class="nav-txt">Minhas Avaliações</span></div>
-      <div class="nav-it" data-label="Meus Documentos"><span class="nav-ico"><i class="fa fa-file"></i></span><span class="nav-txt">Meus Documentos</span></div>
+    <!-- ... navegação ... -->
+     <div class="nav-s">
+        <div class="nav-l">Biblioteca</div>
+        <a href="dashboard.php" class="nav-i" data-tip="Início"><span class="ni"><i class="fa fa-home"></i></span><span class="nt">Início</span></a>
+        <a href="library.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span></a>
+        <a href="my-documents.php" class="nav-i" data-tip="Os Meus"><span class="ni"><i class="fa fa-folder"></i></span><span class="nt">Os Meus Documentos</span></a>
     </div>
-    <div class="nav-sec">
-      <div class="nav-lbl">Financeiro</div>
-      <div class="nav-it" data-label="Receitas"><span class="nav-ico"><i class="fa fa-money"></i></span><span class="nav-txt">Receitas</span></div>
-      <div class="nav-it" data-label="Notificações"><span class="nav-ico">🔔</span><span class="nav-txt">Notificações</span><span class="nav-bdg-red">3</span></div>
-      <div class="nav-it" data-label="Comentários"><span class="nav-ico"><i class="fa fa-comment"></i></span><span class="nav-txt">Comentários</span><span class="nav-bdg">7</span></div>
+    <div class="nav-s">
+        <div class="nav-l">Conta</div>
+        <a href="pair-review.php" class="nav-i" data-tip="Avaliações"><span class="ni"><i class="fa fa-comment-o"></i></span><span class="nt">Avaliação por pares</span><span class="nb">-</span></a>
+        <a href="gamification.php" class="nav-i act" data-tip="Pontos"><span class="ni"><i class="fa fa-star"></i></span><span class="nt">Pontos & Ranking</span><span class="ng">-</span></a>
+        <a href="notification.php" class="nav-i" data-tip="Notificações"><span class="ni">🔔</span><span class="nt">Notificações</span><span class="nb">3</span></a>
     </div>
     <div class="sb-foot">
-      <div class="nav-it" data-label="Configurações"><span class="nav-ico"><i class="fa fa-cog"></i></span><span class="nav-txt">Configurações</span></div>
-      <div class="nav-it" data-label="Sair"><span class="nav-ico"><i class="fa fa-logout"></i></span><span class="nav-txt">Sair</span></div>
+        <a href="logout.php" class="nav-i" data-tip="Sair"><span class="ni">🚪</span><span class="nt">Sair da Sessão</span></a>
     </div>
-  </aside>
+  </aside>    

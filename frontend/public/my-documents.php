@@ -9,35 +9,33 @@ if (!is_dir($uploadDir)) {
 $userId = $_SESSION['user_uuid'];
 $result = $documentService->getUserDocuments($userId);
 
+session_start();
+if (!isset($_SESSION['jwt_auth'])) {
+    header('Location: auth.php');
+    exit;
+}
+$jwt = $_SESSION['jwt_auth'];
+$userName = $_SESSION['user_name'] ?? 'Usuário';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!DOCTYPE html>
 <html lang="pt">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetroPub – Meus Artigos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>PetroPub — Pontos & Ranking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/gamificacao.css">
+    <link rel="stylesheet" href="assets/css/header.css">
     <link href="assets/css/dashboard-style.css" rel="stylesheet">
     <link href="assets/css/elements.css" rel="stylesheet">
+    <link href="assets/css/modals.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="role-switcher">
-            <span class="role-label">Olá, <?=$_SESSION['user_name']?></span>
-            <button class="role-btn" onclick="">Home</button>
-            <a class="role-btn" 
-                href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
-            >Submeter Artigo</a>
-    
-            <button class="role-btn active" onclick="">Meus Artigos</button>
-            <button class="role-btn" onclick="">Revisão por Pares</button>
-            <button class="role-btn" onclick="">Meios de pagamento</button> 
-        </div>
-    </header>
-
-    <section class="main" style="margin-top: 40px;">
+    <section class="main">
         <section class="topbar">
             <div class="logo-wrap" onclick="goHome()">
                 <svg width="44" height="44" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,6 +53,7 @@ $result = $documentService->getUserDocuments($userId);
                 <span class="logo-text">PETRO<span>PUB</span></span>
             </div>
 
+            
             <div class="topbar-left">
                 <div class="breadcrumb">PetroPub <span>/ Painel</span></div>
                 <h1>
@@ -77,8 +76,27 @@ $result = $documentService->getUserDocuments($userId);
                 <div class="icon-btn">🔔<span class="notif-dot"></span></div>
                 <a href="sair.php" class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</a>
             </div>
+            
         </section>
 
+            
+    </section>
+    <div class="app">
+    <?php
+    require_once 'header-role.php';
+    ?>
+    <!-- Main -->
+    <div class="main">
+        <div class="topbar">
+        <div class="tb-l">
+            <button class="tb-ham" onclick="openSB()">☰</button>
+            <div class="tb-title">Meus Artigos</div>
+        </div>
+        <div class="tb-r">
+            <div class="pts-pill" id="user-points"><span class="pts-pill-ico">🏅</span> <span id="points-value">...</span> pts</div>
+        </div>
+        </div>
+        <div class="page-wrap">
         <div class="page-content">
             <div class="section-card">
                 <div class="section-header">
@@ -144,7 +162,9 @@ $result = $documentService->getUserDocuments($userId);
                 </div>
             </div>
         </div>
-    </section>
+        </div>
+    </div>
+    </div>
 
     <div class="toast" id="toast"></div>
     <?php
@@ -154,6 +174,7 @@ $result = $documentService->getUserDocuments($userId);
     <script src="assets/js/api.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/my-documents.js"></script>
+    <script src="assets/js/sidebar.js"></script>
     <script>        
         loadUserDocuments();
 
@@ -168,6 +189,6 @@ $result = $documentService->getUserDocuments($userId);
 
             userDocuments = response.data.documents;
         }
-    </script>
+</script>
 </body>
 </html>

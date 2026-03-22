@@ -1,6 +1,7 @@
 
 <div class="dashboard" id="dash-admin">
-  <!-- <aside class="sidebar">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">PETRO<span>PUB</span></div>
       <div class="sidebar-role">Painel Administrativo</div>
@@ -45,7 +46,7 @@
     <div class="sidebar-footer">
       <div class="nav-item"><span class="nav-icon">🚪</span> Sair</div>
     </div>
-  </aside> -->
+  </aside>
 
   <div class="main">
     <div class="topbar">
@@ -67,22 +68,22 @@
       <div class="stats-grid stats-grid-4">
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon crimson">👥</div><span class="stat-change up">+48 hoje</span></div>
-          <div class="stat-num">5.842</div>
+          <div class="stat-num" id="admin-users">...</div>
           <div class="stat-label">Utilizadores registados</div>
         </div>
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon gold">📂</div><span class="stat-change up">+12</span></div>
-          <div class="stat-num">1.247</div>
+          <div class="stat-num" id="admin-docs">...</div>
           <div class="stat-label">Documentos no acervo</div>
         </div>
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon green">💰</div><span class="stat-change up">+23%</span></div>
-          <div class="stat-num">4.820.000</div>
+          <div class="stat-num" id="admin-revenue">...</div>
           <div class="stat-label">Receita total (Kz)</div>
         </div>
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon blue">⬇️</div><span class="stat-change up">+340</span></div>
-          <div class="stat-num">28.450</div>
+          <div class="stat-num" id="admin-downloads">...</div>
           <div class="stat-label">Downloads totais</div>
         </div>
       </div>
@@ -91,22 +92,22 @@
       <div class="stats-grid stats-grid-4" style="margin-top:-10px">
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon crimson">⏳</div><span class="stat-change neutral">urgente</span></div>
-          <div class="stat-num">12</div>
+          <div class="stat-num" id="admin-pending-receipts">...</div>
           <div class="stat-label">Comprovantes pendentes</div>
         </div>
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon gold">✅</div><span class="stat-change neutral">6 novos</span></div>
-          <div class="stat-num">6</div>
+          <div class="stat-num" id="admin-pending-uploads">...</div>
           <div class="stat-label">Uploads para aprovar</div>
         </div>
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon green">👑</div><span class="stat-change up">+8</span></div>
-          <div class="stat-num">312</div>
+          <div class="stat-num" id="admin-premium">...</div>
           <div class="stat-label">Assinantes premium</div>
         </div>
         <div class="stat-card">
           <div class="stat-top"><div class="stat-icon blue">🚨</div><span class="stat-change down">3 alertas</span></div>
-          <div class="stat-num">3</div>
+          <div class="stat-num" id="admin-fraud-alerts">...</div>
           <div class="stat-label">Alertas anti-fraude</div>
         </div>
       </div>

@@ -90,7 +90,7 @@ async function fetchDocuments() {
     extractFilters();
     renderCategories();
     renderTypes();
-    setPriceRange();
+    // setPriceRange();
     applyFilters();
 }
 
@@ -231,11 +231,11 @@ document.getElementById('type-list').addEventListener('click', e => {
   filters.type = item.dataset.type;
   applyFilters();
 });
-document.getElementById('price-range').addEventListener('input', e => {
-  filters.price = +e.target.value;
-  document.getElementById('range-fill').style.width = ((filters.price-minPrice)/(maxPrice-minPrice)*100)+"%";
-  applyFilters();
-});
+// document.getElementById('price-range').addEventListener('input', e => {
+//   filters.price = +e.target.value;
+//   document.getElementById('range-fill').style.width = ((filters.price-minPrice)/(maxPrice-minPrice)*100)+"%";
+//   applyFilters();
+// });
 document.getElementById('apply-filters').addEventListener('click', applyFilters);
 document.getElementById('grid-view').addEventListener('click', () => {
   document.getElementById('grid-view').classList.add('on');

@@ -129,14 +129,18 @@ if ($method === 'GET' && ($path === 'documents' || $path === 'documents/')) {
     
     $result['user'] = $user;
 
-    if ($user['type'] == 'COMMON_USER') {
-        $result = $documentService->requirePayment($input['id'], $result['document']);
-        echo json_encode($result);
-        exit();
-    }
+    // if ($user['type'] == 'COMMON_USER') {
+    //     $result = $documentService->requirePayment($input['id'], $result['document']);
+    //     echo json_encode($result);
+    //     exit();
+    // }
     
     $result = $documentService->publishDocument($input['id'], $result['document']);
     echo json_encode($result);
+
+} elseif ($method === 'GET' && ($path === 'documents-detail' || $path === 'documents-detail/')) {
+
+echo json_encode(['error' => $input]);
 
 }else {
     http_response_code(405);

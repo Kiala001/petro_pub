@@ -1,6 +1,9 @@
-
 <?php
 require_once 'includes.php';
+if (!isset($_SESSION['jwt_auth'])) {
+    header('Location: auth.php');
+    exit;
+}
 
 $uploadDir = '../../uploads/documents';
 if (!is_dir($uploadDir)) {
@@ -14,76 +17,55 @@ $userId = $_SESSION['user_uuid'];
 
 $result = $documentService->getDocumentsPending();
 
+$jwt = $_SESSION['jwt_auth'];
+$userName = $_SESSION['user_name'] ?? 'Usuário';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!DOCTYPE html>
 <html lang="pt">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetroPub – Artigos Para Avaliação</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>PetroPub — Documentos para Avaliação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/gamificacao.css">
     <link href="assets/css/dashboard-style.css" rel="stylesheet">
+    <link href="assets/css/modals.css" rel="stylesheet">
     <link href="assets/css/elements.css" rel="stylesheet">
+    <link href="assets/css/sidebar.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="role-switcher">
-            <span class="role-label">Olá, <?=$_SESSION['user_name']?></span>
-            <button class="role-btn" onclick="">Home</button>
-            <a class="role-btn" 
-                href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
-            >Submeter Artigo</a>
     
-            <button class="role-btn" onclick="">Meus Artigos</button>
-            <button class="role-btn active" onclick="">Revisão por Pares</button>
-        </div>
-    </header>
-
-    <section class="main" style="margin-top: 40px;">
-        <section class="topbar">
-            <div class="logo-wrap" onclick="goHome()">
-                <svg width="44" height="44" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Book shape -->
-                <rect x="30" y="20" width="140" height="160" rx="8" fill="#6B1020"/>
-                <rect x="30" y="20" width="12" height="160" rx="4" fill="#E5C97E"/>
-                <!-- <rect x="30" y="20" width="12" height="160" rx="4" fill="#E5C97E"/> -->
-                <!-- Oil drop -->
-                <ellipse cx="105" cy="75" rx="14" ry="18" fill="#E5C97E"/>
-                <polygon points="105,48 94,72 116,72" fill="#E5C97E"/>
-                <!-- Derrick tower simplified -->
-                <rect x="96" y="88" width="18" height="55" rx="2" fill="#E5C97E" opacity="0.9"/>
-                <polygon points="105,85 88,143 122,143" fill="none" stroke="#E5C97E" stroke-width="5"/>
-                </svg>
-                <span class="logo-text">PETRO<span>PUB</span></span>
-            </div>
-
-            <!-- <div class="topbar-left">
-                <div class="breadcrumb">PetroPub <span>/ Painel</span></div>
-                <h1>
-                    Painel do
-                    <?php
-                    $userType = $_SESSION['type_auth'];
-                    $profile = ($userType == "ADMIN") ? "Administrativo" : $userType ;
-                    $profile = ($userType == "TEACHER") ? "Docente" : "Estudante" ;
-                    
-                    echo $profile;
-                    ?> 
-                </h1>
-            </div> -->
-            <div class="topbar-right">
-                <a 
-                    href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
-                    class="btn btn-primary">
-                    <span>📤</span> Submeter Artigo
-                </a>
-                <div class="icon-btn">🔔<span class="notif-dot"></span></div>
-                <div class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</div>
-            </div>
-        </section>
+<div class="app">
+    
+  <?php
+  require_once 'header-role.php';
+  ?>
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-l">
+        <button class="tb-ham" onclick="openSB()">☰</button>
+        <div class="tb-title">Documentos para Avaliação</div>
+      </div>
+      <div class="tb-r">
+    <div class="topbar-right">
+        <a 
+            href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
+            class="btn btn-primary">
+            <span>📤</span> Submeter Artigo
+        </a>
+        <div class="icon-btn">🔔<span class="notif-dot"></span></div>
+        <div class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</div>
+    </div>    
+    </div>
+    </div>
+    <div class="page-wrap">
+        <section class="main">
         <div class="page-wrap">
-
             <!-- ROLE BANNER -->
             <div class="role-banner rb-teacher" id="role-banner" style="padding-left: 20px;">
                 <span class="rb-icon">
@@ -102,8 +84,8 @@ $result = $documentService->getDocumentsPending();
                 </div>
             </div>
         </div>
-
-        <div class="page-content">
+    </section>
+         <div class="page-content">
             <div class="section-card">
                 <div class="section-header">
                     <div>
@@ -175,7 +157,9 @@ $result = $documentService->getDocumentsPending();
             </div>
 
         </div>
-    </section>
+    </div>
+  </div>
+</div>
 
     <div class="toast" id="toast"></div>
     <?php
@@ -199,6 +183,6 @@ $result = $documentService->getDocumentsPending();
 
             userDocuments = response.data.documents;
         }
-    </script>
+</script>
 </body>
 </html>

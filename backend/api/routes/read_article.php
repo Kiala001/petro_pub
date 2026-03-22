@@ -5,13 +5,13 @@ require_once '../src/Domain/User/UserId.php';
 require_once '../src/Domain/Document/Document.php';
 require_once '../src/Infrastructure/Database/DocumentRepositoryImpl.php';
 require_once '../src/Infrastructure/Database/UserRepositoryImpl.php';
+require_once '../src/Infrastructure/Database/CategoryRepositoryImpl.php';
 require_once '../src/Infrastructure/Database/ReviewRepositoryImpl.php';
-require_once '../src/Application/DocumentReviewService.php';
+require_once '../src/Application/DocumentService.php';
 require_once '../src/Infrastructure/Security/JWTService.php';
 require_once '../src/Application/UrlEncryptService.php';
 
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
-
 
 $authHeader = $_SESSION['jwt_auth'];
 $token = str_replace('Bearer ', '', $authHeader);
@@ -26,12 +26,11 @@ if (!$payload) {
 
 $userRepository = new UserRepositoryImpl($db);
 $documentRepository = new DocumentRepositoryImpl($db);
-$reviewRepository = new ReviewRepository($db);
-$drService = new DocumentReviewService($documentRepository, $reviewRepository, $userRepository);
+$categoryRepository = new CategoryRepositoryImpl($db);
+$documentService = new DocumentService($documentRepository, $categoryRepository, $uploadDir);
 
-if ($method === 'GET' && ($path === 'article' || $path === 'article/')) {
-    
-    $result = $drService->getDocumentsWithReviews();
-    
-    echo json_encode($result);
-}
+$documentId = str_replace('read/', '', $path);
+
+$result = $documentService->getDocumentDetails($documentId);
+
+echo json_encode($result);

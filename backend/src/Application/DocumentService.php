@@ -43,7 +43,7 @@ class DocumentService {
                 $data['course'],
                 $data['summary'],
                 $data['keywords'],
-                $filePath,
+                $fileName,
                 $data['file_size'],
                 $fileType,
                 $data['price'],
@@ -96,48 +96,48 @@ class DocumentService {
 
             $this->documentRepository->updateStatus($newDocument);
 
-            // --- INTEGRAÇÃO DE PONTOS E NOTIFICAÇÕES ---
-            // Instanciar repositórios e serviços necessários
-            require_once __DIR__ . '/PointService.php';
-            require_once __DIR__ . '/NotificationService.php';
-            require_once __DIR__ . '/../Infrastructure/Database/PointRepositoryImpl.php';
-            require_once __DIR__ . '/../Infrastructure/Database/NotificationRepositoryImpl.php';
-            require_once __DIR__ . '/../Domain/Id.php';
-            require_once __DIR__ . '/../Domain/Notificacao/Notificacao.php';
+            // // --- INTEGRAÇÃO DE PONTOS E NOTIFICAÇÕES ---
+            // // Instanciar repositórios e serviços necessários
+            // require_once __DIR__ . '/PointService.php';
+            // require_once __DIR__ . '/NotificationService.php';
+            // require_once __DIR__ . '/../Infrastructure/Database/PointRepositoryImpl.php';
+            // require_once __DIR__ . '/../Infrastructure/Database/NotificationRepositoryImpl.php';
+            // require_once __DIR__ . '/../Domain/Id.php';
+            // require_once __DIR__ . '/../Domain/Notificacao/Notificacao.php';
 
-            global $db;
-            $pointRepo = new PointRepositoryImpl($db);
-            $notificationRepo = new NotificationRepositoryImpl($db);
-            $pointService = new PointService($pointRepo);
-            $notificationService = new NotificationService($notificationRepo);
+            // global $db;
+            // $pointRepo = new PointRepositoryImpl($db);
+            // $notificationRepo = new NotificationRepositoryImpl($db);
+            // $pointService = new PointService($pointRepo);
+            // $notificationService = new NotificationService($notificationRepo);
 
-            // Adiciona pontos ao usuário
-            $pointService->pointDocumentApproved($newDocument->getUserId(), $newDocument->getId());
+            // // Adiciona pontos ao usuário
+            // $pointService->pointDocumentApproved($newDocument->getUserId(), $newDocument->getId());
 
-            // Notificação para o usuário
-            $notificationService->notify(
-                $newDocument->getUserId(),
-                'Documento aprovado',
-                'Seu documento "' . $newDocument->getTitle() . '" foi aprovado e será publicado em breve.',
-                'success',
-                'fa fa-check',
-                '/frontend/my-documents.php',
-                'private'
-            );
+            // // Notificação para o usuário
+            // $notificationService->notify(
+            //     $newDocument->getUserId(),
+            //     'Documento aprovado',
+            //     'Seu documento "' . $newDocument->getTitle() . '" foi aprovado e será publicado em breve.',
+            //     'success',
+            //     'fa fa-check',
+            //     '/frontend/my-documents.php',
+            //     'private'
+            // );
 
-            // Notificação para o admin (broadcast ou para todos admins, aqui exemplo simples)
-            // Supondo que o admin tem user_id = 'ADMIN' ou similar, ajuste conforme necessário
-            $notificationService->notify(
-                'ADMIN',
-                'Novo documento aprovado',
-                'O documento "' . $newDocument->getTitle() . '" do usuário ' . $newDocument->getUserId() . ' foi aprovado.',
-                'info',
-                'fa fa-file',
-                '/frontend/dashboard-admin.php',
-                'admin'
-            );
+            // // Notificação para o admin (broadcast ou para todos admins, aqui exemplo simples)
+            // // Supondo que o admin tem user_id = 'ADMIN' ou similar, ajuste conforme necessário
+            // $notificationService->notify(
+            //     'ADMIN',
+            //     'Novo documento aprovado',
+            //     'O documento "' . $newDocument->getTitle() . '" do usuário ' . $newDocument->getUserId() . ' foi aprovado.',
+            //     'info',
+            //     'fa fa-file',
+            //     '/frontend/dashboard-admin.php',
+            //     'admin'
+            // );
 
-            // --- FIM INTEGRAÇÃO ---
+            // // --- FIM INTEGRAÇÃO ---
 
             return [
                 'success' => true, 

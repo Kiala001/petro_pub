@@ -17,15 +17,29 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PetroPub — Notificações</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/notification.css">
+<link rel="stylesheet" href="assets/css/sidebar.css">
+<link rel="stylesheet" href="assets/css/element.css">
 </head>
 <body>
-<div class="page-wrap">
-  <div class="card">
-    <div class="card-title">Minhas Notificações</div>
-    <div id="notif-list" class="notif-list">Carregando...</div>
+<div class="app">
+  <?php require_once 'header-role.php'; ?>
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-l">
+        <button class="tb-ham" onclick="openSB()">☰</button>
+        <div class="tb-title">Minhas Notificações</div>
+      </div>
+    </div>
+    <div class="page-wrap">
+      <div class="card">
+        <div class="card-title">Minhas Notificações</div>
+        <div id="notif-list" class="notif-list">Carregando...</div>
+      </div>
+    </div>
   </div>
 </div>
+<script src="assets/js/sidebar.js"></script>
+<script src="assets/js/dashboard-data.js"></script>
 <script>
 async function fetchNotifications() {
   const res = await fetch('/backend/api/routes/notification.php?path=notifications', {credentials:'same-origin'});

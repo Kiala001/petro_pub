@@ -13,31 +13,25 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PetroPub — Pontos & Ranking</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/gamificacao.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroPub — Pontos & Ranking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/gamificacao.css">
+    <link rel="stylesheet" href="assets/css/header.css">
+    <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
 </head>
 <body>
 <div class="app">
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-head">
-      <div><div class="sb-logo">PETRO<span>PUB</span></div><div class="sb-role">Portal do Estudante</div></div>
-      <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
-      <button class="sb-tog" id="sb-col"   onclick="toggleCol()">◀</button>
-    </div>
-    <div class="sb-user">
-      <div class="ava ava-cr"><?php echo $userInitials; ?></div>
-      <div class="sb-ui"><div class="sb-un"><?php echo $userName; ?></div><div class="sb-ue"><?php echo $userEmail; ?></div></div>
-    </div>
-    <!-- ... navegação ... -->
-  </aside>
+  <?php
+  require_once 'header-role.php';
+  ?>
   <!-- Main -->
   <div class="main">
     <div class="topbar">
       <div class="tb-l">
+        <button class="tb-ham" onclick="openSB()">☰</button>
         <div class="tb-title">Gamificação & Pontos</div>
       </div>
       <div class="tb-r">
@@ -94,6 +88,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 
 <script src="assets/js/util.js"></script>
 <script src="assets/js/api.js"></script>
+<script src="assets/js/sidebar.js"></script>
 <script>
 // Funções para buscar dados do backend
 async function fetchPoints() {
