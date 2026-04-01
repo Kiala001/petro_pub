@@ -21,7 +21,7 @@ $payload = $jwtService->verifyToken($token);
 
 if (!$payload && $method !== 'GET') {
     http_response_code(401);
-    echo json_encode(['error' => 'Não autorizado']);
+    echo json_encode(['error' => 'Usuário não autorizado']);
     exit;
 }
 
@@ -83,6 +83,7 @@ if ($method === 'GET' && ($path === 'documents' || $path === 'documents/')) {
         $categoryId,
         $data,
         $_FILES['document'],
+        $_FILES['cover_file'],
         $userType
     );
 

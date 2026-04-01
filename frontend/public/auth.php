@@ -1,3 +1,15 @@
+<?php
+// Página de gamificação: pontos, ranking, conquistas
+session_start();
+if (isset($_SESSION['jwt_auth'])) {
+    header('Location: my-documents.php');
+    exit;
+}
+$jwt = $_SESSION['jwt_auth'];
+$userName = $_SESSION['user_name'] ?? 'Usuário';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>

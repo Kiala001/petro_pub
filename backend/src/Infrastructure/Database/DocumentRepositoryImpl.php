@@ -24,8 +24,8 @@ class DocumentRepositoryImpl implements DocumentRepository {
         $stmt = $this->connection->prepare('
             INSERT INTO documents (
                 id, user_id, category_id, title, authors, advisor, course, 
-                summary, keywords, payment_method, file_path, file_size, file_type, price_kz, 
-                access_mode, pub_mode, status, version, download_link, expires_at, plagiarism_score, 
+                summary, price, location, keywords, file_cover, file_path, file_size, file_type,
+                pub_mode, status, version, download_link, expires_at, plagiarism_score, 
                 schedule_date, schedule_time, created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
@@ -39,13 +39,13 @@ class DocumentRepositoryImpl implements DocumentRepository {
             $document->getAdvisor(),
             $document->getCourse(),
             $document->getSummary(),
+            $document->getPriceKz(),
+            $document->getLocation(),
             json_encode($document->getKeywords()),
-            json_encode($document->getPaymentMethods()),
+            $document->getFilePathCover(),
             $document->getFilePath(),
             $document->getFileSize(),
             $document->getFileType(),
-            $document->getPriceKz(),
-            $document->getAccessMode(),
             $document->getPubMode(),
             $document->getStatus(),
             $document->getVersion(),

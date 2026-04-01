@@ -12,10 +12,12 @@ class Document {
     private $keywords;
     private $paymentMethod;
     private $filePath;
+    private $filePathCover;
     private $fileSize;
     private $fileType;
     private $priceKz;
     private $isPaid;
+    private $location;
     private $status;
     private $version;
     private $downloadLink;
@@ -50,13 +52,12 @@ class Document {
         $filePath,
         $fileSize,
         $fileType,
-        $priceKz,
-        $accessMode,
+        $fileCover,
         $pubMode,
         $sched_date,
         $sched_time,
-        $paymentMethod,
-        //$isPaid = true
+        $price,
+        $location
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -71,15 +72,14 @@ class Document {
         $this->filePath = $filePath;
         $this->fileSize = $fileSize;
         $this->fileType = $fileType;
-        $this->priceKz = $this->validatePrice($priceKz);
-        $this->paymentMethod = $paymentMethod;
-        // $this->isPaid = $isPaid;
+        $this->filePathCover = $fileCover;
         $this->status = self::STATUS_PENDING;
         $this->version = 1;
-        $this->accessMode = $accessMode;
         $this->pubMode = $pubMode;
         $this->sched_date = $sched_date;
         $this->sched_time = $sched_time;
+        $this->priceKz = $price;
+        $this->location = $location;
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
     }
@@ -123,9 +123,11 @@ class Document {
     public function getKeywords() { return $this->keywords; }
     public function getPaymentMethods() { return $this->paymentMethod; }
     public function getFilePath() { return $this->filePath; }
+    public function getFilePathCover() { return $this->filePathCover; }
     public function getFileSize() { return $this->fileSize; }
     public function getFileType() { return $this->fileType; }
     public function getPriceKz() { return $this->priceKz; }
+    public function getLocation() { return $this->location; }
     public function getStatus() { return $this->status; }
     public function getVersion() { return $this->version; }
     public function getDownloadLink() { return $this->downloadLink; }
@@ -207,6 +209,10 @@ class Document {
         $this->status = self::STATUS_PUBLISHED;
     }
 
+    public function programmingAdmin() {
+        $this->status = self::STATUS_PROGRAMMING;
+    }
+    
     public function isPaid() {
         return $this->status == self::STATUS_PAID;
     }

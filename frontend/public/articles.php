@@ -13,6 +13,23 @@ $userId = $_SESSION['user_uuid'];
 
 $allArticles = $documentService->getAllDocuments();
 
+if (!isset($_SESSION['jwt_auth'])) {
+    header('Location: auth.php');
+    exit;
+}
+
+if (isset($_SESSION['jwt_auth']) && $_SESSION['type_auth'] != 'ADMIN') {
+    header('Location: library.php');
+    exit;
+}
+
+$result = $drService->getDocumentsWithReviews();
+$document = $result['documents'];
+
+$jwt = $_SESSION['jwt_auth'];
+$userName = $_SESSION['user_name'] ?? 'Usuário';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!doctype html>
 <html lang="pt">
@@ -36,7 +53,7 @@ $allArticles = $documentService->getAllDocuments();
 
     <div class="app">
       <!-- ════════ SIDEBAR ════════ -->
-      <!-- <aside class="sidebar" id="sidebar">
+      <aside class="sidebar" id="sidebar">
         <div class="sb-head">
           <div>
             <div class="sb-logo">PETRO<span>PUB</span></div>
@@ -46,68 +63,42 @@ $allArticles = $documentService->getAllDocuments();
           <button class="sb-tog" id="sb-col" onclick="toggleCol()">◀</button>
         </div>
         <div class="sb-user">
-          <div class="ava ava-dk">AD</div>
+          <div class="ava ava-dk"><?=$userInitials?></div>
           <div class="sb-ui">
-            <div class="sb-un">Ana Domingos</div>
-            <div class="sb-ue">admin@petropub.ao</div>
+            <div class="sb-un"><?=$userName?></div>
+            <div class="sb-ue"><?=$userEmail?></div>
           </div>
         </div>
         <div class="nav-s">
           <div class="nav-l">Visão Geral</div>
-          <div class="nav-i" data-tip="Dashboard">
-            <span class="ni">📊</span><span class="nt">Dashboard</span>
-          </div>
-          <div class="nav-i" data-tip="Utilizadores">
-            <span class="ni">👥</span><span class="nt">Utilizadores</span>
-          </div>
-          <div class="nav-i" data-tip="Documentos">
-            <span class="ni">📚</span><span class="nt">Documentos</span>
-          </div>
+          <a href="users.php" class="nav-i" data-tip="Utilizadores">
+            <span class="ni"><i class="fa fa-users"></i></span><span class="nt">Utilizadores</span>
+          </a>
+          <a href="articles.php" class="nav-i act" data-tip="Documentos">
+            <span class="ni"><i class="fa fa-book"></i></span><span class="nt">Documentos</span>
+          </a>
+          <a href="library.php" class="nav-i">
+            <span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span>
+          </a>
         </div>
         <div class="nav-s">
-          <div class="nav-l">Editorial</div>
-          <div class="nav-i act" data-tip="Avaliações">
-            <span class="ni">🔍</span
-            ><span class="nt">Gestão de Avaliações</span
-            ><span class="nb">2</span>
-          </div>
+          <div class="nav-l"></div>
+          <a href="pair-review.php" class="nav-i" data-tip="Avaliações">
+            <span class="ni"><i class="fa fa-comments-o"></i></span
+            ><span class="nt">Revisão por Par</span
+            >
+          </a>
           <div class="nav-i" data-tip="Publicação">
-            <span class="ni">📤</span><span class="nt">Publicação</span>
-          </div>
-          <div class="nav-i" data-tip="Categorias">
-            <span class="ni">🗂️</span><span class="nt">Categorias</span>
-          </div>
-        </div>
-        <div class="nav-s">
-          <div class="nav-l">Financeiro</div>
-          <div class="nav-i" data-tip="Receitas">
-            <span class="ni">💰</span><span class="nt">Receitas</span>
-          </div>
-          <div class="nav-i" data-tip="Comprovantes">
-            <span class="ni">📜</span><span class="nt">Comprovantes</span
-            ><span class="nb">12</span>
-          </div>
-        </div>
-        <div class="nav-s">
-          <div class="nav-l">Sistema</div>
-          <div class="nav-i" data-tip="Alertas">
-            <span class="ni">🚨</span><span class="nt">Alertas</span
-            ><span class="nb">3</span>
-          </div>
-          <div class="nav-i" data-tip="Gamificação">
-            <span class="ni">⭐</span
-            ><span class="nt">Gamificação & Ranking</span>
-          </div>
-          <div class="nav-i" data-tip="Configurações">
-            <span class="ni">⚙️</span><span class="nt">Configurações</span>
+            <span class="ni"><i class="fa fa-file"></i></span><span class="nt">Meus Documentos</span>
           </div>
         </div>
         <div class="sb-foot">
           <div class="nav-i" data-tip="Sair">
-            <span class="ni">🚪</span><span class="nt">Sair da Sessão</span>
+            <span class="ni">🚪</span><span class="nt">Terminar Sessão</span>
           </div>
         </div>
-      </aside> -->
+      </aside>
+
 
       <!-- ════════ MAIN ════════ -->
       <div class="main">
@@ -122,13 +113,10 @@ $allArticles = $documentService->getAllDocuments();
             </div>
           </div>
           <div class="tb-r">
-            <div class="admin-badge">
-              ⚙️ <span class="ab-txt">Administrador</span>
-            </div>
-            <div class="notif-wrap">
+            <!-- <div class="notif-wrap">
               <div class="notif-btn">🔔</div>
               <div class="notif-dot"></div>
-            </div>
+            </div> -->
             <div
               class="ava ava-dk"
               style="
@@ -139,7 +127,7 @@ $allArticles = $documentService->getAllDocuments();
                 flex-shrink: 0;
               "
             >
-              AD
+              <?=$userInitials?>
             </div>
           </div>
         </div>
@@ -220,7 +208,7 @@ $allArticles = $documentService->getAllDocuments();
           </div>
 
           <!-- TOOLBAR -->
-          <div class="toolbar">
+          <!-- <div class="toolbar">
             <div class="tb-search">
               <span class="search-ico"><i class="fa fa-search"></i></span>
               <input
@@ -230,13 +218,6 @@ $allArticles = $documentService->getAllDocuments();
                 oninput="applyFilters()"
               />
             </div>
-            <select class="f-sel" id="cat-sel" onchange="applyFilters()">
-              <option value="">Todas as categorias</option>
-              <option>Eng. Informática</option>
-              <option>Eng. do Petróleo</option>
-              <option>Gestão</option>
-              <option>Medicina</option>
-            </select>
             <select class="f-sel" id="sort-sel" onchange="applyFilters()">
               <option value="recent">Mais recentes</option>
               <option value="score-asc">Menor pontuação</option>
@@ -258,13 +239,9 @@ $allArticles = $documentService->getAllDocuments();
                 <i class="fa fa-close" style="color: var(--er)"></i>
                 Rejeitados
               </button>
-              <button class="chip" onclick="setChip('aguardando pagamento', this)">
-                <i class="fa fa-credit-card" style="color: var(--inf)"></i>
-                Pagamento
-              </button>
             </div>
             </div>
-          </div>
+          </div> -->
 
           <!-- DOCUMENT LIST -->
           <div id="doc-list">
@@ -277,12 +254,14 @@ $allArticles = $documentService->getAllDocuments();
     ?>
 
     <script src="assets/js/modal.js"></script>
-    <script src="assets/js/util.js"></script>
+    <!-- <script src="assets/js/util.js"></script> -->
     <script src="assets/js/api.js"></script>
     <script>
       const S = (n) => "⭐".repeat(n) + "☆".repeat(5 - n);
 
-      let docs = [];
+      let docs = "<?php echo $document; ?>";
+
+      console.log(docs);
 
       async function loadArticle(docs) {
         const response = await apiRequest("article");
@@ -301,7 +280,7 @@ $allArticles = $documentService->getAllDocuments();
         pendente: { cls: "bo", lbl: "Em Avaliação" },
         aguardando_pagamento: { cls: "br", lbl: "Aguardando Pagamento" },
         aprovado: { cls: "bg", lbl: "Aprovado" },
-        publicado: { cls: "bi", lbl: "Publicado" },
+        publicado: { cls: "bg", lbl: "Publicado" },
         rejeitado: { cls: "br", lbl: "Rejeitado" },
       };
 
@@ -555,7 +534,7 @@ $allArticles = $documentService->getAllDocuments();
         document.getElementById("rs-date").textContent =
           new Date().toLocaleDateString("pt-PT");
         openModal("modal-result");
-        applyFilters();
+        // applyFilters();
         setTimeout(() => {
           showToast(
             ok ? " Documento aprovado! A página será recarregada em instantes." : " Documento rejeitado! A página será recarregada em instantes.",
@@ -563,8 +542,61 @@ $allArticles = $documentService->getAllDocuments();
           );
         }, 4000);
 
-        document.location.href = 'articles.php';
+        location.reload();
       }
+
+
+      const sidebar = document.getElementById("sidebar"),
+        sbOv = document.getElementById("sb-ov");
+      const sbClose = document.getElementById("sb-close"),
+        sbCol = document.getElementById("sb-col");
+      let collapsed = false;
+      function checkBP() {
+        const w = window.innerWidth;
+        if (w < 768) {
+          sbClose.style.display = sidebar.classList.contains("open")
+            ? "flex"
+            : "none";
+          sbCol.style.display = "none";
+          sidebar.classList.remove("collapsed");
+        } else if (w < 1200) {
+          sbClose.style.display = "none";
+          sbCol.style.display = "none";
+          sidebar.classList.remove("open");
+          sbOv.classList.remove("open");
+          document.body.style.overflow = "";
+        } else {
+          sbClose.style.display = "none";
+          sbCol.style.display = "flex";
+          sbCol.textContent = collapsed ? "▶" : "◀";
+        }
+      }
+      function openSB() {
+        sidebar.classList.add("open");
+        sbOv.style.display = "block";
+        setTimeout(() => sbOv.classList.add("open"), 10);
+        sbClose.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+      function closeSB() {
+        sidebar.classList.remove("open");
+        sbOv.classList.remove("open");
+        setTimeout(() => (sbOv.style.display = "none"), 300);
+        sbClose.style.display = "none";
+        document.body.style.overflow = "";
+      }
+      function toggleCol() {
+        collapsed = !collapsed;
+        sidebar.classList.toggle("collapsed", collapsed);
+        sbCol.textContent = collapsed ? "▶" : "◀";
+      }
+      document.querySelectorAll(".nav-i").forEach((i) =>
+        i.addEventListener("click", () => {
+          if (window.innerWidth < 768) closeSB();
+        }),
+      );
+      window.addEventListener("resize", checkBP);
+      checkBP();
 
       loadArticle(docs)
     </script>

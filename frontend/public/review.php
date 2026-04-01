@@ -18,6 +18,15 @@ $reviews = $result['reviews'];
 $review_count = $result['count'];
 
 $review_stat = calcularMediaAvaliacoes($reviews);
+
+if (!isset($_SESSION['jwt_auth'])) {
+    header('Location: auth.php');
+    exit;
+}
+$jwt = $_SESSION['jwt_auth'];
+$userName = $_SESSION['user_name'] ?? 'Usuário';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -26,6 +35,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetroPub – Detalhe e Avaliação do Documento</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/header.css">
     <link href="assets/css/review.css" rel="stylesheet">
     <link href="assets/css/elements.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
@@ -40,6 +50,72 @@ $review_stat = calcularMediaAvaliacoes($reviews);
 
 <div class="app">
 
+  <?php
+  $tp = $_SESSION['type_auth'];
+  if ($tp == "ADMIN") {
+    echo '<aside class="sidebar" id="sidebar">
+            <div class="sidebar-user">
+              <div class="s-avatar">'.$userInitials.'</div>
+              <div>
+                <div class="s-name">'.$userName.'</div>
+                <div class="s-role">'.$userEmail.'</div>
+              </div>
+            </div>
+
+            <div class="nav-group">
+              <div class="nav-label">Principal</div>
+              <a href="upload-document.php" class="nav-item active">
+                <span class="nav-icon"><i class="fa fa-send"></i></span> Submeter Artigo
+              </div>
+              <a href="my-documents.php" class="nav-item">
+                <span class="nav-icon"><i class="fa fa-book"></i></span> Meus Artigos
+                <span class="nav-badge">4</span>
+              </a>
+              <a href="users.php" class="nav-item"><span class="nav-icon"><i class="fa fa-users"></i></span> Utilizadores</a>
+              <a href="library.php" class="nav-item"><span class="nav-icon"><i class="fa fa-book"></i></span> Biblioteca</a>
+              <a href="articles.php" class="nav-item">
+                <span class="nav-icon"><i class="fa fa-comments-o"></i></span> Todos Artigos
+              </a>
+            </div>
+
+            <div class="sidebar-footer">
+              <div class="nav-item" style="color: rgba(255, 255, 255, 0.45)">
+                <span class="nav-icon">🚪</span> Sair
+              </div>
+            </div>
+          </aside>';
+  } else {
+    echo '<aside class="sidebar" id="sidebar">
+            <div class="sidebar-user">
+              <div class="s-avatar">'.$userInitials.'</div>
+              <div>
+                <div class="s-name">'.$userName.'</div>
+                <div class="s-role">'.$userEmail.'</div>
+              </div>
+            </div>
+
+            <div class="nav-group">
+              <div class="nav-label">Principal</div>
+              <a href="upload-document.php" class="nav-item active">
+                <span class="nav-icon"><i class="fa fa-send"></i></span> Submeter Artigo
+              </a>
+              <a href="my-documents.php" class="nav-item">
+                <span class="nav-icon"><i class="fa fa-book"></i></span> Meus Artigos
+              </a>
+              <a href="library.php" class="nav-item"><span class="nav-icon"><i class="fa fa-book"></i></span> Biblioteca</a>
+              <div class="nav-item">
+                <span class="nav-icon"><i class="fa fa-comments-o"></i></span> Revisão por pares
+              </div>
+            </div>
+
+            <div class="nav-group">
+              <div class="nav-label">Conta</div>
+              <a href="logout.php" class="nav-item"><span class="nav-icon"><i class="fa fa-logout"></i></span> Terminar sessão</a>
+            </div>
+            </aside>';
+      
+  }
+  ?>
 
   <div class="main">
 
@@ -60,7 +136,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
         <div class="notif-btn" style="width:36px;height:36px;border-radius:8px;background:var(--cream);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;position:relative;flex-shrink:0">
           🔔<span style="position:absolute;top:5px;right:5px;width:7px;height:7px;background:#E53E3E;border-radius:50%;border:2px solid white"></span>
         </div>
-        <div class="ava ava-gold" style="width:36px;height:36px;font-size:13px;cursor:pointer;flex-shrink:0">JP</div>
+        <div class="ava ava-gold" style="width:36px;height:36px;font-size:13px;cursor:pointer;flex-shrink:0"><?=$userInitials?></div>
       </div>
     </div>
 
@@ -233,7 +309,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
               <div>
                 <div style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Média das Avaliações</div>
                 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                  <span style="font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,28px);font-weight:700;color:var(--crimson)">
+                  <span style="font-family:'Arial',serif;font-size:clamp(22px,3vw,28px);font-weight:700;color:var(--crimson)">
                     <?=$review_stat['media']?>
                   </span>
                   <div>
@@ -418,7 +494,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
     </div>
     <div class="modal-body" style="text-align:center;padding:36px 24px">
       <div style="font-size:48px;margin-bottom:14px">📄</div>
-      <h3 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--text-dark);margin-bottom:8px">Pré-visualização PDF</h3>
+      <h3 style="font-family:'Arial',serif;font-size:17px;color:var(--text-dark);margin-bottom:8px">Pré-visualização PDF</h3>
       <p style="font-size:14px;color:var(--text-light);margin-bottom:18px">Em produção, o PDF seria renderizado aqui.</p>
       <div style="background:var(--cream);border:2px dashed var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:18px">
         <div style="font-size:13px;color:var(--text-light)">[ Visualizador de PDF ]</div>
@@ -467,16 +543,6 @@ function updateCharCount(el, targetId, max) {
   span.textContent = len;
   span.style.color = len > max * 0.9 ? 'var(--danger)' : 'var(--text-light)';
 }
-
-
-// ═══════════════════════════════
-//  DECISION SELECTOR
-// ═══════════════════════════════
-
-
-// ═══════════════════════════════
-//  SUBMIT EVALUATION
-// ═══════════════════════════════
 
 // ═══════════════════════════════
 //  MODAL

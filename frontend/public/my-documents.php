@@ -24,83 +24,42 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetroPub — Pontos & Ranking</title>
+    <title>PetroPub — Meus Artigos </title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/gamificacao.css">
     <link rel="stylesheet" href="assets/css/header.css">
     <link href="assets/css/dashboard-style.css" rel="stylesheet">
-    <link href="assets/css/elements.css" rel="stylesheet">
+    <link href="assets/css/my-document.css" rel="stylesheet">
     <link href="assets/css/modals.css" rel="stylesheet">
+    <link href="assets/css/elements.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
 </head>
 <body>
-    <section class="main">
-        <section class="topbar">
-            <div class="logo-wrap" onclick="goHome()">
-                <svg width="44" height="44" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Book shape -->
-                <rect x="30" y="20" width="140" height="160" rx="8" fill="#6B1020"/>
-                <rect x="30" y="20" width="12" height="160" rx="4" fill="#E5C97E"/>
-                <!-- <rect x="30" y="20" width="12" height="160" rx="4" fill="#E5C97E"/> -->
-                <!-- Oil drop -->
-                <ellipse cx="105" cy="75" rx="14" ry="18" fill="#E5C97E"/>
-                <polygon points="105,48 94,72 116,72" fill="#E5C97E"/>
-                <!-- Derrick tower simplified -->
-                <rect x="96" y="88" width="18" height="55" rx="2" fill="#E5C97E" opacity="0.9"/>
-                <polygon points="105,85 88,143 122,143" fill="none" stroke="#E5C97E" stroke-width="5"/>
-                </svg>
-                <span class="logo-text">PETRO<span>PUB</span></span>
+    <div class="app">
+    <?php
+    require_once 'header-role.php';
+    ?>
+    <div class="main">
+        <div class="topbar">
+            <div class="tb-l">
+                <button class="tb-ham" onclick="openSB()">☰</button>
+                <!-- <div class="tb-title">Meus Artigos</div> -->
             </div>
-
-            
-            <div class="topbar-left">
-                <div class="breadcrumb">PetroPub <span>/ Painel</span></div>
-                <h1>
-                    Painel do
-                    <?php
-                    $userType = $_SESSION['type_auth'];
-                    $profile = ($userType == "ADMIN") ? "Administrativo" : $userType ;
-                    $profile = ($userType == "TEACHER") ? "Docente" : "Estudante" ;
-                    
-                    echo $profile;
-                    ?> 
-                </h1>
-            </div>
-            <div class="topbar-right">
+            <div class="tb-r">
                 <a 
                     href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
                     class="btn btn-primary">
                     <span>📤</span> Submeter Artigo
                 </a>
                 <div class="icon-btn">🔔<span class="notif-dot"></span></div>
-                <a href="sair.php" class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</a>
+                <a href="logout.php" class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</a>
             </div>
-            
-        </section>
-
-            
-    </section>
-    <div class="app">
-    <?php
-    require_once 'header-role.php';
-    ?>
-    <!-- Main -->
-    <div class="main">
-        <div class="topbar">
-        <div class="tb-l">
-            <button class="tb-ham" onclick="openSB()">☰</button>
-            <div class="tb-title">Meus Artigos</div>
-        </div>
-        <div class="tb-r">
-            <div class="pts-pill" id="user-points"><span class="pts-pill-ico">🏅</span> <span id="points-value">...</span> pts</div>
-        </div>
         </div>
         <div class="page-wrap">
         <div class="page-content">
             <div class="section-card">
                 <div class="section-header">
-                    <div><div class="section-title">Meus Artigos</div><div class="section-sub"><?=$result['count']?> carregados até agora</div></div>
+                    <div><div class="section-title">Meus Artigos</div><div class="section-sub"><?=$result['count']?> carregado(s) até agora</div></div>
                     <!-- <a class="section-action">Gerir</a> -->
                 </div>
                 <div class="table-wrap">
@@ -108,8 +67,8 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                         <thead>
                             <tr>
                                 <th>Título</th>
-                                <th>Downloads</th>
-                                <th>Receita</th>
+                                <th>Visualizações</th>
+                                <th>Avaliações</th>
                                 <th>Estado</th>
                                 <th>Acções</th>
                             </tr>
@@ -126,14 +85,14 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                                     <br>
                                     <small><?=$article['course']?> · <?=$article['created_at']?></small>
                                 </td>
-                                <td>-</td>
-                                <td> - </td>
+                                <td> <?=$article['review_count']?> </td>
+                                <td> <?=$article['read_count']?> </td>
                                 <td>
                                     <?=renderColorStatus($article['status'])?>
                                 </td>
                                 <td>   
                                     <div>
-                                        <button class="btn btn-success btn-sm" style="margin-bottom: 5px;">✓ Ver Detalhes</button> <br>
+                                        <!-- <button class="btn btn-success btn-sm" style="margin-bottom: 5px;">✓ Ver Detalhes</button> <br> -->
                                         <button class="btn btn-ghost btn-sm" style="margin-bottom: 5px;">✎ Editar</button> <br>
                                         <button class="btn btn-ghost btn-sm" style="color:#E53E3E;" onclick="deleteArticle('<?=$article['id']?>')">✕ Excluir</button>
                                     </div>
@@ -168,13 +127,12 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 
     <div class="toast" id="toast"></div>
     <?php
-    require_once 'assets/modals/document.php';
+        require_once 'assets/modals/document.php';
     ?>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/my-documents.js"></script>
-    <script src="assets/js/sidebar.js"></script>
     <script>        
         loadUserDocuments();
 
@@ -183,11 +141,24 @@ $userInitials = strtoupper(substr($userName, 0, 2));
             const response = await apiRequest(`documents/user/${userData.user_id}`);
 
             if (!response.data.success) {
-                // showToast(response.data.error || 'Erro ao carregar documentos');
                 return;
             }
 
             userDocuments = response.data.documents;
+        }
+
+        function openSB() {
+            document.querySelector('.sidebar').classList.add('open');
+            document.querySelector('.sb-ov').classList.add('open');
+        }
+
+        function closeSB() {
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.sb-ov').classList.remove('open');
+        }
+        function closeSidebar() {
+            document.getElementById("sidebar").classList.remove("open");
+            document.getElementById("overlay").classList.remove("open");
         }
 </script>
 </body>

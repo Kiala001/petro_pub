@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetroPub – Biblioteca Académica Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #6B1020;
+    --crimson-dark: #4A0B16;
+    --crimson-light: #8C1A2E;
+    --gold: #C9A84C;
+    --gold-light: #E5C97E;
+    --cream: #FAF7F2;
+    --warm-white: #FEFCF8;
+    --text-dark: #1A1208;
+    --text-mid: #4A3728;
+    --text-light: #8A7060;
+    --border: rgba(107,16,32,0.12);
+    --shadow-sm: 0 2px 8px rgba(107,16,32,0.08);
+    --shadow-md: 0 8px 32px rgba(107,16,32,0.12);
+    --shadow-lg: 0 20px 60px rgba(107,16,32,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--crimson); border-radius: 3px; }
+
+  /* ===== HEADER ===== */
+  header {
+    background: var(--crimson-dark);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .logo-img {
+    height: 44px;
+    filter: brightness(0) invert(1);
+  }
+
+  .logo-text {
+    font-family: 'Arial', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.5px;
+  }
+
+  .logo-text span {
+    color: var(--gold-light);
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  nav a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  nav a:hover, nav a.active {
+    background: rgba(255,255,255,0.12);
+    color: white;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-login {
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .btn-login:hover {
+    border-color: white;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .btn-register {
+    background: var(--gold);
+    border: none;
+    color: var(--crimson-dark);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .btn-register:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    height: 480px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('fundo.jpg');
+    background-size: cover;
+    background-position: center 40%;
+    filter: brightness(0.35);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(74,11,22,0.85) 0%, rgba(107,16,32,0.6) 50%, rgba(0,0,0,0.4) 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 80px;
+    max-width: 760px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.2);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold-light);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: 'Arial', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .hero p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+    margin-bottom: 32px;
+    max-width: 560px;
+  }
+
+  .hero-search {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    max-width: 620px;
+  }
+
+  .hero-search input {
+    flex: 1;
+    padding: 16px 20px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-family: 'Arial', sans-serif;
+    color: var(--text-dark);
+    background: transparent;
+  }
+
+  .hero-search input::placeholder { color: var(--text-light); }
+
+  .hero-search select {
+    padding: 16px 12px;
+    border: none;
+    border-left: 1px solid var(--border);
+    background: var(--cream);
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    color: var(--text-mid);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .hero-search button {
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-search button:hover { background: var(--crimson-light); }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 32px;
+    right: 80px;
+    display: flex;
+    gap: 32px;
+    z-index: 2;
+  }
+
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Arial', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 40px;
+    gap: 32px;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: sticky;
+    top: 112px;
+    height: fit-content;
+  }
+
+  .filter-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .filter-title {
+    font-family: 'Arial', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--crimson-dark);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--crimson);
+  }
+
+  .filter-section { margin-bottom: 24px; }
+
+  .filter-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 4px;
+  }
+
+  .filter-option:hover { background: var(--cream); }
+
+  .filter-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--crimson);
+    cursor: pointer;
+  }
+
+  .filter-option label {
+    font-size: 14px;
+    color: var(--text-mid);
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .filter-count {
+    font-size: 12px;
+    color: var(--text-light);
+    background: var(--cream);
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  .btn-apply {
+    width: 100%;
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Arial', sans-serif;
+    margin-top: 4px;
+  }
+
+  .btn-apply:hover {
+    background: var(--crimson-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ===== CONTENT AREA ===== */
+  .content-area {}
+
+  .content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .content-header h2 {
+    font-family: 'Arial', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--crimson-dark);
+  }
+
+  .content-header p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  .sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sort-controls select, .sort-controls input {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    color: var(--text-mid);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .sort-controls select:focus, .sort-controls input:focus {
+    border-color: var(--crimson);
+  }
+
+  .view-toggle {
+    display: flex;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .view-btn {
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.2s;
+    font-size: 16px;
+  }
+
+  .view-btn.active {
+    background: var(--crimson);
+    color: white;
+  }
+
+  /* ===== DOCUMENT GRID ===== */
+  .doc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    transition: all 0.3s;
+  }
+
+  .doc-grid.list-view {
+    grid-template-columns: 1fr;
+  }
+
+  .doc-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: all 0.25s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .doc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(107,16,32,0.2);
+  }
+
+  .doc-grid.list-view .doc-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .doc-thumb {
+    background: linear-gradient(135deg, var(--crimson-dark), var(--crimson-light));
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .doc-grid.list-view .doc-thumb {
+    width: 100px;
+    height: 100%;
+    min-height: 120px;
+  }
+
+  .doc-thumb-icon {
+    font-size: 42px;
+    opacity: 0.9;
+  }
+
+  .doc-type-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.9);
+    color: var(--crimson);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .doc-body {
+    padding: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .doc-category {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .doc-title {
+    font-family: 'Arial', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .doc-author {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .doc-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .doc-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .doc-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+
+  .doc-price {
+    font-family: 'Arial', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--crimson);
+  }
+
+  .doc-price.free {
+    color: #2D7A4F;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .btn-download {
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-download:hover {
+    background: var(--crimson-dark);
+    transform: scale(1.03);
+  }
+
+  .btn-download.secondary {
+    background: transparent;
+    color: var(--crimson);
+    border: 1.5px solid var(--crimson);
+  }
+
+  .btn-download.secondary:hover {
+    background: var(--crimson);
+    color: white;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, var(--crimson-dark), var(--crimson-light));
+    padding: 28px 32px;
+    position: relative;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal-type {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: var(--gold-light);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .modal-title {
+    font-family: 'Arial', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .modal-author-line {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+
+  .modal-body {
+    padding: 28px 32px;
+  }
+
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .modal-info-item {
+    background: var(--cream);
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .modal-info-item .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .modal-info-item .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .modal-abstract h4 {
+    font-family: 'Arial', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--crimson-dark);
+    margin-bottom: 10px;
+  }
+
+  .modal-abstract p {
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  .modal-footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .modal-price-block .price-label {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 2px;
+  }
+
+  .modal-price-block .price-val {
+    font-family: 'Arial', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--crimson);
+  }
+
+  .modal-price-block .price-val.free-tag {
+    color: #2D7A4F;
+    font-size: 20px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Arial', sans-serif;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: var(--crimson-dark); transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--crimson);
+    border: 1.5px solid var(--crimson);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Arial', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover { background: var(--crimson); color: white; }
+
+  /* ===== AUTH MODAL ===== */
+  .auth-modal {
+    max-width: 440px;
+  }
+
+  .auth-header {
+    padding: 32px 36px 0;
+    text-align: center;
+  }
+
+  .auth-logo {
+    width: 64px;
+    height: 64px;
+    background: var(--crimson);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 16px;
+  }
+
+  .auth-header h3 {
+    font-family: 'Arial', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--crimson-dark);
+    margin-bottom: 8px;
+  }
+
+  .auth-header p {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  .auth-body {
+    padding: 28px 36px 32px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    color: var(--text-dark);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--crimson);
+    box-shadow: 0 0 0 3px rgba(107,16,32,0.08);
+  }
+
+  .auth-submit {
+    width: 100%;
+    background: var(--crimson);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Arial', sans-serif;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .auth-submit:hover { background: var(--crimson-dark); transform: translateY(-1px); }
+
+  .auth-toggle {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  .auth-toggle a {
+    color: var(--crimson);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  /* ===== UPLOAD SECTION ===== */
+  .upload-section {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+  }
+
+  .upload-title {
+    font-family: 'Arial', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--crimson-dark);
+    margin-bottom: 16px;
+  }
+
+  .upload-area {
+    border: 2px dashed rgba(107,16,32,0.25);
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--cream);
+  }
+
+  .upload-area:hover {
+    border-color: var(--crimson);
+    background: rgba(107,16,32,0.03);
+  }
+
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-area p { font-size: 13px; color: var(--text-light); }
+  .upload-area strong { color: var(--crimson); }
+
+  /* ===== TAGS ===== */
+  .tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+  .tag {
+    background: rgba(107,16,32,0.08);
+    color: var(--crimson);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tag:hover { background: var(--crimson); color: white; }
+
+  /* ===== PAGINATION ===== */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+  }
+
+  .page-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .page-btn:hover, .page-btn.active {
+    background: var(--crimson);
+    color: white;
+    border-color: var(--crimson);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--crimson-dark);
+    color: rgba(255,255,255,0.7);
+    padding: 48px 80px 32px;
+    margin-top: 60px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+
+  .footer-brand p {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-top: 14px;
+    max-width: 280px;
+  }
+
+  .footer-col h4 {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 10px; }
+  .footer-col ul li a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .footer-col ul li a:hover { color: var(--gold-light); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--crimson-dark);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .doc-card { animation: fadeUp 0.4s ease both; }
+  .doc-card:nth-child(1) { animation-delay: 0.05s; }
+  .doc-card:nth-child(2) { animation-delay: 0.1s; }
+  .doc-card:nth-child(3) { animation-delay: 0.15s; }
+  .doc-card:nth-child(4) { animation-delay: 0.2s; }
+  .doc-card:nth-child(5) { animation-delay: 0.25s; }
+  .doc-card:nth-child(6) { animation-delay: 0.3s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .doc-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 0 20px; }
+    .hero-content { padding: 0 24px; }
+    .hero h1 { font-size: 34px; }
+    .hero-stats { display: none; }
+    .main-container { grid-template-columns: 1fr; padding: 20px; }
+    .sidebar { position: static; }
+    .doc-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    footer { padding: 32px 24px; }
+    nav { display: none; }
+  }
+
+  .section-featured {
+    background: linear-gradient(135deg, rgba(107,16,32,0.05), rgba(201,168,76,0.05));
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(107,16,32,0.08);
+  }
+
+  .featured-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .featured-label::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap" onclick="goHome()">
+    <svg width="44" height="44" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Book shape -->
+      <rect x="30" y="20" width="140" height="160" rx="8" fill="white"/>
+      <rect x="30" y="20" width="12" height="160" rx="4" fill="#E5C97E"/>
+      <!-- Oil drop -->
+      <ellipse cx="105" cy="75" rx="14" ry="18" fill="#6B1020"/>
+      <polygon points="105,48 94,72 116,72" fill="#6B1020"/>
+      <!-- Derrick tower simplified -->
+      <rect x="96" y="88" width="18" height="55" rx="2" fill="#6B1020" opacity="0.9"/>
+      <polygon points="105,85 88,143 122,143" fill="none" stroke="#6B1020" stroke-width="5"/>
+    </svg>
+    <span class="logo-text">PETRO<span>PUB</span></span>
+  </div>
+
+  <nav>
+    <a class="active" onclick="showSection('home')">Início</a>
+    <a onclick="showSection('home')">Dissertações</a>
+    <a onclick="showSection('home')">Monografias</a>
+    <a onclick="showSection('home')">PAP</a>
+    <a onclick="showSection('home')">Artigos</a>
+  </nav>
+
+  <div class="header-actions">
+    <button class="btn-login" onclick="openModal('login-modal')">Entrar</button>
+    <button class="btn-register" onclick="openModal('register-modal')">Registar</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎓 Biblioteca Académica Digital</div>
+    <h1>Conhecimento ao<br>Alcance de <em>Todos</em></h1>
+    <p>Aceda a milhares de dissertações, monografias e trabalhos académicos de instituições angolanas. A plataforma de referência para pesquisa científica.</p>
+    <div class="hero-search">
+      <input type="text" id="heroSearch" placeholder="Pesquisar dissertações, monografias, PAP..." onkeyup="handleSearch(event)">
+      <select id="heroType" onchange="filterByType()">
+        <option value="">Todos os Tipos</option>
+        <option value="Dissertação">Dissertações</option>
+        <option value="Monografia">Monografias</option>
+        <option value="PAP">PAP</option>
+        <option value="Artigo">Artigos</option>
+      </select>
+      <button onclick="doSearch()">🔍 Pesquisar</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">1.200+</div>
+      <div class="stat-label">Documentos</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">48</div>
+      <div class="stat-label">Instituições</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5.800+</div>
+      <div class="stat-label">Utilizadores</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div class="main-container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="filter-panel">
+      <div class="filter-title">🔎 Filtros</div>
+
+      <div class="filter-section">
+        <h4>Tipo de Documento</h4>
+        <div class="filter-option"><input type="checkbox" id="f-dis" onchange="applyFilters()"><label for="f-dis">Dissertação</label><span class="filter-count">342</span></div>
+        <div class="filter-option"><input type="checkbox" id="f-mon" onchange="applyFilters()"><label for="f-mon">Monografia</label><span class="filter-count">510</span></div>
+        <div class="filter-option"><input type="checkbox" id="f-pap" onchange="applyFilters()"><label for="f-pap">PAP</label><span class="filter-count">218</span></div>
+        <div class="filter-option"><input type="checkbox" id="f-art" onchange="applyFilters()"><label for="f-art">Artigo</label><span class="filter-count">130</span></div>
+      </div>
+
+      <div class="filter-section">
+        <h4>Área de Conhecimento</h4>
+        <div class="filter-option"><input type="checkbox" id="f-eng" onchange="applyFilters()"><label for="f-eng">Engenharia do Petróleo</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-geo" onchange="applyFilters()"><label for="f-geo">Geologia & Geofísica</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-econ" onchange="applyFilters()"><label for="f-econ">Economia & Gestão</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-dir" onchange="applyFilters()"><label for="f-dir">Direito</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-inf" onchange="applyFilters()"><label for="f-inf">Informática</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-med" onchange="applyFilters()"><label for="f-med">Medicina & Saúde</label></div>
+      </div>
+
+      <div class="filter-section">
+        <h4>Acesso</h4>
+        <div class="filter-option"><input type="checkbox" id="f-free" onchange="applyFilters()"><label for="f-free">Acesso Livre</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-paid" onchange="applyFilters()"><label for="f-paid">Acesso Pago</label></div>
+      </div>
+
+      <div class="filter-section">
+        <h4>Ano de Publicação</h4>
+        <div class="filter-option"><input type="checkbox" id="f-2024" onchange="applyFilters()"><label for="f-2024">2024</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-2023" onchange="applyFilters()"><label for="f-2023">2023</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-2022" onchange="applyFilters()"><label for="f-2022">2022</label></div>
+        <div class="filter-option"><input type="checkbox" id="f-older" onchange="applyFilters()"><label for="f-older">Anteriores</label></div>
+      </div>
+
+      <button class="btn-apply" onclick="resetFilters()">Limpar Filtros</button>
+    </div>
+
+    <div class="upload-section">
+      <div class="upload-title">📤 Submeter Trabalho</div>
+      <div class="upload-area" onclick="openModal('upload-modal')">
+        <div class="upload-icon">📄</div>
+        <p><strong>Clique para submeter</strong><br>PDF, DOCX até 50MB</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+    <!-- Featured -->
+    <div class="section-featured">
+      <div class="featured-label">⭐ Destaque da Semana</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="featured-row"></div>
+    </div>
+
+    <div class="content-header">
+      <div>
+        <h2>Acervo Académico</h2>
+        <p id="result-count">Mostrando 12 de 1.200+ documentos</p>
+      </div>
+      <div class="sort-controls">
+        <select onchange="sortDocs(this.value)">
+          <option value="recent">Mais Recentes</option>
+          <option value="title">Título A-Z</option>
+          <option value="downloads">Mais Baixados</option>
+          <option value="price-asc">Preço: Menor</option>
+          <option value="price-desc">Preço: Maior</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" id="grid-btn" onclick="setView('grid')" title="Grade">⊞</button>
+          <button class="view-btn" id="list-btn" onclick="setView('list')" title="Lista">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="tag-wrap" style="margin-bottom:24px">
+      <span class="tag" onclick="quickFilter('Engenharia do Petróleo')">Engenharia do Petróleo</span>
+      <span class="tag" onclick="quickFilter('Gestão')">Gestão</span>
+      <span class="tag" onclick="quickFilter('Geologia')">Geologia</span>
+      <span class="tag" onclick="quickFilter('Direito')">Direito</span>
+      <span class="tag" onclick="quickFilter('Informática')">Informática</span>
+      <span class="tag" onclick="quickFilter('Medicina')">Medicina</span>
+      <span class="tag" onclick="quickFilter('Educação')">Educação</span>
+      <span class="tag" onclick="quickFilter('Ambiente')">Ambiente</span>
+    </div>
+
+    <!-- Grid -->
+    <div class="doc-grid" id="doc-grid"></div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="page-btn">‹</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">...</button>
+      <button class="page-btn">48</button>
+      <button class="page-btn">›</button>
+    </div>
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span style="font-family:'Arial',serif;font-size:22px;font-weight:700;color:white">PETRO<span style="color:var(--gold-light)">PUB</span></span>
+      <p>A principal plataforma de biblioteca académica digital de Angola. Conectando estudantes, investigadores e instituições de ensino superior.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Biblioteca</h4>
+      <ul>
+        <li><a>Dissertações</a></li>
+        <li><a>Monografias</a></li>
+        <li><a>PAP</a></li>
+        <li><a>Artigos Científicos</a></li>
+        <li><a>Teses de Doutoramento</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Instituições</h4>
+      <ul>
+        <li><a>Universidade Agostinho Neto</a></li>
+        <li><a>Universidade Metodista</a></li>
+        <li><a>ISPTEC</a></li>
+        <li><a>Universidade Lusíada</a></li>
+        <li><a>Ver todas →</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Suporte</h4>
+      <ul>
+        <li><a>Como Submeter</a></li>
+        <li><a>Política de Acesso</a></li>
+        <li><a>Pagamentos (Kz)</a></li>
+        <li><a>Contacto</a></li>
+        <li><a>FAQ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 PetroPub. Todos os direitos reservados. Angola 🇦🇴</span>
+    <span>Desenvolvido para a Comunidade Académica Angolana</span>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ <span id="toast-msg"></span></div>
+
+<!-- DOC MODAL -->
+<div class="modal-overlay" id="doc-modal" onclick="closeModalOutside(event,'doc-modal')">
+  <div class="modal" id="doc-modal-content">
+    <div class="modal-header">
+      <span class="modal-type" id="m-type"></span>
+      <h2 class="modal-title" id="m-title"></h2>
+      <p class="modal-author-line" id="m-author"></p>
+      <button class="modal-close" onclick="closeModal('doc-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid" id="m-grid"></div>
+      <div class="modal-abstract">
+        <h4>Resumo / Abstract</h4>
+        <p id="m-abstract"></p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-price-block">
+        <div class="price-label">Preço de Acesso</div>
+        <div class="price-val" id="m-price"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-outline" onclick="closeModal('doc-modal')">Fechar</button>
+        <button class="btn-primary" id="m-buy-btn" onclick="buyDoc()">📥 Aceder ao Documento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal" onclick="closeModalOutside(event,'login-modal')">
+  <div class="modal auth-modal">
+    <div class="auth-header">
+      <div class="auth-logo">📚</div>
+      <h3>Bem-vindo de Volta</h3>
+      <p>Inicie sessão para aceder ao seu acervo</p>
+    </div>
+    <div class="auth-body">
+      <div class="form-group">
+        <label>E-mail Institucional</label>
+        <input type="email" placeholder="utilizador@instituicao.ao">
+      </div>
+      <div class="form-group">
+        <label>Palavra-passe</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+      <button class="auth-submit" onclick="loginUser()">Entrar na Plataforma</button>
+      <div class="auth-toggle">Não tem conta? <a onclick="switchAuth()">Registe-se aqui</a></div>
+    </div>
+    <button class="modal-close" style="position:absolute;top:16px;right:16px;background:var(--border);color:var(--text-dark);width:32px;height:32px;border-radius:50%;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="closeModal('login-modal')">✕</button>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="register-modal" onclick="closeModalOutside(event,'register-modal')">
+  <div class="modal auth-modal">
+    <div class="auth-header" style="padding-top:28px">
+      <div class="auth-logo">🎓</div>
+      <h3>Criar Conta</h3>
+      <p>Junte-se à comunidade académica angolana</p>
+    </div>
+    <div class="auth-body">
+      <div class="form-group">
+        <label>Nome Completo</label>
+        <input type="text" placeholder="O seu nome completo">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" placeholder="email@exemplo.ao">
+      </div>
+      <div class="form-group">
+        <label>Instituição</label>
+        <select>
+          <option>Seleccione a sua instituição</option>
+          <option>Universidade Agostinho Neto</option>
+          <option>Universidade Metodista de Angola</option>
+          <option>ISPTEC</option>
+          <option>Universidade Lusíada de Angola</option>
+          <option>Universidade Católica de Angola</option>
+          <option>Universidade Jean Piaget de Angola</option>
+          <option>Outra</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Palavra-passe</label>
+        <input type="password" placeholder="Mínimo 8 caracteres">
+      </div>
+      <button class="auth-submit" onclick="registerUser()">Criar Conta Gratuita</button>
+      <div class="auth-toggle">Já tem conta? <a onclick="switchAuthToLogin()">Entrar aqui</a></div>
+    </div>
+    <button class="modal-close" style="position:absolute;top:16px;right:16px;background:var(--border);color:var(--text-dark);width:32px;height:32px;border-radius:50%;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="closeModal('register-modal')">✕</button>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="upload-modal" onclick="closeModalOutside(event,'upload-modal')">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <span class="modal-type">Nova Submissão</span>
+      <h2 class="modal-title">Submeter Trabalho Académico</h2>
+      <button class="modal-close" onclick="closeModal('upload-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Título do Trabalho</label>
+        <input type="text" placeholder="Título completo do trabalho">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select>
+            <option>Dissertação</option>
+            <option>Monografia</option>
+            <option>PAP</option>
+            <option>Artigo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ano</label>
+          <input type="number" placeholder="2025" value="2025">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Área de Conhecimento</label>
+        <select>
+          <option>Engenharia do Petróleo</option>
+          <option>Geologia e Geofísica</option>
+          <option>Economia e Gestão</option>
+          <option>Direito</option>
+          <option>Informática</option>
+          <option>Medicina e Saúde</option>
+          <option>Ciências da Educação</option>
+          <option>Outra</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Orientador(a)</label>
+        <input type="text" placeholder="Nome do orientador(a)">
+      </div>
+      <div class="form-group">
+        <label>Preço de Acesso (Kz)</label>
+        <input type="number" placeholder="0 para acesso livre" value="0">
+      </div>
+      <div class="upload-area" style="margin-top:4px">
+        <div class="upload-icon">📎</div>
+        <p><strong>Arraste o ficheiro aqui</strong> ou clique para seleccionar<br>PDF ou DOCX (máx. 50MB)</p>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:flex-end">
+      <button class="btn-outline" onclick="closeModal('upload-modal')">Cancelar</button>
+      <button class="btn-primary" onclick="submitDoc()">📤 Submeter Trabalho</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======= DATA =======
+const documents = [
+  {
+    id: 1,
+    title: "Análise da Produção de Petróleo no Bloco 0 de Cabinda: Perspectivas e Desafios",
+    author: "Manuel António Cardoso",
+    advisor: "Prof. Dr. João Lemos",
+    type: "Dissertação",
+    category: "Engenharia do Petróleo",
+    institution: "Universidade Agostinho Neto",
+    year: 2024,
+    pages: 128,
+    downloads: 842,
+    price: 2500,
+    free: false,
+    featured: true,
+    abstract: "Esta dissertação analisa a produção petrolífera no Bloco 0 de Cabinda ao longo das últimas duas décadas, identificando os principais desafios técnicos, ambientais e económicos. São propostas soluções inovadoras para optimizar a extracção e minimizar o impacto ambiental, contribuindo para o desenvolvimento sustentável do sector petrolífero angolano.",
+    icon: "🛢️",
+    color: "#4A0B16"
+  },
+  {
+    id: 2,
+    title: "Gestão de Recursos Humanos nas Empresas Angolanas do Sector Energético",
+    author: "Filomena Ngunga dos Santos",
+    advisor: "Prof.ª Dra. Maria José Lopes",
+    type: "Monografia",
+    category: "Gestão",
+    institution: "Universidade Metodista de Angola",
+    year: 2024,
+    pages: 96,
+    downloads: 634,
+    price: 0,
+    free: true,
+    featured: true,
+    abstract: "Este trabalho investiga as práticas de gestão de recursos humanos adoptadas pelas principais empresas do sector energético em Angola, com foco na retenção de talentos e desenvolvimento profissional no contexto pós-COVID.",
+    icon: "👔",
+    color: "#1A4A2E"
+  },
+  {
+    id: 3,
+    title: "Impacto Ambiental das Actividades Extractivas na Bacia do Congo: Estudo de Caso",
+    author: "Hélder Pires Tchinganha",
+    advisor: "Prof. Dr. António Ferreira",
+    type: "Dissertação",
+    category: "Ambiente",
+    institution: "ISPTEC",
+    year: 2023,
+    pages: 154,
+    downloads: 528,
+    price: 3000,
+    free: false,
+    featured: false,
+    abstract: "Avaliação do impacto ambiental das actividades de extracção de recursos naturais na Bacia do Congo, com proposta de medidas mitigadoras e monitoramento contínuo do ecossistema fluvial.",
+    icon: "🌿",
+    color: "#1A3A4A"
+  },
+  {
+    id: 4,
+    title: "Sistemas de Informação para Controlo de Inventário em Empresas de Logística",
+    author: "Sebastião Luzolo Mpanga",
+    advisor: "Prof. Dr. Carlos Mendes",
+    type: "PAP",
+    category: "Informática",
+    institution: "Instituto Médio Técnico",
+    year: 2024,
+    pages: 68,
+    downloads: 1204,
+    price: 0,
+    free: true,
+    featured: false,
+    abstract: "Desenvolvimento de um sistema integrado de gestão de inventário para empresas do sector logístico angolano, utilizando tecnologias modernas de desenvolvimento web e bases de dados relacionais.",
+    icon: "💻",
+    color: "#1A2A4A"
+  },
+  {
+    id: 5,
+    title: "Direito Petrolífero Angolano: Da Lei das Actividades Petrolíferas às Novas Tendências",
+    author: "Catarina Lopes Bento",
+    advisor: "Prof. Dr. Rui Marques",
+    type: "Monografia",
+    category: "Direito",
+    institution: "Universidade Lusíada de Angola",
+    year: 2023,
+    pages: 112,
+    downloads: 389,
+    price: 2000,
+    free: false,
+    featured: false,
+    abstract: "Análise crítica da legislação petrolífera angolana, com ênfase nas reformas introduzidas pela Lei n.º 10/04 e nas tendências actuais de regulação do sector, comparando com modelos internacionais de referência.",
+    icon: "⚖️",
+    color: "#3A1A4A"
+  },
+  {
+    id: 6,
+    title: "Geologia Estrutural da Margem Continental de Angola: Implicações para a Prospecção",
+    author: "Domingos Caetano Vida",
+    advisor: "Prof. Dr. Pedro Alvares",
+    type: "Dissertação",
+    category: "Geologia",
+    institution: "Universidade Agostinho Neto",
+    year: 2022,
+    pages: 186,
+    downloads: 712,
+    price: 3500,
+    free: false,
+    featured: false,
+    abstract: "Estudo detalhado da geologia estrutural da margem continental angolana, identificando formações promissoras para a prospecção de hidrocarbonetos nas bacias sedimentares do pré-sal e do pós-sal.",
+    icon: "⛰️",
+    color: "#4A3A1A"
+  },
+  {
+    id: 7,
+    title: "Prevalência de Malária em Crianças Menores de 5 Anos na Província do Moxico",
+    author: "Eunice Mateus Kakunda",
+    advisor: "Prof.ª Dra. Sandra Torres",
+    type: "Monografia",
+    category: "Medicina",
+    institution: "Universidade Católica de Angola",
+    year: 2024,
+    pages: 88,
+    downloads: 956,
+    price: 0,
+    free: true,
+    featured: false,
+    abstract: "Investigação epidemiológica sobre a prevalência de malária em crianças com idade inferior a 5 anos na Província do Moxico, identificando factores de risco e propondo estratégias de prevenção e controlo.",
+    icon: "🏥",
+    color: "#1A4A3A"
+  },
+  {
+    id: 8,
+    title: "Desafios da Educação Inclusiva nas Escolas Primárias de Luanda",
+    author: "Bernardo Nkosi Muanda",
+    advisor: "Prof.ª Dra. Helena Castro",
+    type: "PAP",
+    category: "Educação",
+    institution: "Instituto Médio Normal de Educação",
+    year: 2023,
+    pages: 54,
+    downloads: 478,
+    price: 0,
+    free: true,
+    featured: false,
+    abstract: "Análise dos principais desafios enfrentados pelas escolas primárias de Luanda na implementação de práticas de educação inclusiva para crianças com necessidades educativas especiais.",
+    icon: "📖",
+    color: "#2A1A4A"
+  },
+  {
+    id: 9,
+    title: "Optimização de Processos de Refino de Petróleo Bruto: Caso da Refinaria de Luanda",
+    author: "Sónia Ferreira Pimentel",
+    advisor: "Prof. Dr. Mário Santos",
+    type: "Dissertação",
+    category: "Engenharia do Petróleo",
+    institution: "ISPTEC",
+    year: 2024,
+    pages: 140,
+    downloads: 623,
+    price: 2800,
+    free: false,
+    featured: false,
+    abstract: "Este trabalho propõe um conjunto de melhorias nos processos de refino de petróleo bruto da Refinaria de Luanda, visando aumentar a eficiência operacional e reduzir as emissões de gases poluentes.",
+    icon: "🔧",
+    color: "#4A1A1A"
+  },
+  {
+    id: 10,
+    title: "Economia Digital em Angola: Oportunidades e Barreiras à Implementação",
+    author: "Joana Madalena Kiala",
+    advisor: "Prof. Dr. Luís Fonseca",
+    type: "Monografia",
+    category: "Gestão",
+    institution: "Universidade Jean Piaget de Angola",
+    year: 2023,
+    pages: 102,
+    downloads: 845,
+    price: 1500,
+    free: false,
+    featured: false,
+    abstract: "Investigação sobre o estado actual da economia digital em Angola, mapeando as principais oportunidades de crescimento e as barreiras estruturais que impedem a sua plena implementação.",
+    icon: "📊",
+    color: "#1A2A3A"
+  },
+  {
+    id: 11,
+    title: "Utilização das TIC no Ensino Secundário: Perspectivas de Professores e Alunos",
+    author: "Arnaldo Pedro Canga",
+    advisor: "Prof.ª Dra. Conceição Ribeiro",
+    type: "PAP",
+    category: "Educação",
+    institution: "Instituto Médio Normal de Educação",
+    year: 2024,
+    pages: 72,
+    downloads: 312,
+    price: 0,
+    free: true,
+    featured: false,
+    abstract: "Estudo qualitativo sobre a percepção de professores e alunos do ensino secundário relativamente ao uso das Tecnologias de Informação e Comunicação em contexto de sala de aula.",
+    icon: "🖥️",
+    color: "#3A4A1A"
+  },
+  {
+    id: 12,
+    title: "Contrato de Partilha de Produção: Análise Fiscal e Impacto nas Receitas do Estado",
+    author: "Ricardo Kalúmba Dias",
+    advisor: "Prof. Dr. Paulo Leal",
+    type: "Dissertação",
+    category: "Direito",
+    institution: "Universidade Agostinho Neto",
+    year: 2022,
+    pages: 160,
+    downloads: 421,
+    price: 3200,
+    free: false,
+    featured: false,
+    abstract: "Análise do regime fiscal dos contratos de partilha de produção no quadro jurídico angolano, com avaliação do impacto das receitas petrolíferas nas finanças públicas do Estado angolano.",
+    icon: "📜",
+    color: "#4A2A1A"
+  }
+];
+
+let currentDoc = null;
+let currentView = 'grid';
+let filteredDocs = [...documents];
+
+// ======= RENDER =======
+function renderDocs(docs) {
+  const grid = document.getElementById('doc-grid');
+  grid.innerHTML = '';
+  docs.forEach(doc => {
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.onclick = () => openDoc(doc.id);
+    card.innerHTML = `
+      <div class="doc-thumb" style="background:linear-gradient(135deg,${doc.color},${doc.color}cc)">
+        <span class="doc-thumb-icon">${doc.icon}</span>
+        <span class="doc-type-badge">${doc.type}</span>
+      </div>
+      <div class="doc-body">
+        <div class="doc-category">${doc.category}</div>
+        <div class="doc-title">${doc.title}</div>
+        <div class="doc-author">👤 ${doc.author}</div>
+        <div class="doc-meta">
+          <span>🏛️ ${doc.institution.split(' ').slice(0,2).join(' ')}</span>
+          <span>📅 ${doc.year}</span>
+          <span>📄 ${doc.pages} págs.</span>
+          <span>⬇️ ${doc.downloads.toLocaleString()}</span>
+        </div>
+        <div class="doc-footer">
+          <div class="doc-price ${doc.free ? 'free' : ''}">${doc.free ? '🟢 Acesso Livre' : doc.price.toLocaleString() + ' Kz'}</div>
+          <button class="btn-download" onclick="event.stopPropagation();openDoc(${doc.id})">
+            ${doc.free ? '⬇️ Baixar' : '🔓 Aceder'}
+          </button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('result-count').textContent = `Mostrando ${docs.length} de 1.200+ documentos`;
+}
+
+function renderFeatured() {
+  const featured = documents.filter(d => d.featured);
+  const row = document.getElementById('featured-row');
+  row.innerHTML = '';
+  featured.forEach(doc => {
+    const el = document.createElement('div');
+    el.style.cssText = `background:linear-gradient(135deg,${doc.color},${doc.color}cc);border-radius:12px;padding:20px;color:white;cursor:pointer;transition:transform .2s`;
+    el.onmouseenter = () => el.style.transform = 'scale(1.02)';
+    el.onmouseleave = () => el.style.transform = 'scale(1)';
+    el.onclick = () => openDoc(doc.id);
+    el.innerHTML = `
+      <div style="font-size:28px;margin-bottom:8px">${doc.icon}</div>
+      <div style="font-size:10px;opacity:.7;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">${doc.type} • ${doc.year}</div>
+      <div style="font-family:'Arial',serif;font-size:15px;font-weight:700;line-height:1.3;margin-bottom:8px">${doc.title}</div>
+      <div style="font-size:12px;opacity:.8">${doc.author}</div>
+      <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:700">${doc.free ? '🟢 Livre' : doc.price.toLocaleString() + ' Kz'}</span>
+        <span style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:100px;font-size:12px">Ver →</span>
+      </div>`;
+    row.appendChild(el);
+  });
+}
+
+// ======= MODAL =======
+function openDoc(id) {
+  const doc = documents.find(d => d.id === id);
+  currentDoc = doc;
+  document.getElementById('m-type').textContent = doc.type;
+  document.getElementById('m-title').textContent = doc.title;
+  document.getElementById('m-author').textContent = `Por ${doc.author} | Orientador: ${doc.advisor}`;
+  document.getElementById('m-abstract').textContent = doc.abstract;
+  document.getElementById('m-grid').innerHTML = `
+    <div class="modal-info-item"><div class="label">Instituição</div><div class="value">${doc.institution}</div></div>
+    <div class="modal-info-item"><div class="label">Área</div><div class="value">${doc.category}</div></div>
+    <div class="modal-info-item"><div class="label">Ano</div><div class="value">${doc.year}</div></div>
+    <div class="modal-info-item"><div class="label">Páginas</div><div class="value">${doc.pages}</div></div>
+    <div class="modal-info-item"><div class="label">Downloads</div><div class="value">${doc.downloads.toLocaleString()}</div></div>
+    <div class="modal-info-item"><div class="label">Idioma</div><div class="value">Português</div></div>`;
+  const priceEl = document.getElementById('m-price');
+  if (doc.free) {
+    priceEl.textContent = 'Acesso Livre';
+    priceEl.className = 'price-val free-tag';
+    document.getElementById('m-buy-btn').textContent = '📥 Baixar Gratuitamente';
+  } else {
+    priceEl.textContent = doc.price.toLocaleString() + ' Kz';
+    priceEl.className = 'price-val';
+    document.getElementById('m-buy-btn').textContent = '🔓 Comprar Acesso';
+  }
+  openModal('doc-modal');
+}
+
+function buyDoc() {
+  closeModal('doc-modal');
+  showToast(currentDoc.free ? '✅ Download iniciado com sucesso!' : '🔄 A redirecionar para pagamento via Multicaixa Express...');
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function closeModalOutside(e, id) {
+  if (e.target.id === id) closeModal(id);
+}
+
+// ======= SEARCH =======
+function handleSearch(e) {
+  if (e.key === 'Enter') doSearch();
+}
+
+function doSearch() {
+  const q = document.getElementById('heroSearch').value.toLowerCase();
+  filteredDocs = documents.filter(d =>
+    d.title.toLowerCase().includes(q) ||
+    d.author.toLowerCase().includes(q) ||
+    d.category.toLowerCase().includes(q)
+  );
+  renderDocs(filteredDocs);
+  if (q) showToast(`🔍 ${filteredDocs.length} resultado(s) para "${document.getElementById('heroSearch').value}"`);
+}
+
+function filterByType() {
+  const type = document.getElementById('heroType').value;
+  filteredDocs = type ? documents.filter(d => d.type === type) : [...documents];
+  renderDocs(filteredDocs);
+}
+
+function quickFilter(cat) {
+  filteredDocs = documents.filter(d => d.category.includes(cat));
+  renderDocs(filteredDocs);
+  showToast(`📂 Filtrando por: ${cat}`);
+}
+
+function applyFilters() { renderDocs(filteredDocs); }
+
+function resetFilters() {
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  filteredDocs = [...documents];
+  renderDocs(filteredDocs);
+  showToast('🔄 Filtros removidos');
+}
+
+function sortDocs(val) {
+  const sorted = [...filteredDocs];
+  if (val === 'title') sorted.sort((a,b) => a.title.localeCompare(b.title));
+  else if (val === 'downloads') sorted.sort((a,b) => b.downloads - a.downloads);
+  else if (val === 'price-asc') sorted.sort((a,b) => a.price - b.price);
+  else if (val === 'price-desc') sorted.sort((a,b) => b.price - a.price);
+  else sorted.sort((a,b) => b.year - a.year);
+  renderDocs(sorted);
+}
+
+// ======= VIEW =======
+function setView(v) {
+  currentView = v;
+  const grid = document.getElementById('doc-grid');
+  if (v === 'list') {
+    grid.classList.add('list-view');
+    document.getElementById('list-btn').classList.add('active');
+    document.getElementById('grid-btn').classList.remove('active');
+  } else {
+    grid.classList.remove('list-view');
+    document.getElementById('grid-btn').classList.add('active');
+    document.getElementById('list-btn').classList.remove('active');
+  }
+}
+
+// ======= AUTH =======
+function loginUser() {
+  closeModal('login-modal');
+  showToast('👋 Sessão iniciada com sucesso! Bem-vindo à PetroPub.');
+}
+
+function registerUser() {
+  closeModal('register-modal');
+  showToast('🎉 Conta criada! Verifique o seu e-mail para confirmar o registo.');
+}
+
+function switchAuth() {
+  closeModal('login-modal');
+  setTimeout(() => openModal('register-modal'), 200);
+}
+
+function switchAuthToLogin() {
+  closeModal('register-modal');
+  setTimeout(() => openModal('login-modal'), 200);
+}
+
+function submitDoc() {
+  closeModal('upload-modal');
+  showToast('📨 Trabalho submetido! Aguarda revisão pela equipa editorial.');
+}
+
+function goHome() {
+  filteredDocs = [...documents];
+  renderDocs(filteredDocs);
+}
+
+// ======= TOAST =======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ======= INIT =======
+renderFeatured();
+renderDocs(documents);
+</script>
+</body>
+</html>

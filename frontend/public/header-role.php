@@ -1,7 +1,12 @@
 <!-- Sidebar -->
+<div class="sb-ov" id="overlay" onclick="closeSidebar()"></div>
+ <?php
+  $type = $_SESSION['type_auth'];
+  if ($type == 'ADMIN') {
+  ?>
   <aside class="sidebar" id="sidebar">
     <div class="sb-head">
-      <div><div class="sb-logo">PETRO<span>PUB</span></div><div class="sb-role">Portal do Estudante</div></div>
+      <div><div class="sb-logo">PETRO<span>PUB</span></div><div class="sb-role">Portal Administrativo</div></div>
       <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
       <button class="sb-tog" id="sb-col"   onclick="toggleCol()">◀</button>
     </div>
@@ -12,17 +17,61 @@
     <!-- ... navegação ... -->
      <div class="nav-s">
         <div class="nav-l">Biblioteca</div>
-        <a href="dashboard.php" class="nav-i" data-tip="Início"><span class="ni"><i class="fa fa-home"></i></span><span class="nt">Início</span></a>
-        <a href="library.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span></a>
         <a href="my-documents.php" class="nav-i" data-tip="Os Meus"><span class="ni"><i class="fa fa-folder"></i></span><span class="nt">Os Meus Documentos</span></a>
+        <a href="users.php" class="nav-i" data-tip="Os Meus"><span class="ni"><i class="fa fa-users"></i></span><span class="nt">Utilizadores</span></a>
+        <a href="upload-document.php" class="nav-i"><span class="ni"><i class="fa fa-send"></i></span><span class="nt">
+          Submeter Artigo
+        </span></a>
+        <a href="library.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span></a>
+        <a href="opportunities.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-file"></i></span><span class="nt">Oportunidades</span></a>
+        <a href="noticy.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-info"></i></span><span class="nt">Notícias</span></a>
     </div>
     <div class="nav-s">
         <div class="nav-l">Conta</div>
-        <a href="pair-review.php" class="nav-i" data-tip="Avaliações"><span class="ni"><i class="fa fa-comment-o"></i></span><span class="nt">Avaliação por pares</span><span class="nb">-</span></a>
-        <a href="gamification.php" class="nav-i act" data-tip="Pontos"><span class="ni"><i class="fa fa-star"></i></span><span class="nt">Pontos & Ranking</span><span class="ng">-</span></a>
-        <a href="notification.php" class="nav-i" data-tip="Notificações"><span class="ni">🔔</span><span class="nt">Notificações</span><span class="nb">3</span></a>
+        <a href="articles.php" class="nav-i" data-tip="Avaliações"><span class="ni"><i class="fa fa-comments-o"></i></span><span class="nt">Revisão de Artigos</span></a>
+        <a href="pair-review.php" class="nav-i" data-tip="Avaliações"><span class="ni"><i class="fa fa-comment"></i></span><span class="nt">Revisão por pares</span></a>
+        <!-- <a href="gamification.php" class="nav-i act" data-tip="Pontos"><span class="ni"><i class="fa fa-star"></i></span><span class="nt">Pontos & Ranking</span><span class="ng">-</span></a> -->
+        <!-- <a href="notification.php" class="nav-i" data-tip="Notificações"><span class="ni">🔔</span><span class="nt">Notificações</span><span class="nb">3</span></a> -->
     </div>
     <div class="sb-foot">
         <a href="logout.php" class="nav-i" data-tip="Sair"><span class="ni">🚪</span><span class="nt">Sair da Sessão</span></a>
     </div>
   </aside>    
+
+  <?php
+    
+  } else {
+ ?>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div><div class="sb-logo">PETRO<span>PUB</span></div><div class="sb-role">Portal de Usuário</div></div>
+      <button class="sb-tog" style="color: white;" id="sb-close" onclick="closeSB()">✕</button>
+      <button class="sb-tog" id="sb-col"   onclick="toggleCol()">◀</button>
+    </div>
+    <div class="sb-user">
+      <div class="ava ava-cr"><?php echo $userInitials; ?></div>
+      <div class="sb-ui"><div class="sb-un"><?php echo $userName; ?></div><div class="sb-ue"><?php echo $userEmail; ?></div></div>
+    </div>
+    <!-- ... navegação ... -->
+     <div class="nav-s">
+        <div class="nav-l">Biblioteca</div>
+        <a href="my-documents.php" class="nav-i"><span class="ni"><i class="fa fa-folder"></i></span><span class="nt">Os Meus Documentos</span></a>
+        <a href="upload-document.php" class="nav-i"><span class="ni"><i class="fa fa-send"></i></span><span class="nt">
+          Submeter Artigo
+        </span></a>
+        <a href="library.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span></a>
+        <a href="opportunities.php" class="nav-i" data-tip="Documentos"><span class="ni"><i class="fa fa-list"></i></span><span class="nt">Oportunidades</span></a>
+    </div>
+    <div class="nav-s">
+        <div class="nav-l">Conta</div>
+        <a href="pair-review.php" class="nav-i" data-tip="Avaliações"><span class="ni"><i class="fa fa-comment-o"></i></span><span class="nt">Avaliação por pares</span><span class="nb">-</span></a>
+        <a href="gamification.php" class="nav-i act" data-tip="Pontos"><span class="ni"><i class="fa fa-star"></i></span><span class="nt">Pontos & Ranking</span><span class="ng">-</span></a>
+        <!-- <a href="notification.php" class="nav-i" data-tip="Notificações"><span class="ni">🔔</span><span class="nt">Notificações</span><span class="nb">3</span></a> -->
+    </div>
+    <div class="sb-foot">
+        <a href="logout.php" class="nav-i" data-tip="Sair"><span class="ni">🚪</span><span class="nt">Sair da Sessão</span></a>
+    </div>
+  </aside>    
+  <?php
+  }
+  ?>

@@ -62,7 +62,9 @@ class Review {
             return "APROVADO";
         } elseif ($this->decision == "reject") {
             return "REJEITADO"; 
-        } else {   
+        } elseif($this->decision == "other") {  
+            return  "other"; 
+        }else {
             return "REVISÃO";
         }
     }

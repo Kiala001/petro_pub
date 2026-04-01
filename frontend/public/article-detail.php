@@ -4,6 +4,15 @@ include_once 'includes.php';
 $documentId = $_GET['flex-direction'];
 $documentId = decrypt($documentId);
 
+if (!isset($_SESSION['jwt_auth'])) {
+    header('Location: auth.php');
+    exit;
+}
+
+if (isset($_SESSION['jwt_auth']) && $_SESSION['type_auth'] == "ADMIN") {
+    header('Location: library.php');
+    exit;
+}
 
 $result = $documentService->getDocumentDetails($documentId);
 $article = $result['document'];
@@ -19,6 +28,12 @@ $reviews = $result['reviews'];
 $review_count = $result['count'];
 
 $review_stat = calcularMediaAvaliacoes($reviews);
+
+
+$jwt = $_SESSION['jwt_auth'];
+$userName = $_SESSION['user_name'] ?? 'Usuário';
+$userEmail = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!doctype html>
 <html lang="pt">
@@ -43,6 +58,51 @@ $review_stat = calcularMediaAvaliacoes($reviews);
     <div class="app">
       <!-- ══════ SIDEBAR ══════ -->
       
+      <aside class="sidebar" id="sidebar">
+        <div class="sb-head">
+          <div>
+            <div class="sb-logo">PETRO<span>PUB</span></div>
+            <div class="sb-role-tag">Administração</div>
+          </div>
+          <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
+          <button class="sb-tog" id="sb-col" onclick="toggleCol()">◀</button>
+        </div>
+        <div class="sb-user">
+          <div class="ava ava-dk"><?=$userInitials?></div>
+          <div class="sb-ui">
+            <div class="sb-un"><?=$userName?></div>
+            <div class="sb-ue"><?=$userEmail?></div>
+          </div>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l">Visão Geral</div>
+          <a href="users.php" class="nav-i" data-tip="Utilizadores">
+            <span class="ni"><i class="fa fa-users"></i></span><span class="nt">Utilizadores</span>
+          </a>
+          <a href="articles.php" class="nav-i act" data-tip="Documentos">
+            <span class="ni"><i class="fa fa-book"></i></span><span class="nt">Documentos</span>
+          </a>
+          <a href="library.php" class="nav-i">
+            <span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span>
+          </a>
+        </div>
+        <div class="nav-s">
+          <div class="nav-l"></div>
+          <a href="pair-review.php" class="nav-i" data-tip="Avaliações">
+            <span class="ni"><i class="fa fa-comments-o"></i></span
+            ><span class="nt">Revisão por Par</span
+            >
+          </a>
+          <div class="nav-i" data-tip="Publicação">
+            <span class="ni"><i class="fa fa-file"></i></span><span class="nt">Meus Documentos</span>
+          </div>
+        </div>
+        <div class="sb-foot">
+          <div class="nav-i" data-tip="Sair">
+            <span class="ni">🚪</span><span class="nt">Terminar Sessão</span>
+          </div>
+        </div>
+      </aside>
 
       <!-- ══════ MAIN ══════ -->
       <div class="main">
@@ -61,16 +121,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
             </div>
           </div>
           <div class="tb-r">
-            <button
-              class="btn-back"
-              onclick="showToast('← A voltar à lista…', 't-def')"
-            >
-              ← <span class="btn-back-txt">Voltar à lista</span>
-            </button>
-            <div class="admin-pill">
-              <i class="fa fa-cog"></i> <span class="ap-txt">Administrador</span>
-            </div>
-            <div class="notif-btn">🔔</div>
+            
             <div
               class="ava ava-dk"
               style="
@@ -81,7 +132,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                 flex-shrink: 0;
               "
             >
-              AD
+              <?=$userInitials?>
             </div>
           </div>
         </div>
@@ -131,7 +182,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                       </div>
                     </div>
                     <div class="meta-item">
-                      <span class="meta-ico"><i class="fa fa-search"></i></span>
+                      <span class="meta-ico"><i class="fa fa-comments-o"></i></span>
                       <div>
                         <div class="meta-lbl">Avaliações</div>
                         <div class="meta-val"><?=$result['count']?> recebida(s)</div>
@@ -140,7 +191,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                   </div>
                 </div>
                 <div class="dhc-body">
-                  <div class="doc-actions">
+                  <!-- <div class="doc-actions">
                     <button
                       class="btn-da bda-view"
                       onclick="
@@ -155,7 +206,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                     >
                       📥 Download
                     </button>
-                  </div>
+                  </div> -->
                   <div class="doc-qs">
                     <div class="qs-item">
                       <div class="qs-n"><?=$review_stat['media']?></div>
@@ -290,67 +341,7 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                     }
                 }
                 ?>
-
                 </div>
-                <!-- <div class="sc-footer">
-                  <div>
-                    <div
-                      style="
-                        font-size: 11px;
-                        font-weight: 700;
-                        color: var(--tx-l);
-                        text-transform: uppercase;
-                        letter-spacing: 0.8px;
-                        margin-bottom: 5px;
-                      "
-                    >
-                      Média das Avaliações
-                    </div>
-                    <div
-                      style="
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        flex-wrap: wrap;
-                      "
-                    >
-                      <span
-                        style="
-                          font-family: &quot;Playfair Display&quot;, serif;
-                          font-size: clamp(22px, 3vw, 28px);
-                          font-weight: 700;
-                          color: var(--cr);
-                        "
-                        >3.5</span
-                      >
-                      <div>
-                        <div
-                          style="
-                            font-size: clamp(14px, 2vw, 18px);
-                            letter-spacing: 2px;
-                          "
-                        >
-                          ⭐⭐⭐⭐☆
-                        </div>
-                        <div
-                          style="
-                            font-size: 12px;
-                            color: var(--tx-l);
-                            margin-top: 1px;
-                          "
-                        >
-                          2 avaliações · 0 aprovados · 2 pedidos de revisão
-                        </div>
-                      </div>
-                    </div>
-                    <div class="prog" style="max-width: 220px; margin-top: 8px">
-                      <div class="prog-f" style="width: 70%"></div>
-                    </div>
-                  </div>
-                  <button class="btn btn-cr" onclick="scrollToDecision()">
-                    ⚖️ Tomar Decisão
-                  </button>
-                </div> -->
               </div>
 
             </div>
@@ -394,7 +385,9 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                     Apenas o administrador pode aprovar ou rejeitar a publicação
                   </p>
                 </div>
-
+                <?php
+                if ($article['status'] == 'PENDETE') {
+                ?>
                 <!-- Form state -->
                 <div id="decision-form">
                   <div class="dc-body">
@@ -503,8 +496,40 @@ $review_stat = calcularMediaAvaliacoes($reviews);
                     </button>
                   </div>
                 </div>
-
+                <?php
+                } else {
+                ?>
                 <!-- Confirmed state (hidden initially) -->
+                <div class="decision-confirmed" style="display: block;">
+                  <div class="conf-ico" id="cf-ico">🎉</div>
+                  <div class="conf-title" id="cf-title">
+                    O artigo já foi decidido!
+                  </div>
+                  <div class="conf-desc" id="cf-desc">
+                    A decisão foi registada e o autor foi notificado
+                    automaticamente.
+                  </div>
+                  </div>
+                  <div
+                    style="
+                      margin-top: 16px;
+                      display: flex;
+                      gap: 8px;
+                      justify-content: center;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <button
+                      class="btn btn-cr btn-sm"
+                      onclick="location.goback()"
+                    >
+                      ← Ver Lista
+                    </button>
+                  </div>
+                </div>
+                <?php
+                }
+                ?>
                 <div class="decision-confirmed" id="decision-confirmed">
                   <div class="conf-ico" id="cf-ico">🎉</div>
                   <div class="conf-title" id="cf-title">

@@ -1,3 +1,4 @@
+
 <?php
 require_once 'includes.php';
 if (!isset($_SESSION['jwt_auth'])) {
@@ -27,46 +28,39 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetroPub — Documentos para Avaliação</title>
+    <title>PetroPub — Pontos & Ranking</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/gamificacao.css">
+    <link rel="stylesheet" href="assets/css/header.css">
     <link href="assets/css/dashboard-style.css" rel="stylesheet">
+    <link href="assets/css/my-document.css" rel="stylesheet">
     <link href="assets/css/modals.css" rel="stylesheet">
     <link href="assets/css/elements.css" rel="stylesheet">
-    <link href="assets/css/sidebar.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
 </head>
 <body>
-    
-<div class="app">
-    
-  <?php
-  require_once 'header-role.php';
-  ?>
-  <!-- Main -->
-  <div class="main">
-    <div class="topbar">
-      <div class="tb-l">
-        <button class="tb-ham" onclick="openSB()">☰</button>
-        <div class="tb-title">Documentos para Avaliação</div>
-      </div>
-      <div class="tb-r">
-    <div class="topbar-right">
-        <a 
-            href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
-            class="btn btn-primary">
-            <span>📤</span> Submeter Artigo
-        </a>
-        <div class="icon-btn">🔔<span class="notif-dot"></span></div>
-        <div class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</div>
-    </div>    
-    </div>
-    </div>
-    <div class="page-wrap">
-        <section class="main">
+    <div class="app">
+    <?php
+    require_once 'header-role.php';
+    ?>
+    <div class="main">
+        <div class="topbar">
+            <div class="tb-l">
+                <button class="tb-ham" onclick="openSB()">☰</button>
+                <!-- <div class="tb-title">Meus Artigos</div> -->
+            </div>
+            <div class="tb-r">
+                <a 
+                    href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
+                    class="btn btn-primary">
+                    <span>📤</span> Submeter Artigo
+                </a>
+                <div class="icon-btn">🔔<span class="notif-dot"></span></div>
+                <a href="sair.php" class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</a>
+            </div>
+        </div>
         <div class="page-wrap">
-            <!-- ROLE BANNER -->
+        <div class="page-content">
             <div class="role-banner rb-teacher" id="role-banner" style="padding-left: 20px;">
                 <span class="rb-icon">
                     <!-- <i class="fa fa-book"></i> -->
@@ -83,9 +77,6 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 </div>
                 </div>
             </div>
-        </div>
-    </section>
-         <div class="page-content">
             <div class="section-card">
                 <div class="section-header">
                     <div>
@@ -94,8 +85,10 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 </div>
                 <div style="padding:16px 24px;display:flex;flex-direction:column;gap:12px">
                 <?php
+                    
+                    $i = 0;  
                     if (!empty($result['documents'])) {
-                        foreach ($result['documents'] as $article) {  
+                        foreach ($result['documents'] as $article) {
                             if ($article['user_id'] != $userId) {
                                 $authors = json_decode($article['authors']);
                                 $authors_list = explode(",", $authors);
@@ -116,25 +109,24 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                                     <div class="dc-header">
                                         <div class="dc-type-icon ic-blue" style="font-size:26px; color: var(--crimson);"><i class="fa fa-book"></i></div>
                                         <div class="dc-info">
-                                        <div class="dc-meta-row">
-                                            <span class="badge b-orange">⏳ Em Avaliação</span>
-                                            <span class="badge b-blue"><?=$article['category_id']?></span>
-                                        </div>
-                                        <div class="dc-title"><?=$article['title']?></div>
-                                        <div class="dc-author-row">
-                                            <span><div class="fa fa-user"></div> <strong><?=$user['name']?></strong></span>
-                                            <span><i class="fa fa-calendar"></i> <strong><?=$article['created_at']?></strong></span>
-                                            <span><i class="fa fa-graduate"></i> <strong><?=$article['course']?></strong></span>
-                                            <span><i class="fa fa-file"></i> <strong>-- págs.</strong></span>
-                                        </div>
+                                            <div class="dc-meta-row">
+                                                <span class="badge b-orange">⏳ Em Avaliação</span>
+                                                <span class="badge b-blue"><?=$article['category_id']?></span>
+                                            </div>
+                                            <div class="dc-title"><?=$article['title']?></div>
+                                            <div class="dc-author-row">
+                                                <span><div class="fa fa-user"></div> <strong><?=$user['name']?></strong></span>
+                                                <span><i class="fa fa-calendar"></i> <strong><?=$article['created_at']?></strong></span>
+                                                <span><i class="fa fa-graduate"></i> <strong><?=$article['course']?></strong></span>
+                                            </div>
                                         </div>
                                         <div class="dc-actions-col">
-                                        <div class="dc-avg">
-                                            <div class="dc-avg-num"><?=$review_stat['media']?></div>
-                                            <div class="dc-avg-stars"><?=$review_stat['stars']?></div>
-                                            <div class="dc-avg-lbl"><?=$review_count?> avaliações</div>
-                                        </div>
-                                        <a class="btn btn-primary btn-sm" href="review.php?flex-direction=<?=encrypt($article['id'])?>">✎ Avaliar</a>
+                                            <div class="dc-avg">
+                                                <div class="dc-avg-num"><?=$review_stat['media']?></div>
+                                                <div class="dc-avg-stars"><?=$review_stat['stars']?></div>
+                                                <div class="dc-avg-lbl"><?=$review_count?> avaliações</div>
+                                            </div>
+                                            <a class="btn btn-primary btn-sm" href="review.php?flex-direction=<?=encrypt($article['id'])?>">✎ Avaliar</a>
                                         </div>
                                     </div>
                                     <div class="dc-footer-actions">
@@ -143,7 +135,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                                     </div>
                                 </div>
                                 <?php
-                            }        
+                            }  
                         }        
                     }else {
                         echo '
@@ -152,14 +144,14 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                             </div>
                         ';
                     }
+
                 ?>
                 </div>
             </div>
-
+        </div>
         </div>
     </div>
-  </div>
-</div>
+    </div>
 
     <div class="toast" id="toast"></div>
     <?php
@@ -183,6 +175,20 @@ $userInitials = strtoupper(substr($userName, 0, 2));
 
             userDocuments = response.data.documents;
         }
+
+        function openSB() {
+        document.querySelector('.sidebar').classList.add('open');
+        document.querySelector('.sb-ov').classList.add('open');
+        }
+
+        function closeSB() {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.querySelector('.sb-ov').classList.remove('open');
+        }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("open");
+      }
 </script>
 </body>
 </html>

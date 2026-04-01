@@ -16,10 +16,10 @@ class DocumentReviewService {
     }
 
     public function getDocumentsWithReviews(){
-
                 
         $documents = $this->documentRepo->getAll();
         $result = [];
+
         
         foreach($documents as $doc){
             
@@ -29,6 +29,7 @@ class DocumentReviewService {
             $mappedReviews = [];
             $sum = 0;
             $i = 1;
+            $userName = null;
 
             foreach($reviews as $rv){
                 
@@ -45,11 +46,12 @@ class DocumentReviewService {
                 
                 if (!empty($user)) {
                     $initials = $this->getInitials($user['name']);
-                    $role = ($user['type'] === "TEACHER") ? "Docente" : "Estudante/Usuário Comum";
+                    $role = ($user['type'] === "TEACHER") ? "Docente" : "Usuário Comum";
 
                     $role = $role." | ".$user['email']." | ".$user['points']." pontos";
 
                     $name = $user['name'];
+                    $userName = $name;
                 }
 
                 $mappedReviews[] = [
@@ -79,6 +81,7 @@ class DocumentReviewService {
                 "status" => strtolower($doc['status']),
                 "cat" => $doc['category_id'],
                 "file_size" => $doc['file_size'],
+                "file_cover" => $doc['file_cover'],
                 "type" => $doc['title'],
                 "course" => $doc['course'],
                 "ico" => "📄",
@@ -89,6 +92,7 @@ class DocumentReviewService {
                 "year" => date("Y", strtotime($doc['created_at'])),
                 "pages" => $doc['file_size'],
                 "avg" => round($avg,1),
+                "user_name" => $userName,
                 "reviews" => $mappedReviews,
                 "documentId" => encrypt($doc['id'])
             ];

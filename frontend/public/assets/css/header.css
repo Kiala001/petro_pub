@@ -3,7 +3,7 @@
 .sidebar{width:var(--sb);flex-shrink:0;background:var(--cr-dk);min-height:100vh;height:100vh;position:sticky;top:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;transition:width .28s cubic-bezier(.4,0,.2,1),transform .28s cubic-bezier(.4,0,.2,1);z-index:200;}
 .sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);}
 .sb-head{padding:20px 20px 15px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;min-height:66px;flex-shrink:0;}
-.sb-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:#fff;white-space:nowrap;}
+.sb-logo{font-family:'Arial',serif;font-size:20px;font-weight:900;color:#fff;white-space:nowrap;}
 .sb-logo span{color:var(--gd-lt);}
 .sb-role{font-size:10px;font-weight:700;color:rgba(255,255,255,.36);text-transform:uppercase;letter-spacing:1.5px;margin-top:3px;white-space:nowrap;}
 .sb-tog{display:none;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#fff;width:30px;height:30px;border-radius:var(--r1);font-size:14px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;transition:background .18s;}

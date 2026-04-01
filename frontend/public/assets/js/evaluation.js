@@ -29,8 +29,6 @@ function prepareEval(document_id) {
         }
     }
     
-    console.log("Document ID: "+document_id)
-
     validateValue(comment, 'comentário')
     // showToast('🎉 Avaliação enviada com sucesso!');
 
@@ -62,7 +60,7 @@ async function submitReview(evalData) {
         location.reload();
     }, 4000);
   }else{
-    showToast(result.message);
+    showToast(result.error);
   }
 }
 

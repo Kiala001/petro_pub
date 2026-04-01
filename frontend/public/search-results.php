@@ -1,0 +1,684 @@
+<?php
+include_once 'includes.php';
+
+/* ════════════════════════════════════════════════════════════
+   API — AUTOCOMPLETE SUGGESTIONS
+   category_id em documents contém o NOME da categoria
+════════════════════════════════════════════════════════════ */
+if (isset($_GET['api']) && $_GET['api'] === 'suggest') {
+    header('Content-Type: application/json; charset=utf-8');
+    $q    = trim($_GET['q']    ?? '');
+    $tipo = trim($_GET['tipo'] ?? '');
+    if (strlen($q) < 2) { echo '[]'; exit; }
+
+    $where  = ["status = 'PUBLICADO'", "(title LIKE ? OR keywords LIKE ?)"];
+    $params = ["%$q%", "%$q%"];
+    if ($tipo) { $where[] = 'category_id = ?'; $params[] = $tipo; }
+    $wSql = implode(' AND ', $where);
+
+    $stmt = $db->prepare("
+        SELECT id, title, category_id
+        FROM documents
+        WHERE $wSql
+        ORDER BY read_count DESC
+        LIMIT 7
+    ");
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode(array_map(fn($r) => [
+        'id'    => $r['id'],
+        'title' => $r['title'],
+        'cat'   => $r['category_id'] ?? 'Documento',
+        'icon'  => '📄',
+    ], $rows), JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+/* ════════════════════════════════════════════════════════════
+   PARAMS
+   $tipo  = valor de category_id (nome da categoria)
+   Não há JOIN com categories — tudo em documents
+════════════════════════════════════════════════════════════ */
+$q         = trim($_GET['q']         ?? '');
+$tipo      = trim($_GET['tipo']      ?? '');   // = category_id value
+$year_from = (int)($_GET['year_from'] ?? 0);
+$year_to   = (int)($_GET['year_to']   ?? 0);
+$sort      = in_array($_GET['sort'] ?? '', ['recent','popular','rated','title'])
+             ? $_GET['sort'] : 'recent';
+$view      = in_array($_GET['view'] ?? '', ['grid','list']) ? $_GET['view'] : 'grid';
+$page      = max(1, (int)($_GET['page'] ?? 1));
+$perPage   = 12;
+
+/* ════════════════════════════════════════════════════════════
+   DISTINCT CATEGORIES from documents.category_id
+   Usamos GROUP BY category_id para listar e contar
+════════════════════════════════════════════════════════════ */
+$cats = $db->query("
+    SELECT category_id       AS name,
+           COUNT(*)          AS doc_count
+    FROM documents
+    WHERE status = 'PUBLICADO'
+      AND category_id IS NOT NULL
+      AND category_id <> ''
+    GROUP BY category_id
+    ORDER BY doc_count DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+/* ════════════════════════════════════════════════════════════
+   BUILD QUERY — apenas tabela documents
+════════════════════════════════════════════════════════════ */
+$where  = ["d.status = 'PUBLICADO'"];
+$params = [];
+
+if ($q) {
+    $where[]  = "(d.title LIKE ? OR d.summary LIKE ? OR d.keywords LIKE ? OR d.authors LIKE ?)";
+    $params[] = "%$q%"; $params[] = "%$q%"; $params[] = "%$q%"; $params[] = "%$q%";
+}
+if ($tipo) {
+    $where[]  = "d.category_id = ?";
+    $params[] = $tipo;
+}
+if ($year_from > 0) { $where[] = "YEAR(d.created_at) >= ?"; $params[] = $year_from; }
+if ($year_to   > 0) { $where[] = "YEAR(d.created_at) <= ?"; $params[] = $year_to; }
+
+$orderMap = [
+    'recent'  => 'd.created_at DESC',
+    'popular' => 'd.read_count DESC',
+    'rated'   => 'avg_r DESC, d.review_count DESC',
+    'title'   => 'd.title ASC',
+];
+$wSql = implode(' AND ', $where);
+$oSql = $orderMap[$sort];
+
+// COUNT — só documents
+$cStmt = $db->prepare("SELECT COUNT(*) FROM documents d WHERE $wSql");
+$cStmt->execute($params);
+$total  = (int)$cStmt->fetchColumn();
+$pages  = max(1, (int)ceil($total / $perPage));
+$page   = min($page, $pages);
+$offset = ($page - 1) * $perPage;
+
+// ROWS — LEFT JOIN com document_review para avg; sem JOIN a categories
+$rStmt = $db->prepare("
+    SELECT d.*,
+           COALESCE(AVG(CAST(dr.rating AS DECIMAL(3,1))), 0) AS avg_r
+    FROM documents d
+    LEFT JOIN document_review dr ON dr.document_id = d.id
+    WHERE $wSql
+    GROUP BY d.id
+    ORDER BY $oSql
+    LIMIT ? OFFSET ?
+");
+$allParams = array_merge($params, [$perPage, $offset]);
+$rStmt->execute($allParams);
+$results = $rStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// YEAR RANGE
+$yearRange = $db->query("
+    SELECT MIN(YEAR(created_at)) AS min_y, MAX(YEAR(created_at)) AS max_y
+    FROM documents WHERE status='PUBLICADO'
+")->fetch(PDO::FETCH_ASSOC);
+
+// ACTIVE FILTER COUNT
+$filterCount = ($q?1:0) + ($tipo?1:0) + ($year_from?1:0) + ($year_to?1:0);
+
+/* HELPERS */
+function h(string $v): string { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
+
+function buildUrl(array $ov = []): string {
+    global $q, $tipo, $year_from, $year_to, $sort, $view, $page;
+    $p = [
+        'q'         => $q,
+        'tipo'      => $tipo,
+        'year_from' => $year_from ?: null,
+        'year_to'   => $year_to   ?: null,
+        'sort'      => $sort,
+        'view'      => $view,
+        'page'      => $page,
+    ];
+    foreach ($ov as $k => $v) $p[$k] = $v;
+    return '?' . http_build_query(array_filter($p, fn($v) =>
+        $v !== null && $v !== '' && $v !== 0 && $v !== '0'
+    ));
+}
+
+function bgFor(int $i): string {
+    $bgs = ['hsl(200,55%,92%)','hsl(140,45%,92%)','hsl(220,55%,92%)','hsl(40,55%,92%)',
+            'hsl(0,45%,92%)','hsl(280,45%,92%)','hsl(60,55%,92%)','hsl(180,45%,92%)'];
+    return $bgs[$i % count($bgs)];
+}
+function starsStr(float $r): string {
+    $f = min(5, max(0, (int)round($r)));
+    return str_repeat('★', $f) . str_repeat('☆', 5 - $f);
+}
+function decodeAuthors($raw): string {
+    $arr = json_decode($raw ?? '', true);
+    if (is_array($arr)) return implode(', ', array_slice($arr, 0, 2));
+    return (string)($raw ?? '');
+}
+
+$logged = isset($_SESSION['jwt_auth']);
+?>
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetroPub — <?= $q ? h($q) : ($tipo ? h($tipo) : 'Pesquisa') ?></title>
+<link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="assets/icons-reference/font-icon-style.css">
+<?= publicCss() ?>
+<style>
+:root{
+  --cr:#6b1020;--cr-dk:#4a0b16;--cr-lt:#8c1a2e;--cr-xl:rgba(107,16,32,.07);--cr-bdr:rgba(107,16,32,.14);
+  --gd:#c9a84c;--gd-lt:#e5c97e;--gd-dk:#9a7828;--gd-bg:rgba(201,168,76,.11);
+  --cream:#faf7f2;--warm:#fef9f3;--bdr:rgba(107,16,32,.10);--bdr2:rgba(107,16,32,.06);
+  --tx:#1a1208;--tx-m:#4a3728;--tx-l:#8a7060;
+  --ok:#2d7a4f;--ok-bg:rgba(45,122,79,.10);--ok-bdr:rgba(45,122,79,.25);
+  --er:#c53030;--er-bg:rgba(197,48,48,.10);
+  --inf:#1a5c8a;--inf-bg:rgba(26,92,138,.10);--pu:#5a3a8a;--pu-bg:rgba(90,58,138,.10);
+  --sh0:0 1px 4px rgba(107,16,32,.07);--sh1:0 3px 16px rgba(107,16,32,.10);
+  --sh2:0 8px 32px rgba(107,16,32,.13);--sh3:0 24px 64px rgba(107,16,32,.18);
+  --r1:7px;--r2:11px;--r3:15px;--r4:20px;
+  --nav-h:60px;--t:.22s cubic-bezier(.4,0,.2,1);--max:1280px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--cream)}::-webkit-scrollbar-thumb{background:var(--cr);border-radius:3px}
+input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all var(--t);white-space:nowrap}
+.btn-cr{background:var(--cr);color:#fff;box-shadow:0 3px 12px rgba(107,16,32,.25)}.btn-cr:hover{background:var(--cr-dk)}
+.btn-gh{background:#fff;color:var(--tx-m);border:1.5px solid var(--bdr)}.btn-gh:hover{background:var(--cr-xl);color:var(--cr);border-color:var(--cr-bdr)}
+.btn-sm{padding:5px 13px;font-size:12px;border-radius:var(--r1)}
+
+/* NAV */
+.nav{background:#fff;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:300;box-shadow:var(--sh0)}
+.nav-inner{display:flex;align-items:center;gap:12px;height:var(--nav-h);max-width:var(--max);margin:0 auto;padding:0 clamp(14px,4vw,40px)}
+.nav-logo{font-family:'Arial',serif;font-weight:900;font-size:20px;color:var(--cr-dk)}.nav-logo span{color:var(--gd)}
+.nav-links{display:flex;align-items:center;gap:0;margin-left:clamp(12px,2vw,24px);flex:1}
+.nav-link{padding:0 clamp(10px,1.5vw,16px);height:var(--nav-h);display:flex;align-items:center;font-size:13px;font-weight:600;color:var(--tx-l);border-bottom:2.5px solid transparent;transition:all var(--t);white-space:nowrap}
+.nav-link:hover,.nav-link.on{color:var(--cr);border-bottom-color:var(--cr)}
+.nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto}
+
+/* SEARCH BAR HERO */
+.search-bar{background:linear-gradient(135deg,var(--cr-dk),var(--cr-lt) 55%,#1A2A50 100%);padding:clamp(20px,4vw,36px) clamp(14px,4vw,40px)}
+.sb-inner{max-width:var(--max);margin:0 auto}
+.sb-bc{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sb-bc a{color:rgba(255,255,255,.75);font-weight:600}.sb-bc a:hover{color:var(--gd-lt)}
+.sb-hero-title{font-family:'Arial',serif;font-size:clamp(18px,3vw,26px);font-weight:700;color:#fff;margin-bottom:14px}
+.sb-hero-title em{color:var(--gd-lt);font-style:normal}
+.search-form{display:flex;gap:8px;max-width:700px;flex-wrap:wrap}
+.sf-input-wrap{flex:1;min-width:220px;position:relative}
+.sf-input{width:100%;padding:12px 40px 12px 14px;border:none;border-radius:var(--r3);font-size:14px;color:var(--tx);background:rgba(255,255,255,.96);outline:none;box-shadow:0 6px 22px rgba(0,0,0,.2)}
+.sf-input:focus{box-shadow:0 0 0 3px rgba(201,168,76,.4),0 6px 22px rgba(0,0,0,.2)}
+.sf-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;background:var(--tx-l);color:#fff;border:none;cursor:pointer;font-size:11px;display:none;align-items:center;justify-content:center}
+.sf-clear.show{display:flex}
+/* SELECT — categories from documents.category_id */
+.sf-tipo{padding:10px 28px 10px 12px;border:none;border-radius:var(--r2);font-size:13px;color:var(--tx-m);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3 3.5-3' stroke='%238A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat calc(100% - 8px) center;appearance:none;outline:none;cursor:pointer;flex-shrink:0;min-width:160px}
+.sf-btn{padding:12px 22px;border-radius:var(--r3);background:var(--cr);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:background var(--t);white-space:nowrap;box-shadow:0 4px 14px rgba(107,16,32,.3)}.sf-btn:hover{background:var(--cr-dk)}
+.sb-result-info{font-size:13px;color:rgba(255,255,255,.65);margin-top:10px}.sb-result-info strong{color:var(--gd-lt)}
+
+/* LAYOUT */
+.layout{display:flex;max-width:var(--max);margin:0 auto;min-height:70vh}
+
+/* SIDEBAR */
+.sidebar{width:256px;flex-shrink:0;background:#fff;border-right:1px solid var(--bdr);position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:var(--bdr)}
+.sb-head{padding:14px 18px 12px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.sb-title-sm{font-size:12px;font-weight:800;color:var(--tx);text-transform:uppercase;letter-spacing:.8px}
+.sb-reset{font-size:11px;font-weight:600;color:var(--cr);text-decoration:none}.sb-reset:hover{text-decoration:underline}
+.sb-sec{padding:13px 18px;border-bottom:1px solid var(--bdr2)}.sb-sec:last-child{border-bottom:none}
+.sb-lbl{font-size:11px;font-weight:800;color:var(--tx-l);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.sb-cat-item{display:flex;align-items:center;gap:8px;padding:7px 0;cursor:pointer;text-decoration:none;transition:all var(--t)}
+.sb-cat-item:hover .sb-cat-name{color:var(--cr)}
+.sb-cat-item.on .sb-cat-name{color:var(--cr);font-weight:700}
+.sb-cat-ico{font-size:15px;flex-shrink:0;width:20px;text-align:center}
+.sb-cat-name{font-size:13px;color:var(--tx-m);flex:1;transition:color var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-cat-cnt{font-size:11px;color:var(--tx-l);background:var(--cream);padding:1px 7px;border-radius:100px;flex-shrink:0}
+.yr-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.yr-input{width:100%;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:var(--r1);font-size:13px;color:var(--tx);background:var(--cream);outline:none;transition:all var(--t)}.yr-input:focus{border-color:var(--cr);background:#fff}
+.sb-radio{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;text-decoration:none}
+.sb-radio:hover .sb-radio-lbl{color:var(--cr)}
+.rb-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--bdr);background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sb-radio.on .rb-dot{border-color:var(--cr);background:var(--cr)}
+.sb-radio.on .rb-dot::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff}
+.sb-radio-lbl{font-size:13px;color:var(--tx-m);transition:color var(--t)}
+
+/* MAIN */
+.main{flex:1;min-width:0;padding:clamp(16px,2.5vw,24px) clamp(14px,3vw,28px)}
+.top-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.result-count{font-size:13px;color:var(--tx-l)}.result-count strong{color:var(--tx);font-weight:700}
+.bar-r{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.sort-sel{padding:7px 26px 7px 11px;border:1.5px solid var(--bdr);border-radius:var(--r2);font-size:13px;color:var(--tx-m);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3 3.5-3' stroke='%238A7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat calc(100% - 8px) center;appearance:none;outline:none;cursor:pointer;transition:border-color var(--t)}.sort-sel:focus{border-color:var(--cr)}
+.vt-btn{width:32px;height:32px;border-radius:var(--r1);border:1.5px solid var(--bdr);background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all var(--t);color:var(--tx-l)}.vt-btn.on,.vt-btn:hover{background:var(--cr);color:#fff;border-color:var(--cr)}
+.mob-filter-btn{display:none;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r2);border:1.5px solid var(--bdr);background:#fff;font-size:13px;font-weight:600;color:var(--tx-m);cursor:pointer}
+.f-bdg{background:var(--cr);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px}
+.active-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.a-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:100px;background:var(--cr-xl);border:1px solid var(--cr-bdr);font-size:12px;font-weight:600;color:var(--cr)}
+.a-tag a{color:var(--cr);font-weight:700;margin-left:2px}
+
+/* CARDS */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(200px,22vw,240px),1fr));gap:clamp(12px,2vw,16px)}
+.docs-grid.list-view{grid-template-columns:1fr;gap:10px}
+.doc-card{background:#fff;border-radius:var(--r3);border:1px solid var(--bdr);overflow:hidden;transition:box-shadow var(--t),transform var(--t);animation:fadeUp .38s ease both;position:relative}
+.doc-card:hover{box-shadow:var(--sh2);transform:translateY(-3px);border-color:rgba(107,16,32,.18)}
+.dc-thumb{
+    height: clamp(150px, 110vw, 300px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(30px,5vw,42px)
+}
+.dc-thumb-img {
+    height: 100%;
+    width: 100%;
+}
+.dc-body{padding:clamp(11px,1.6vw,14px)}
+.dc-type{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:var(--inf-bg);color:var(--inf);display:inline-flex;margin-bottom:7px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-title{font-family:'Arial',serif;font-size:clamp(13px,1.4vw,14px);font-weight:700;color:var(--tx);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
+.dc-author{font-size:12px;color:var(--tx-l);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
+.dc-rating{font-size:12px;color:var(--gd-dk);font-weight:600}
+.dc-free{background:var(--ok-bg);color:var(--ok);font-size:10px;font-weight:800;padding:2px 8px;border-radius:100px}
+.dc-price{font-size:11px;font-weight:700;color:var(--tx-m)}
+.dc-actions{display:flex;gap:6px}
+.dc-btn{padding:7px 12px;border-radius:var(--r1);font-size:11px;font-weight:700;cursor:pointer;border:none;flex:1;text-align:center;transition:all var(--t);display:block}
+.dco-v{background:var(--cream);border:1px solid var(--bdr);color:var(--tx-m)}.dco-v:hover{background:var(--cr-xl);color:var(--cr);border-color:var(--cr-bdr)}
+.dco-buy{background:var(--cr);color:#fff}.dco-buy:hover{background:var(--cr-dk)}
+/* LIST VIEW */
+.docs-grid.list-view .doc-card{display:flex}
+.docs-grid.list-view .dc-thumb{width:80px;height:auto;min-height:110px;flex-shrink:0;border-radius:var(--r3) 0 0 var(--r3)}
+.docs-grid.list-view .dc-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+.docs-grid.list-view .dc-actions{margin-top:auto}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:clamp(24px,4vw,36px);flex-wrap:wrap}
+.pg-btn{width:36px;height:36px;border-radius:var(--r1);border:1.5px solid var(--bdr);background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--tx-m);cursor:pointer;transition:all var(--t)}
+.pg-btn:hover:not(.on):not(.disabled){border-color:var(--cr-bdr);color:var(--cr)}.pg-btn.on{background:var(--cr);color:#fff;border-color:var(--cr)}.pg-btn.disabled{opacity:.3;pointer-events:none}
+
+/* EMPTY */
+.empty{text-align:center;padding:clamp(48px,8vw,80px) 20px;background:#fff;border-radius:var(--r4);border:1px solid var(--bdr)}
+.empty-ico{font-size:clamp(52px,8vw,72px);margin-bottom:16px}
+.empty-title{font-family:'Arial',serif;font-size:clamp(20px,3vw,26px);color:var(--tx);margin-bottom:8px}
+.empty-sub{font-size:14px;color:var(--tx-l);line-height:1.6;max-width:400px;margin:0 auto 24px}
+
+/* MOBILE SB */
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:500;backdrop-filter:blur(3px);opacity:0;transition:opacity .28s}.sb-ov.open{opacity:1}
+.mob-sb{position:fixed;left:0;top:0;bottom:0;width:min(300px,88vw);background:#fff;z-index:600;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto}.mob-sb.open{transform:translateX(0)}
+.mob-sb-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr)}
+.mob-sb-close{width:28px;height:28px;border-radius:50%;background:var(--cream);border:1px solid var(--bdr);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* LOGIN PROMPT */
+.lp{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:400;background:#fff;border-radius:var(--r4);box-shadow:var(--sh3);border:1px solid var(--bdr);padding:14px 20px;max-width:min(480px,90vw);width:100%;flex-wrap:wrap;gap:12px;align-items:center}
+.lp.show{display:flex;animation:slideUp .3s ease both}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;z-index:9999;transform:translateY(30px);background:var(--cr-dk);color:#fff;padding:11px 18px;border-radius:var(--r3);font-size:13px;font-weight:500;box-shadow:var(--sh3);opacity:0;transition:all .3s cubic-bezier(.22,1,.36,1);max-width:280px;border:1px solid rgba(201,168,76,.2)}.toast.show{opacity:1;transform:translateY(0)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+@media(max-width:860px){.sidebar{display:none}.mob-filter-btn{display:flex}}
+@media(max-width:768px){.nav-links{display:none}.search-form{flex-wrap:wrap}.sf-tipo{width:100%}}
+@media(max-width:600px){.docs-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<?= pubNav('sobre') ?>
+
+<!-- MOBILE SB -->
+<div class="sb-ov" id="sb-ov" onclick="closeMobSB()"></div>
+<div class="mob-sb" id="mob-sb">
+  <div class="mob-sb-head">
+    <div style="font-size:14px;font-weight:800;color:var(--tx)"><i class="fa fa-filter"></i> Filtros</div>
+    <button class="mob-sb-close" onclick="closeMobSB()">✕</button>
+  </div>
+  <div id="mob-sb-body"></div>
+</div>
+
+<!-- LOGIN PROMPT -->
+<div class="lp" id="lp">
+  <span style="font-size:22px;flex-shrink:0">🔐</span>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:13px;font-weight:700;color:var(--tx)">Login necessário para aceder ao documento</div>
+    <div style="font-size:12px;color:var(--tx-l)">Crie uma conta gratuita para acesso completo</div>
+  </div>
+  <a href="auth.php" class="btn btn-cr btn-sm">Entrar</a>
+  <button onclick="document.getElementById('lp').classList.remove('show')" style="width:24px;height:24px;border-radius:50%;background:var(--cream);border:1px solid var(--bdr);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+</div>
+
+<!-- NAV -->
+<!-- <nav class="nav">
+  <div class="nav-inner">
+    <a href="index.php" class="nav-logo" style="font-family:'Arial',serif;font-weight:900">PETRO<span style="color:var(--gd)">PUB</span></a>
+    <div class="nav-links">
+      <a href="index.php"              class="nav-link">Home</a>
+      <a href="library.php"            class="nav-link on">Biblioteca</a>
+      <a href="list-noticies.php"      class="nav-link">Notícias</a>
+      <a href="list-opportunities.php" class="nav-link">Oil & Gas</a>
+      <a href="about.php"              class="nav-link">Sobre</a>
+      <a href="contact.php"            class="nav-link">Contacto</a>
+      <a href="faq.php"            class="nav-link">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <?php if ($logged): ?>
+        <a href="my-documents.php" class="btn btn-cr btn-sm"><i class="fa fa-user"></i></a>
+      <?php else: ?>
+        <a href="auth.php" class="btn btn-cr btn-sm">Entrar</a>
+      <?php endif; ?>
+    </div>
+  </div>
+</nav> -->
+
+<!-- SEARCH BAR HERO -->
+<div class="search-bar">
+  <div class="sb-inner">
+    <div class="sb-bc">
+      <a href="index.php">Home</a> › <a href="library.php">Biblioteca</a> ›
+      <span style="color:#fff">Pesquisa</span>
+    </div>
+    <div class="sb-hero-title">
+      <?php if ($q && $tipo): ?>
+        Resultados para <em>"<?= h($q) ?>"</em> em <em><?= h($tipo) ?></em>
+      <?php elseif ($q): ?>
+        Resultados para <em>"<?= h($q) ?>"</em>
+      <?php elseif ($tipo): ?>
+        Categoria: <em><?= h($tipo) ?></em>
+      <?php else: ?>
+        Todos os documentos
+      <?php endif; ?>
+    </div>
+    <!--
+      SEARCH FORM — $tipo = category_id (nome da categoria)
+      O select carrega valores distintos de documents.category_id
+    -->
+    <form class="search-form" method="GET" action="">
+      <div class="sf-input-wrap">
+        <input class="sf-input" type="text" name="q" id="sf-q"
+               value="<?= h($q) ?>"
+               placeholder="Pesquisar documentos, autores, palavras-chave…"
+               oninput="toggleClear(this)">
+        <button type="button" class="sf-clear <?= $q?'show':'' ?>"
+                id="sf-clear" onclick="clearSearch()">✕</button>
+      </div>
+
+      <!-- SELECT usa values de documents.category_id -->
+      <select class="sf-tipo" name="tipo" onchange="this.form.submit()">
+        <option value="">Todos os tipos</option>
+        <?php foreach ($cats as $c): ?>
+        <option value="<?= h($c['name']) ?>"
+                <?= $tipo === $c['name'] ? 'selected' : '' ?>>
+          <?= h($c['name']) ?> (<?= (int)$c['doc_count'] ?>)
+        </option>
+        <?php endforeach; ?>
+      </select>
+
+      <?php if ($sort !== 'recent'): ?>
+        <input type="hidden" name="sort" value="<?= h($sort) ?>">
+      <?php endif; ?>
+      <?php if ($view !== 'grid'): ?>
+        <input type="hidden" name="view" value="<?= h($view) ?>">
+      <?php endif; ?>
+      <button type="submit" class="sf-btn">
+        <i class="fa fa-search"></i> Pesquisar
+      </button>
+    </form>
+    <div class="sb-result-info">
+      <strong><?= $total ?></strong> documento<?= $total!=1?'s':'' ?> encontrado<?= $total!=1?'s':'' ?>
+      <?= $q ? " para <strong>\"".h($q)."\"</strong>" : "" ?>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ═════ SIDEBAR ═════ -->
+  <aside class="sidebar" id="sidebar-desktop">
+    <div class="sb-head">
+      <div class="sb-title-sm"><i class="fa fa-filter"></i> Filtros</div>
+      <?php if ($filterCount > 0): ?>
+      <a href="search-results.php" class="sb-reset">Limpar (<?= $filterCount ?>)</a>
+      <?php endif; ?>
+    </div>
+
+    <!-- CATEGORY FILTER — valores de documents.category_id -->
+    <div class="sb-sec">
+      <div class="sb-lbl">Tipo de documento</div>
+      <a href="<?= buildUrl(['tipo'=>'','page'=>1]) ?>"
+         class="sb-cat-item <?= !$tipo ? 'on' : '' ?>">
+        <!-- <span class="sb-cat-ico"><i class="fa fa-list"></i></span> -->
+        <span class="sb-cat-name">Todos</span>
+        <span class="sb-cat-cnt"><?= $total ?></span>
+      </a>
+      <?php foreach ($cats as $c): ?>
+      <a href="<?= buildUrl(['tipo'=>$c['name'],'page'=>1]) ?>"
+         class="sb-cat-item <?= $tipo===$c['name'] ? 'on' : '' ?>">
+        <!-- <span class="sb-cat-ico">📄</span> -->
+        <span class="sb-cat-name" title="<?= h($c['name']) ?>"><?= h($c['name']) ?></span>
+        <span class="sb-cat-cnt"><?= (int)$c['doc_count'] ?></span>
+      </a>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- YEAR RANGE -->
+    <form class="sb-sec" method="GET" action="">
+      <div class="sb-lbl">Ano de publicação</div>
+      <?php if ($q):    ?><input type="hidden" name="q"    value="<?= h($q) ?>"><?php endif; ?>
+      <?php if ($tipo): ?><input type="hidden" name="tipo" value="<?= h($tipo) ?>"><?php endif; ?>
+      <input type="hidden" name="sort" value="<?= h($sort) ?>">
+      <input type="hidden" name="view" value="<?= h($view) ?>">
+      <div class="yr-row">
+        <input class="yr-input" type="number" name="year_from"
+               value="<?= $year_from ?: '' ?>"
+               placeholder="De…"
+               min="<?= $yearRange['min_y'] ?? 2000 ?>"
+               max="<?= date('Y') ?>"
+               onchange="this.form.submit()">
+        <input class="yr-input" type="number" name="year_to"
+               value="<?= $year_to ?: '' ?>"
+               placeholder="Até…"
+               min="<?= $yearRange['min_y'] ?? 2000 ?>"
+               max="<?= date('Y') ?>"
+               onchange="this.form.submit()">
+      </div>
+    </form>
+
+    <!-- SORT -->
+    <div class="sb-sec">
+      <div class="sb-lbl">Ordenar por</div>
+      <?php foreach ([
+        'recent'  => 'Mais recentes',
+        'popular' => 'Mais populares',
+        'rated'   => 'Melhor avaliados',
+        'title'   => 'Título A→Z',
+      ] as $sv => $sl): ?>
+      <a href="<?= buildUrl(['sort'=>$sv,'page'=>1]) ?>"
+         class="sb-radio <?= $sort===$sv ? 'on' : '' ?>">
+        <div class="rb-dot"></div>
+        <span class="sb-radio-lbl"><?= $sl ?></span>
+      </a>
+      <?php endforeach; ?>
+    </div>
+  </aside>
+
+  <!-- ═════ MAIN CONTENT ═════ -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="mob-filter-btn" onclick="openMobSB()">
+          <i class="fa fa-cog"></i> Filtros<?php if($filterCount>0): ?>
+          <span class="f-bdg"><?= $filterCount ?></span>
+          <?php endif; ?>
+        </button>
+        <div class="result-count">
+          A mostrar
+          <strong><?= $total > 0 ? ($offset + 1) : 0 ?></strong>–<strong><?= min($offset + $perPage, $total) ?></strong>
+          de <strong><?= $total ?></strong>
+        </div>
+      </div>
+      <div class="bar-r">
+        <form method="GET" action="" style="display:flex;align-items:center;gap:6px">
+          <?php if ($q):         ?><input type="hidden" name="q"         value="<?= h($q) ?>"><?php endif; ?>
+          <?php if ($tipo):      ?><input type="hidden" name="tipo"      value="<?= h($tipo) ?>"><?php endif; ?>
+          <?php if ($year_from): ?><input type="hidden" name="year_from" value="<?= $year_from ?>"><?php endif; ?>
+          <?php if ($year_to):   ?><input type="hidden" name="year_to"   value="<?= $year_to ?>"><?php endif; ?>
+          <input type="hidden" name="view" value="<?= h($view) ?>">
+          <select class="sort-sel" name="sort" onchange="this.form.submit()">
+            <option value="recent"  <?= $sort==='recent'  ? 'selected':'' ?>>Mais recentes</option>
+            <option value="popular" <?= $sort==='popular' ? 'selected':'' ?>>Mais populares</option>
+            <option value="rated"   <?= $sort==='rated'   ? 'selected':'' ?>>Melhor avaliados</option>
+            <option value="title"   <?= $sort==='title'   ? 'selected':'' ?>>Título A→Z</option>
+          </select>
+        </form>
+        <a href="<?= buildUrl(['view'=>'grid']) ?>" class="vt-btn <?= $view==='grid'?'on':'' ?>" title="Grelha">⊞</a>
+        <a href="<?= buildUrl(['view'=>'list']) ?>" class="vt-btn <?= $view==='list'?'on':'' ?>" title="Lista">☰</a>
+      </div>
+    </div>
+
+    <!-- ACTIVE TAGS -->
+    <?php if ($filterCount > 0): ?>
+    <div class="active-tags">
+      <?php if ($q): ?>
+      <span class="a-tag">"<?= h($q) ?>"<a href="<?= buildUrl(['q'=>'','page'=>1]) ?>">✕</a></span>
+      <?php endif; ?>
+      <?php if ($tipo): ?>
+      <span class="a-tag"><?= h($tipo) ?><a href="<?= buildUrl(['tipo'=>'','page'=>1]) ?>">✕</a></span>
+      <?php endif; ?>
+      <?php if ($year_from || $year_to): ?>
+      <span class="a-tag"><i class="fa fa-calendar"></i> <?= $year_from ?: '...' ?> – <?= $year_to ?: 'presente' ?>
+        <a href="<?= buildUrl(['year_from'=>null,'year_to'=>null,'page'=>1]) ?>">✕</a>
+      </span>
+      <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- RESULTS -->
+    <?php if (empty($results)): ?>
+    <div class="empty">
+      <div class="empty-ico"><i class="fa fa-search"></i></div>
+      <div class="empty-title">Nenhum resultado encontrado</div>
+      <div class="empty-sub">
+        <?= $q
+            ? "Não encontrámos documentos para \"".h($q)."\". Tente outros termos."
+            : "Tente ajustar os filtros para ver mais resultados." ?>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a href="search-results.php" class="btn btn-cr">Limpar filtros</a>
+        <a href="library.php"        class="btn btn-gh">Ver biblioteca</a>
+      </div>
+    </div>
+    <?php else: ?>
+
+    <div class="docs-grid <?= $view==='list' ? 'list-view' : '' ?>" id="docs-grid">
+      <?php foreach ($results as $i => $d):
+        $bg        = bgFor($i);
+        // category_id IS the category name — display it directly
+        $catName   = h($d['category_id'] ?? 'Documento');
+        $rating    = round((float)($d['avg_r'] ?? 0), 1);
+        $stars     = starsStr($rating);
+        $authorStr = h(mb_substr(decodeAuthors($d['authors'] ?? ''), 0, 44));
+        $isFree    = empty($d['price']) || (int)$d['price'] === 0;
+        $delay     = number_format($i * 0.045, 3);
+        $docId     = h($d['id']);
+
+        $authors = json_decode($d['authors']);
+        $authors_list = explode(",", $authors);
+      ?>
+      <div class="doc-card" id="dc-<?= $docId ?>" style="animation-delay:<?= $delay ?>s">
+        <div class="dc-thumb" style="background:<?= $bg ?>">
+            <img class="dc-thumb-img" src="../../uploads/documents/cover/<?=$d['file_cover']?>">
+        </div>
+        <div class="dc-body">
+          <span class="dc-type" title="<?= $catName ?>"><?= $catName ?></span>
+          <div class="dc-title"><?= h($d['title']) ?></div>
+          <div class="dc-author"><?= arrayForString($authors_list) ?></div>
+          <div class="dc-footer">
+            <span class="dc-rating"><?= $stars ?> <?= $rating > 0 ? number_format($rating, 1) : '—' ?></span>
+            <?php if ($isFree): ?>
+            <span class="dc-free">Gratís</span>
+            <?php else: ?>
+            <span class="dc-price"><?= number_format((int)$d['price'], 0, '.', '.') ?> Kz</span>
+            <?php endif; ?>
+          </div>
+          <div class="dc-actions">
+            <?php if ($logged): ?>
+            <a href="detail-doc.php?id=<?= $docId ?>" class="dc-btn dco-v">Ver Detalhes</a>
+            <?php else: ?>
+            <button class="dc-btn dco-buy" onclick="showLoginPrompt()">Ver Detalhes</button>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- PAGINATION -->
+    <?php if ($pages > 1): ?>
+    <div class="pagination">
+      <a href="<?= buildUrl(['page'=>$page-1]) ?>"
+         class="pg-btn <?= $page<=1?'disabled':'' ?>">‹</a>
+      <?php for ($p = 1; $p <= $pages; $p++):
+        $show = ($p===1 || $p===$pages || abs($p-$page)<=1);
+        $ell  = (!$show && abs($p-$page)===2);
+        if ($show): ?>
+      <a href="<?= buildUrl(['page'=>$p]) ?>"
+         class="pg-btn <?= $p===$page?'on':'' ?>"><?= $p ?></a>
+      <?php elseif ($ell): ?>
+      <span style="color:var(--tx-l);padding:0 4px">…</span>
+      <?php endif; endfor; ?>
+      <a href="<?= buildUrl(['page'=>$page+1]) ?>"
+         class="pg-btn <?= $page>=$pages?'disabled':'' ?>">›</a>
+    </div>
+    <?php endif; ?>
+
+    <?php endif; ?>
+  </main>
+</div>
+
+
+<?= pubFooter() ?>
+
+<script>
+function showLoginPrompt() {
+    document.getElementById('lp').classList.add('show');
+}
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+}
+function toggleClear(inp) {
+    document.getElementById('sf-clear').classList.toggle('show', inp.value.length > 0);
+}
+function clearSearch() {
+    const inp = document.getElementById('sf-q');
+    inp.value = '';
+    document.getElementById('sf-clear').classList.remove('show');
+    inp.focus();
+}
+function openMobSB() {
+    document.getElementById('mob-sb-body').innerHTML =
+        document.getElementById('sidebar-desktop').innerHTML;
+    const o = document.getElementById('sb-ov');
+    const s = document.getElementById('mob-sb');
+    o.style.display = 'block';
+    setTimeout(() => o.classList.add('open'), 10);
+    s.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobSB() {
+    const o = document.getElementById('sb-ov');
+    const s = document.getElementById('mob-sb');
+    o.classList.remove('open'); s.classList.remove('open');
+    setTimeout(() => o.style.display = 'none', 300);
+    document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>

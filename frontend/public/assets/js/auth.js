@@ -44,7 +44,7 @@ async function loginAuth(l_email, l_password, l_userType) {
     showToast('Sessão iniciada! Bem-vindo de volta à PetroPub. <br> Serás redicionado dentro de alguns instantes');
     
     setTimeout(() => 
-        window.location.href = 'dashboard.php',
+        window.location.href = 'library.php',
     4000);
         
 }

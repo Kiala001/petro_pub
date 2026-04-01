@@ -12,7 +12,7 @@
       <div style="font-size:48px;margin-bottom:16px">
         <i class="fa fa-trash" style="color: var(--crimson-light)"></i>
       </div>
-      <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--text-dark);margin-bottom:8px">Remover este artigo?</h3>
+      <h3 style="font-family:'Arial',serif;font-size:18px;color:var(--text-dark);margin-bottom:8px">Remover este artigo?</h3>
       <p style="font-size:14px;color:var(--text-light);line-height:1.6">Artigos publicados já não podem ser excluidos, o mesmo acontece com os usuários que pagam para terem os artigos na plataforma.</p>
     </div>
     <div class="modal-footer" style="justify-content:center;gap:12px">

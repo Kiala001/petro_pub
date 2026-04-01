@@ -112,7 +112,7 @@
         flex-shrink: 0;
       }
       .sb-logo {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: 20px;
         font-weight: 900;
         color: #fff;
@@ -390,7 +390,7 @@
         color: var(--cr);
       }
       .tb-title {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(14px, 2vw, 17px);
         font-weight: 700;
         color: var(--cr-dk);
@@ -628,7 +628,7 @@
         margin-bottom: 12px;
       }
       .dhc-title {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(18px, 3vw, 26px);
         font-weight: 900;
         color: #fff;
@@ -713,7 +713,7 @@
         text-align: center;
       }
       .qs-n {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(16px, 2vw, 20px);
         font-weight: 700;
         color: var(--tx);
@@ -744,7 +744,7 @@
         flex-wrap: wrap;
       }
       .sc-title {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(14px, 1.5vw, 16px);
         font-weight: 700;
         color: var(--cr-dk);
@@ -868,7 +868,7 @@
         letter-spacing: 2px;
       }
       .rc-val {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: 18px;
         font-weight: 700;
         color: var(--tx);
@@ -1015,7 +1015,7 @@
         margin-bottom: 12px;
       }
       .avg-score {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(44px, 5.5vw, 60px);
         font-weight: 900;
         color: #fff;
@@ -1100,7 +1100,7 @@
         padding: clamp(16px, 2vw, 20px) clamp(16px, 2vw, 24px);
       }
       .dc-head h3 {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(16px, 1.8vw, 18px);
         font-weight: 700;
         color: #fff;
@@ -1262,7 +1262,7 @@
         margin-bottom: 14px;
       }
       .conf-title {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(17px, 2vw, 20px);
         margin-bottom: 8px;
       }
@@ -1439,7 +1439,7 @@
         position: relative;
       }
       .m-head h3 {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(17px, 2vw, 20px);
         font-weight: 700;
         color: #fff;
@@ -1478,7 +1478,7 @@
         margin-bottom: 14px;
       }
       .m-title {
-        font-family: "Playfair Display", serif;
+        font-family: "Arial", serif;
         font-size: clamp(17px, 2vw, 21px);
         margin-bottom: 8px;
       }

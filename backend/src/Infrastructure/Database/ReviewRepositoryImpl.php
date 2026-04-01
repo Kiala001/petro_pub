@@ -33,6 +33,12 @@ class ReviewRepository implements ReviewRepositoryInterface {
             $review->getSuggestion(),
             $review->getDecision()
         ]);
+
+        $stmt1 = $this->conn->prepare("UPDATE documents SET read_count = ? + read_count WHERE id=?");
+        $stmt1->execute([
+            1, 
+            $review->getDocumentId()
+        ]);
  
     }
 

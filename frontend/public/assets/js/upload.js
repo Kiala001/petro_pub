@@ -4,87 +4,175 @@ let selectedPaymentMethods = [];
 let pubMode = "immediate";
 let accessMode = "paid";
 let selectedFile = null;
-let file_size = 0
+let selectedCover = null;
+let file_size = 0;
 
+// ══════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════
 function submitDocument() {
-    const title = document.getElementById("doc-title").value;
-    const abstract = document.getElementById("doc-abstract").value;
-    const keywords = document
-        .getElementById("doc-tags")
-        .value.split(",")
-        .map((k) => k.trim())
-        .filter((k) => k);
-    const course = document.getElementById("doc-inst").value;
-    const price = parseFloat(document.getElementById("doc-price").value) || 0;
-    const advisor = document.getElementById("doc-advisor").value;
-    const date = document.getElementById("doc-date").value;
-    const doc_authors = document
-        .getElementById("doc-authors")
-        .value.split(",")
-        .map((a) => a.trim());
+  const title = document.getElementById("doc-title").value;
+  const price = document.getElementById("doc-price").value;
+  const localization = document.getElementById("doc-localization").value;
+  const abstract = document.getElementById("doc-abstract").value;
+  const keywords = document
+    .getElementById("doc-tags")
+    .value.split(",")
+    .map((k) => k.trim())
+    .filter((k) => k);
+  const course = document.getElementById("doc-inst").value;
+  const doc_authors = document
+    .getElementById("doc-authors")
+    .value.split(",")
+    .map((a) => a.trim())
+    .filter((a) => a);
 
-    if (!title) {
-        showToast("⚠️ Preencha o título do documento");
-        return;
+  if (!title) {
+    showToast("⚠️ Preencha o título do documento");
+    return;
+  }
+  if (!abstract || abstract.length < 50) {
+    showToast("⚠️ Preencha o resumo (mínimo 50 caracteres)");
+    return;
+  }
+  if (!course) {
+    showToast("⚠️ Preencha o curso ou área");
+    return;
+  }
+  if (doc_authors.length === 0) {
+    showToast("⚠️ Preencha pelo menos um autor");
+    return;
+  }
+  if (keywords.length < 2) {
+    showToast("⚠️ Adicione pelo menos duas palavras-chave");
+    return;
+  }
+  if (!selectedDocType) {
+    showToast("⚠️ Seleccione o tipo de documento");
+    return;
+  }
+  if (!selectedFile) {
+    showToast("⚠️ Faça upload do ficheiro do documento");
+    return;
+  }
+  if (!price) {
+    showToast("⚠️ Deve preencher o preço da venda do livro");
+    return;
+  }
+  if (!location) {
+    showToast("⚠️ Deves especificar o local onde será feito a comercialização");
+    return;
+  }
+  if (pubMode === "scheduled") {
+    if (!document.getElementById("sched-date").value) {
+      showToast("⚠️ Defina a data de publicação");
+      return;
     }
-    if (!abstract) {
-        showToast("⚠️ Preencha o resumo do documento");
-        return;
+    if (!document.getElementById("sched-time").value) {
+      showToast("⚠️ Defina a hora de publicação");
+      return;
     }
-    if (!course) {
-        showToast("⚠️ Preencha o curso");
-        return;
-    }
-    if (doc_authors.length === 0) {
-        showToast("⚠️ Preencha os nomes dos autores");
-        return;
-    }
-    if (keywords.length < 2) {
-        showToast("⚠️ Preencha pelo menos duas palavras-chaves");
-        return;
-    }
-    if (!selectedDocType) {
-        showToast("⚠️ Seleccione o tipo de documento");
-        return;
-    }
-    if (!selectedFile) {
-        showToast("⚠️ Faça upload do ficheiro do documento");
-        return;
-    }
-    if (accessMode === "paid" && selectedPaymentMethods.length === 0) {
-        showToast("⚠️ Seleccione pelo menos um meio de pagamento");
-        return;
-    }
-    if (pubMode === "scheduled" && !document.getElementById("sched-date").value) {
-        showToast("⚠️ Defina a data de publicação programada");
-        return;
+  }
+
+  const date = document.getElementById("doc-date").value;
+  const advisor = document.getElementById("doc-advisor").value;
+  const sched_date = document.getElementById("sched-date").value;
+  const sched_time = document.getElementById("sched-time").value;
+
+  const docType = selectedDocType;
+  const document_file = selectedFile;
+  const cover_file = selectedCover;
+  const authors = JSON.stringify(doc_authors);
+  const summary = abstract;
+  const doc_keywords = JSON.stringify(keywords);
+
+  uploadForm(
+    document_file,
+    docType,
+    advisor,
+    date,
+    title,
+    authors,
+    course,
+    summary,
+    doc_keywords,
+    cover_file,
+    pubMode,
+    sched_date,
+    sched_time,
+    price,
+    localization,
+  );
+}
+
+async function uploadForm(
+  document,
+  docType,
+  advisor,
+  date,
+  title,
+  authors,
+  course,
+  summary,
+  keywords,
+  cover_file,
+  pubMode,
+  sched_date,
+  sched_time,
+  price,
+  localization,
+) {
+  const formData = new FormData();
+
+  formData.append("document", document);
+  formData.append("docType", docType);
+  formData.append("advisor", advisor);
+  formData.append("date", date);
+  formData.append("title", title);
+  formData.append("authors", authors);
+  formData.append("course", course);
+  formData.append("summary", summary);
+  formData.append("keywords", keywords);
+  formData.append("cover_file", cover_file);
+  formData.append("pubMode", pubMode);
+  formData.append("sched_date", sched_date);
+  formData.append("sched_time", sched_time);
+  formData.append("file_size", file_size);
+  formData.append("price", price);
+  formData.append("location", localization);
+
+  // Depurando
+  // console.log("====== DEPURAÇÃO");
+  // formData.forEach((value, key) => {
+  //   console.log(key, value);
+  // });
+  // console.log("====== FIM ======");
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/documents`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      showToast(data.error || data.message);
+      return;
     }
 
-    const sched_date = document.getElementById("sched-date").value;
-    const sched_time = document.getElementById("sched-time").value;
+    showToast(data.message || "Documento submetido com sucesso!");
 
-    if (pubMode == "scheduled") {
-        if (!sched_date) {
-        showToast("⚠️ Deves especificar a data de publicação");
-        return;
-        }
-        if (!sched_time) {
-        showToast("⚠️ Deves especificar a hora de publicação");
-        return;
-        }
-    }
-
-    
-    const docType = selectedDocType;
-    const document_file = selectedFile;
-    const payment_method = JSON.stringify(selectedPaymentMethods);
-    const authors = JSON.stringify(doc_authors);
-    const summary = abstract;
-    const doc_keywords = JSON.stringify(keywords);
-    
-
-    uploadForm(document_file, docType, advisor, payment_method, date, title, authors, course, summary, doc_keywords, price, accessMode, pubMode, sched_date, sched_time)
-  //   showToast("Documento submetido com sucesso! Aguarda aprovação editorial.");
+    setTimeout(() => {
+      window.location.href = "my-documents.php";
+    }, 2000);
+  } catch (error) {
+    console.error(error);
+    showToast("Erro ao enviar documento");
+  }
 }
 
 function handleFileSelect(file) {
@@ -343,78 +431,6 @@ function removeFile() {
 //   });
 // }
 
-async function uploadForm(
-    document,
-    docType,
-    advisor,
-    payment_method,
-    date,
-    title,
-    authors,
-    course,
-    summary,
-    keywords,
-    price,
-    accessMode,
-    pubMode,
-    sched_date,
-    sched_time
-) {
-
-    const formData = new FormData();
-
-    formData.append("document", document);
-    formData.append("docType", docType);
-    formData.append("advisor", advisor);
-    formData.append("payment_method", payment_method);
-    formData.append("date", date);
-    formData.append("title", title);
-    formData.append("authors", authors);
-    formData.append("course", course);
-    formData.append("summary", summary);
-    formData.append("keywords", keywords);
-    formData.append("price", price);
-    formData.append("accessMode", accessMode);
-    formData.append("pubMode", pubMode);
-    formData.append("sched_date", sched_date);
-    formData.append("sched_time", sched_time);
-    formData.append("file_size", file_size);
-
-    // Depurando
-    console.log("====== DEPURAÇÃO")
-    formData.forEach((value, key) => {
-        console.log(key, value)
-    })
-    console.log("====== FIM ======")
-    
-    try {
-
-        const response = await fetch(`${API_BASE_URL}/documents`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${getToken()}`
-            },
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (!data.success) {
-            showToast(data.error || data.message);
-            return;
-        }
-
-        showToast(data.message || "Documento submetido com sucesso!");
-
-        setTimeout(() => {
-            window.location.href = "my-documents.php";
-        }, 2000);
-
-    } catch (error) {
-        console.error(error);
-        showToast("Erro ao enviar documento");
-    }
-}
 
 // function showError(message) {
 //     const div = document.getElementById('error');

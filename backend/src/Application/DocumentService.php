@@ -4,6 +4,7 @@ class DocumentService {
     private $documentRepository;
     private $categoryRepository;
     private $uploadDir;
+    const uploadCoverDir = '../../uploads/documents/cover';
 
     public function __construct(DocumentRepository $documentRepository, CategoryRepository $categoryRepository, $uploadDir) {
         $this->documentRepository = $documentRepository;
@@ -11,12 +12,8 @@ class DocumentService {
         $this->uploadDir = $uploadDir;
     }
 
-    public function submitDocument($userId, $categoryId, $data, $file, $role) {
+    public function submitDocument($userId, $categoryId, $data, $file, $cover, $role) {
         try {
-            // $category = $this->categoryRepository->findById($categoryId);
-            // if (!$category) {
-            //     throw new DomainException('Categoria não encontrada');
-            // }
             
             // Validar tipo de arquivo
             $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -29,10 +26,15 @@ class DocumentService {
             $fileName = $this->generateFileName($file['name']);
             $filePath = $this->uploadDir . '/' . $fileName;
             
-            
+            // Gerar caminho de arquivo
+            $fileNameCover = null;
+            if (isset($cover)) {
+                $fileNameCover = $this->generateFileName($cover['name']);
+                $filePathCover = self::uploadCoverDir . '/' . $fileNameCover;
+            }
+        
             // Criar documento
             $documentId = new ID("DOC");
-            
             $document = new Document(
                 $documentId->getValue(),
                 $userId,
@@ -46,13 +48,12 @@ class DocumentService {
                 $fileName,
                 $data['file_size'],
                 $fileType,
-                $data['price'],
-                $data['accessMode'],
+                $fileNameCover,
                 $data['pubMode'],
                 $data['sched_date'],
                 $data['sched_time'],
-                $data['payment_method'],
-                // isset($data['is_paid']) ? $data['is_paid'] : true
+                $data['price'],
+                $data['location']
             );
 
             if ($data['pubMode'] == 'immediate') {
@@ -61,12 +62,26 @@ class DocumentService {
             }
             
             if ($role == 'ADMIN') {
-                $document->publishAdmin();
+                if ($data['pubMode'] != 'immediate') {
+                    $now = date('Y-m-d');
+
+                    if ($data['sched_date'] > $now) {
+                        $document->programmingAdmin();
+                    }
+                } else {
+                    $document->publishAdmin();
+                }
             }
             
-            // Mover arquivo
+            // Mover os arquivos
             if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-                throw new DomainException('Erro ao fazer upload do arquivo');
+                throw new DomainException('Erro ao fazer upload do documento');
+            }
+            
+            if (isset($cover)) {
+                if (!move_uploaded_file($cover['tmp_name'], $filePathCover)) {
+                    throw new DomainException('Erro ao fazer upload da capa do documento');
+                }
             }
             
             $this->documentRepository->save($document);
