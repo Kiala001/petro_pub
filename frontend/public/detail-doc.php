@@ -50,7 +50,7 @@ $stmt->execute([1, $documentId]);
 <!-- ════ TOPBAR ════ -->
 <div class="topbar">
   <div class="tb-l">
-    <div class="logo">PETRO<span>PUB</span></div>
+    <img src='../../uploads/logo/logo1.PNG' alt='logotipo petropub' style='width: 100px; height: 90px;'>
     <div class="breadcrumb">
       <a onclick="showToast('← A voltar à Biblioteca')">← Biblioteca</a>
       &nbsp;/&nbsp; Eng. Informática &nbsp;/&nbsp; Detalhes

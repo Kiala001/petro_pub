@@ -234,15 +234,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="ci-ico">✉️</div>
             <div class="ci-body">
               <div class="ci-label">E-mail</div>
-              <div class="ci-value"><a href="mailto:suporte@petropub.com" class="ci-link">suporte@petropub.com</a></div>
-              <div class="ci-sub">Resposta em 24–48 horas</div>
+              <div class="ci-value"><a href="mailto:petrochamp.ao@outlook.com" class="ci-link">petrochamp.ao@outlook.com</a></div>
+              <div class="ci-sub">Resposta em 24 - 48 horas</div>
             </div>
           </div>
           <div class="contact-item">
             <div class="ci-ico">📱</div>
             <div class="ci-body">
               <div class="ci-label">WhatsApp / Telefone</div>
-              <div class="ci-value"><a href="https://wa.me/244XXXXXXXXX" class="ci-link" target="_blank">+244 XXX XXX XXX</a></div>
+              <div class="ci-value"><a href="https://wa.me/244972339776" class="ci-link" target="_blank">+244 972 339 776</a></div>
               <div class="ci-sub">Segunda–Sexta, 08h–17h</div>
             </div>
           </div>

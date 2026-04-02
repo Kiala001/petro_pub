@@ -72,7 +72,7 @@ if ($method === 'GET' && ($path === 'documents' || $path === 'documents/')) {
     $userType = $_SESSION['type_auth'];
     $data = $_POST;
 
-    if (!isset($_FILES['document'])) {
+    if (!isset($_FILES['cover_file'])) {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'Arquivo não fornecido']);
         exit;

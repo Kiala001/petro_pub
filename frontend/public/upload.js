@@ -1,4 +1,8 @@
-
+// ══════════════════════════════════════════════════════════════
+// upload.js  — Lógica de submissão e edição de documentos
+// Suporta modo: físico (preço + localização + contacto)
+//               digital (PDF obrigatório + leitura no portal)
+// ══════════════════════════════════════════════════════════════
 
 // ── STATE ──────────────────────────────────────────────────────
 let selectedDocType       = '';
@@ -42,7 +46,7 @@ function selectBookMode(mode) {
   // Atualizar badge no step ①
   const modeLabel = document.getElementById('mode-label');
   if (modeLabel) {
-    modeLabel.textContent = mode === 'fisico' ? 'Livro Físico' : 'Livro Digital';
+    modeLabel.textContent = mode === 'fisico' ? '📦 Livro Físico' : '💻 Livro Digital';
     modeLabel.style.background = mode === 'fisico' ? 'rgba(176,122,26,.12)' : 'rgba(26,92,138,.10)';
     modeLabel.style.color = mode === 'fisico' ? 'var(--warn)' : 'var(--info)';
   }
@@ -66,8 +70,6 @@ function submitDocument() {
   const doc_authors = authorsRaw.split(',').map(a => a.trim()).filter(Boolean);
   const keywords    = tagsRaw.split(',').map(k => k.trim()).filter(Boolean);
 
-  if (!selectedCover) { showToast('⚠️ Faça upload da capa do livro'); return; }
-  
   // Validações comuns
   if (!title)                          { showToast('⚠️ Preencha o título do documento'); return; }
   if (!abstract || abstract.length < 50) { showToast('⚠️ Preencha o resumo (mínimo 50 caracteres)'); return; }
@@ -84,7 +86,7 @@ function submitDocument() {
   if (bookMode === 'fisico') {
     const price = (document.getElementById('doc-price')?.value ?? '').trim();
     const loc   = (document.getElementById('doc-localization')?.value ?? '').trim();
-    if (!price || parseFloat(price) <= 0) { showToast('⚠️ >Indique o preço de venda do livro físico'); return; }
+    if (!price || parseFloat(price) <= 0) { showToast('⚠️ Indique o preço de venda do livro físico'); return; }
     if (!loc)                              { showToast('⚠️ Indique a localização de venda do livro'); return; }
   }
 
@@ -166,17 +168,17 @@ async function uploadForm(data) {
     const result = await response.json();
 
     if (!result.success) {
-      showToast(result.error || result.message || 'Erro ao submeter');
+      showToast(result.error || result.message || '❌ Erro ao submeter');
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '📤 Submeter para Revisão'; }
       return;
     }
 
-    showToast(result.message || 'Documento submetido com sucesso!');
+    showToast(result.message || '✅ Documento submetido com sucesso!');
     setTimeout(() => { window.location.href = 'my-documents.php'; }, 1800);
   } catch (err) {
     console.error(err);
-    showToast('Erro de rede ao enviar o documento');
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submeter para Revisão'; }
+    showToast('❌ Erro de rede ao enviar o documento');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '📤 Submeter para Revisão'; }
   }
 }
 
@@ -236,17 +238,17 @@ async function updateDocument(docId) {
     const result = await response.json();
 
     if (!result.success) {
-      showToast(result.error || result.message || 'Erro ao guardar');
-      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Guardar alterações'; }
+      showToast(result.error || result.message || '❌ Erro ao guardar');
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar alterações'; }
       return;
     }
 
-    showToast('Documento actualizado com sucesso!');
+    showToast('✅ Documento actualizado com sucesso!');
     setTimeout(() => { window.location.href = 'my-documents.php'; }, 1600);
   } catch (err) {
     console.error(err);
-    showToast('Erro de rede');
-    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Guardar alterações'; }
+    showToast('❌ Erro de rede');
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar alterações'; }
   }
 }
 
@@ -386,7 +388,7 @@ function selectPublication(mode) {
   const row = document.getElementById('sum-sched-row');
   if (row) row.style.display = mode === 'scheduled' ? 'flex' : 'none';
   const pubEl = document.getElementById('sum-pub');
-  if (pubEl) pubEl.textContent = mode === 'immediate' ? 'Imediata' : 'Programada';
+  if (pubEl) pubEl.textContent = mode === 'immediate' ? '🚀 Imediata' : '⏰ Programada';
   updateSummary();
 }
 
@@ -403,7 +405,7 @@ function updateSummary() {
   setS('sum-type',  selectedDocType || null, !selectedDocType);
   setS('sum-date',  date ? formatDate(date) : null, !date);
   setS('sum-inst',  inst || null, !inst);
-  setS('sum-mode',  bookMode === 'fisico' ? 'Físico' : bookMode === 'digital' ? 'Digital' : null, !bookMode);
+  setS('sum-mode',  bookMode === 'fisico' ? '📦 Físico' : bookMode === 'digital' ? '💻 Digital' : null, !bookMode);
 
   if (bookMode === 'fisico') {
     const priceEl = document.getElementById('sum-price');
@@ -454,5 +456,5 @@ function resetUploadForm() {
   if (secContact) secContact.style.display = 'none';
   if (secDigInfo) secDigInfo.style.display = 'none';
   updateSummary();
-  showToast('Formulário limpo');
+  showToast('🔄 Formulário limpo');
 }

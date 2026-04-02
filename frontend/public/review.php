@@ -20,7 +20,7 @@ $review_count = $result['count'];
 $review_stat = calcularMediaAvaliacoes($reviews);
 
 if (!isset($_SESSION['jwt_auth'])) {
-    header('Location: auth.php');
+    header('Location: index.php');
     exit;
 }
 $jwt = $_SESSION['jwt_auth'];

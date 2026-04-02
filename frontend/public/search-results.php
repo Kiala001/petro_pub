@@ -450,14 +450,12 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
       <div class="sb-lbl">Tipo de documento</div>
       <a href="<?= buildUrl(['tipo'=>'','page'=>1]) ?>"
          class="sb-cat-item <?= !$tipo ? 'on' : '' ?>">
-        <!-- <span class="sb-cat-ico"><i class="fa fa-list"></i></span> -->
         <span class="sb-cat-name">Todos</span>
         <span class="sb-cat-cnt"><?= $total ?></span>
       </a>
       <?php foreach ($cats as $c): ?>
       <a href="<?= buildUrl(['tipo'=>$c['name'],'page'=>1]) ?>"
          class="sb-cat-item <?= $tipo===$c['name'] ? 'on' : '' ?>">
-        <!-- <span class="sb-cat-ico">📄</span> -->
         <span class="sb-cat-name" title="<?= h($c['name']) ?>"><?= h($c['name']) ?></span>
         <span class="sb-cat-cnt"><?= (int)$c['doc_count'] ?></span>
       </a>
@@ -598,12 +596,15 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
           <span class="dc-type" title="<?= $catName ?>"><?= $catName ?></span>
           <div class="dc-title"><?= h($d['title']) ?></div>
           <div class="dc-author"><?= arrayForString($authors_list) ?></div>
-          <div class="dc-footer">
-            <span class="dc-rating"><?= $stars ?> <?= $rating > 0 ? number_format($rating, 1) : '—' ?></span>
-            <?php if ($isFree): ?>
-            <span class="dc-free">Gratís</span>
-            <?php else: ?>
-            <span class="dc-price"><?= number_format((int)$d['price'], 0, '.', '.') ?> Kz</span>
+          <div>
+            <div class="dc-footer">
+              <span class="dc-rating"><?= $stars ?> <?= $rating > 0 ? number_format($rating, 1) : '—' ?></span>
+              <span class="dc-free">
+                <?=$price = ($d['download_link'] == 'fisico') ? 'Fisico' : 'Digital'?>
+              </span>
+            </div>
+            <?php if($d['download_link'] == 'fisico'): ?>
+            <span class="dc-price" style="font-size: 12px; font-weight: bold; margin-bottom: 10px;"><?= number_format((int)$d['price'], 0, '.', '.') ?> Kz</span>
             <?php endif; ?>
           </div>
           <div class="dc-actions">

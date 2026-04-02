@@ -993,6 +993,7 @@ $all_categories = $cats_query->fetchAll();
         align-items: center;
         justify-content: space-between;
         gap: 6px;
+        margin-bottom: 8px;
       }
       .dc-rating {
         font-size: 12px;
@@ -1886,7 +1887,9 @@ $all_categories = $cats_query->fetchAll();
     <div class="drawer-ov" id="dr-ov" onclick="closeDrawer()"></div>
     <div class="drawer" id="drawer">
       <div class="drawer-head">
-        <div class="drawer-logo">PETRO<span>PUB</span></div>
+        <div class="drawer-logo">
+          <img src="../../uploads/logo/logo1.PNG" alt="logotipo petropub" style="width: 100px; height: 100px;">
+        </div>
         <button class="drawer-close" onclick="closeDrawer()">✕</button>
       </div>
       <div class="drawer-body">
@@ -1952,8 +1955,8 @@ $all_categories = $cats_query->fetchAll();
 
     <!-- ANNOUNCE STRIP -->
     <div class="announce" id="announce">
-      ✨ <strong>Novo:</strong> Mais de 1.200 documentos académicos disponíveis
-      — acesso gratuito a conteúdo seleccionado
+      ✨ <strong>Novo:</strong> Mais de <?=$documents_count['total']-1?>+ documentos académicos disponíveis
+      — acesso gratuito a conteúdo digital
       <button
         class="announce-close"
         onclick="document.getElementById('announce').style.display = 'none'"
@@ -1969,7 +1972,7 @@ $all_categories = $cats_query->fetchAll();
           class="nav-logo"
           onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
         >
-          PETRO<span>PUB</span>
+          <img src="../../uploads/logo/logo1.PNG" alt="logotipo petropub" style="width: 100px; height: 100px;">
         </div>
         <div class="nav-links">
           <a href="index.php" class="nav-link on">Home</a>
@@ -2013,14 +2016,14 @@ $all_categories = $cats_query->fetchAll();
         <div class="hero-geo-sq"></div>
       </div>
       <div class="hero-inner">
-        <div class="hero-eyebrow">🎓 Portal Académico de Angola</div>
-        <h1 class="hero-title">
-          Conhecimento académico para o ramo de <br /><em>Oil & Gás</em>
+        <div class="hero-eyebrow">Portal Académico de Angola</div>
+        <h1 class="hero-title" style="text-transform: uppercase;">
+          Conhecimento académico para o ramo de <br /><em>Oil & Gas</em>
         </h1>
-        <p class="hero-sub">
+        <!-- <p class="hero-sub">
           TCCs, dissertações, artigos científicos, livros físicos e relatórios técnicos
           das principais universidades angolanas. Explore gratuitamente.
-        </p>
+        </p> -->
         <div class="hero-search">
           <div class="hs-tabs" id="hs-tabs">
             <div class="hs-tab on" data-type="" onclick="setHsTab(this)">Tudo</div>
@@ -2151,19 +2154,26 @@ $all_categories = $cats_query->fetchAll();
                   <span class="dc-type ${d.tcls}"><?=$document['category_id']?></span>
                   <div class="dc-title"><?=$document['title']?></div>
                   <div class="dc-author">
-                    <i style="color: blue;" class="fa fa-user"></i> 
                     <?php
                       $authors = json_decode($document['authors']);
                       $authors_list = explode(",", $authors);
                       echo arrayForString($authors_list);
                       ?>
                   </div>
-                  <div class="dc-footer">
-                    <span class="dc-rating"><?=$review_stat['stars']?> <?=$review_stat['media']?></span>
-                    <span class="dc-free">
-                      <?=number_format(($document['price']),2,',','.')?>
-                    </span>
-                    <!-- <span class="dc-price"><?=$document['status']?> Kz</span> -->
+                  <div>
+                    <div class="dc-footer">
+                      <span class="dc-rating"><?=$review_stat['stars']?> <?=$review_stat['media']?></span>
+                      <span class="dc-free">
+                        <?=$price = ($document['download_link'] == 'fisico') ? 'Fisico' : 'Digital'?>
+                      </span>
+                    </div>
+                    <?php
+                      $price = ($document['download_link'] == 'fisico') ?
+                        '<span class="dc-price">
+                        '.number_format(($document['price']),2,',','.').' Kz
+                      </span>' : '';
+                      echo $price;
+                    ?>
                   </div>
                 </div>
               </div>
@@ -2315,7 +2325,15 @@ $all_categories = $cats_query->fetchAll();
                 <div class="tc-stat">
                   <span class="tc-views"><?=number_format($t['read_count'] ?? 0)?> visualizações</span>
                 </div>
-                <a href="detail-doc.php?id=<?=$t['id']?>" class="tc-btn">Ver Detalhes →</a>
+                <?php
+                  $price = ($document['download_link'] == 'fisico') ?
+                    '<span class="dc-price" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                      <span> '.number_format(($document['price']),2,',','.').' Kz </span>
+                      <span>Físico</span>
+                  </span>' : 'Digital';
+                  echo $price;
+                ?>
+                <a style="margin-top: 10px;" href="detail-doc.php?id=<?=$t['id']?>" class="tc-btn">Ver Detalhes →</a>
               </div>
             </div>
             <?php endforeach; ?>
@@ -2354,6 +2372,14 @@ $all_categories = $cats_query->fetchAll();
                 <div class="tc-stat">
                   <span class="tc-rating" style="color:var(--gd-dk);font-weight:700"><?=$stars?> <?=$rating > 0 ? number_format($rating,1) : '0'?></span>
                 </div>
+                <?php
+                  $price = ($document['download_link'] == 'fisico') ?
+                    '<span class="dc-price" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                      <span> '.number_format(($document['price']),2,',','.').' Kz </span>
+                      <span>Físico</span>
+                  </span>' : 'Digital';
+                  echo $price;
+                ?>
                 <a href="detail-doc.php?id=<?=$t['id']?>" class="tc-btn">Ver Detalhes →</a>
               </div>
             </div>

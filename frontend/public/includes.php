@@ -562,7 +562,7 @@ function pubNav(string $active = ''): string {
 <div class='mob-ov' id='mob-ov' onclick='closeMob()'></div>
 <div class='mob-drawer' id='mob-drawer'>
   <div class='mob-head'>
-    <div class='mob-logo'>PETRO<span>PUB</span></div>
+    <img src='../../uploads/logo/logo1.PNG' alt='logotipo petropub' style='width: 100px; height: 100px;'>
     <button class='mob-close' onclick='closeMob()'>✕</button>
   </div>
   <div class='mob-body'>$mobLinksHtml</div>
@@ -572,7 +572,9 @@ function pubNav(string $active = ''): string {
 </div>
 <nav class='nav'>
   <div class='nav-inner'>
-    <a href='index.php' class='nav-logo'>PETRO<span>PUB</span></a>
+    <a href='index.php' class='nav-logo'>
+      <img src='../../uploads/logo/logo1.PNG' alt='logotipo petropub' style='width: 100px; height: 100px;'>
+    </a>
     <div class='nav-links'>$linksHtml</div>
     <div class='nav-r'>
         $auth

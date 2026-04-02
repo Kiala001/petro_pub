@@ -181,7 +181,7 @@ $typeIcons = ['TCC'=>'🎓','Artigo'=>'📄','Livro'=>'📖','Dissertação'=>'�
 .dc-author{font-size:12px;color:var(--tx-l);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dc-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
 .dc-cat{font-size:11px;color:var(--tx-l)}.dc-year{font-size:11px;color:var(--tx-l)}
-.dc-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.dc-actions{display:block;}
 .dc-btn{padding:7px;border-radius:var(--r1);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all var(--t);border:none;display:block}
 .dc-btn-see{background:var(--cream);border:1px solid var(--bdr);color:var(--tx-m)}.dc-btn-see:hover{background:var(--cr-xl);color:var(--cr);border-color:var(--cr-bdr)}
 .dc-btn-read{background:var(--cr);color:#fff}.dc-btn-read:hover{background:var(--cr-dk)}
@@ -200,8 +200,35 @@ $typeIcons = ['TCC'=>'🎓','Artigo'=>'📄','Livro'=>'📖','Dissertação'=>'�
 .lp{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:400;background:#fff;border-radius:var(--r4);box-shadow:var(--sh3);border:1px solid var(--bdr);padding:14px 20px;display:none;align-items:center;gap:14px;max-width:min(480px,90vw);width:100%}
 .lp.show{display:flex;animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
 @keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-@media(max-width:860px){.sidebar{display:none}.mob-filter-btn{display:flex}}
-@media(max-width:600px){.docs-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){
+  .sidebar{
+    display:none
+  }
+  .mob-filter-btn{
+    display:flex
+  } 
+  .dc-thumb {
+    height: clamp(140px, 120vw, 200px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(32px, 5vw, 44px);
+  }
+}
+@media(max-width:600px){
+  .docs-grid{
+    grid-template-columns:repeat(2,1fr)
+  }
+  .dc-thumb {
+    height: clamp(140px, 120vw, 200px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(32px, 5vw, 44px);
+  }
+}
 </style>
 </head>
 <body>
@@ -377,6 +404,17 @@ $typeIcons = ['TCC'=>'🎓','Artigo'=>'📄','Livro'=>'📖','Dissertação'=>'�
           </div>
           <div class="dc-title"><?=h($d['title'])?></div>
           <div class="dc-actions">
+            <?php
+              $price = ($d['download_link'] == 'fisico') ?
+                '<span class="dc-price" style="color: #6b1020; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                  <span> '.number_format(($d['price']),2,',','.').' Kz </span>
+                  <span>Físico</span>
+              </span>' : 
+              '<span class="dc-price" style="color: #6b1020; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                Digital
+              </span>';
+              echo $price;
+            ?>
             <!-- <button class="dc-btn dc-btn-see"
                     onclick="showSummary(<?=h(json_encode($d,JSON_UNESCAPED_UNICODE))?>)">Ver resumo</button> -->
             <?php

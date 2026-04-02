@@ -84,9 +84,9 @@ $typeColor  = $typeColors[$opp['type']] ?? 'var(--cr)';
 
 <div class="page-wrap">
   <div class="breadcrumb">
-    <a href="petropub-dashboard.php">Home</a> ›
-    <a href="lista-oportunidades.php">Oportunidades</a> ›
-    <a href="lista-oportunidades.php?type=<?=urlencode($opp['type'])?>"><?=h($opp['type'])?></a> ›
+    <a href="index.php">Home</a> ›
+    <a href="list-opportunities.php">Oportunidades</a> ›
+    <a href="list-opportunities.php?type=<?=urlencode($opp['type'])?>"><?=h($opp['type'])?></a> ›
     <span style="color:var(--tx-m)"><?=mb_substr(h($opp['title']),0,40)?><?=mb_strlen($opp['title'])>40?'…':''?></span>
   </div>
 
@@ -95,15 +95,15 @@ $typeColor  = $typeColors[$opp['type']] ?? 'var(--cr)';
     <div>
       <!-- HEADER -->
       <div class="opp-header">
-        <div class="oh-banner" style="background:linear-gradient(135deg,<?=h($opp['grad_start'])?>,<?=h($opp['grad_end'])?>)">
+        <!-- <div class="oh-banner" style="background:linear-gradient(135deg,<?=h($opp['grad_start'])?>,<?=h($opp['grad_end'])?>)">
           <span style="font-size:clamp(52px,8vw,80px);position:relative;z-index:1"><?=h($opp['icon'])?></span>
-          <?php if($opp['is_featured']): ?><div class="oh-featured">⭐ Destaque</div><?php endif; ?>
-        </div>
+        </div> -->
         <div class="oh-body">
-          <div class="oh-type-row">
+          <?php if($opp['is_featured']): ?><div class="oh-featured">⭐ Destaque</div><?php endif; ?>
+          <div class="oh-type-row">       
             <span class="oh-type <?=typeCls($opp['type'])?>"><?=h($opp['type'])?></span>
             <span style="font-size:11px;color:var(--tx-l)"><i class="fa fa-eye"></i> <?=number_format($opp['views']+1)?> visualizações</span>
-            <span style="font-size:11px;color:var(--tx-l)http://localhost/petro_pub/frontend/public/detail-opportunity.php?id=1"><i class="fa fa-calendar"></i> <?=date('d/m/Y',strtotime($opp['created_at']))?></span>
+            <span style="font-size:11px;color:var(--tx-l)"><i class="fa fa-calendar"></i> <?=date('d/m/Y',strtotime($opp['created_at']))?></span>
           </div>
           <h1 class="oh-title"><?=h($opp['title'])?></h1>
           <?php if($opp['source']): ?>

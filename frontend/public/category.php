@@ -108,8 +108,8 @@ function buildCatUrl(array $ov=[]): string {
     <!-- <div class="hc-ico"><i class="fa fa-book" style="color: var(--cr-dk)"></i></div> -->
     <div>
       <div class="hc-breadcrumb">
-        <a href="petropub-dashboard.php">Home</a> ›
-        <a href="biblioteca-pub.php">Biblioteca</a> ›
+        <a href="index.php">Home</a> ›
+        <a href="library.php">Biblioteca</a> ›
         <span style="color:#fff"><?=$slug?></span>
       </div>
       <h1 class="hc-title"><?=$slug?></h1>

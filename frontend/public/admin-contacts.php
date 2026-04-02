@@ -2,8 +2,8 @@
 include_once 'includes.php';
 
 // ─── AUTH CHECK ───────────────────────────────────────────────
-if (!isset($_SESSION['jwt_auth']) || $_SESSION['user_type'] !== 'ADMIN') {
-    header('Location: auth.php'); exit;
+if (!isset($_SESSION['jwt_auth'])) {
+    header('Location: index.php'); exit;
 }
 
 // ─── API ─────────────────────────────────────────────────────
@@ -61,6 +61,9 @@ function buildUrl(array $ov=[]): string {
     foreach($ov as $k=>$v) $p[$k]=$v;
     return '?'.http_build_query(array_filter($p, fn($v)=>$v!==null&&$v!==''&&$v!==0&&$v!=='all'));
 }
+$userName     = $_SESSION['user_name']  ?? 'Usuário';
+$userEmail    = $_SESSION['user_email'] ?? '';
+$userInitials = strtoupper(substr($userName, 0, 2));
 ?>
 <!doctype html>
 <html lang="pt">
@@ -200,7 +203,7 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
 <!-- MODAL: REPLY -->
 <div class="overlay" id="modal-reply" onclick="if(event.target.id==='modal-reply')closeModal('modal-reply')">
   <div class="modal">
-    <div class="m-hd"><h3>📩 Responder ao contacto</h3><p id="reply-to-lbl">—</p><button class="m-close" onclick="closeModal('modal-reply')">✕</button></div>
+    <div class="m-hd"><h3>Responder ao contacto</h3><p id="reply-to-lbl">—</p><button class="m-close" onclick="closeModal('modal-reply')">✕</button></div>
     <div class="m-body">
       <div style="background:var(--cream);border:1px solid var(--bdr);border-radius:var(--r2);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--tx-m)" id="reply-original"></div>
       <div class="f-group">
@@ -210,54 +213,78 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
     </div>
     <div class="m-foot">
       <button class="btn btn-gh" onclick="closeModal('modal-reply')">Cancelar</button>
-      <button class="btn btn-cr" id="reply-send-btn" onclick="sendReply()">📩 Enviar resposta</button>
+      <button class="btn btn-cr" id="reply-send-btn" onclick="sendReply()">Enviar resposta</button>
     </div>
   </div>
 </div>
 
 <div class="app">
-<aside class="sidebar">
-  <div class="sb-head">
-    <div><div class="sb-logo">PETRO<span>PUB</span></div><div class="sb-role">Administração</div></div>
-  </div>
-  <div class="sb-user"><div class="ava">AD</div><div><div class="sb-un"><?= h($_SESSION['user_name'] ?? 'Admin') ?></div><div class="sb-ue">admin@petropub.ao</div></div></div>
-  <div class="nav-s">
-    <div class="nav-l">Visão Geral</div>
-    <a class="nav-i" href="admin-dashboard.php"><span class="ni">📊</span><span>Dashboard</span></a>
-    <a class="nav-i" href="admin-users.php"><span class="ni">👥</span><span>Utilizadores</span></a>
-  </div>
-  <div class="nav-s">
-    <div class="nav-l">Editorial</div>
-    <a class="nav-i" href="admin-aprovacoes.php"><span class="ni">✅</span><span>Aprovações</span></a>
-    <a class="nav-i" href="admin-documentos.php"><span class="ni">📚</span><span>Documentos</span></a>
-  </div>
-  <div class="nav-s">
-    <div class="nav-l">Comunicação</div>
-    <a class="nav-i act" href="admin-contacts.php"><span class="ni">📩</span><span>Contactos</span><?php if($newCount>0): ?><span class="nb"><?= $newCount ?></span><?php endif; ?></a>
-    <a class="nav-i" href="admin-notificacoes.php"><span class="ni">🔔</span><span>Notificações</span></a>
-  </div>
-  <div class="nav-s">
-    <div class="nav-l">Portal</div>
-    <a class="nav-i" href="admin-seccoes.php"><span class="ni">🗂️</span><span>Secções</span></a>
-    <a class="nav-i" href="admin-oportunidades.php"><span class="ni">⛽</span><span>Oportunidades</span></a>
-    <a class="nav-i" href="admin-avisos.php"><span class="ni">📢</span><span>Avisos</span></a>
-  </div>
-  <div class="sb-foot"><a class="nav-i" href="auth.php?logout=1"><span class="ni">🚪</span><span>Sair</span></a></div>
-</aside>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div>
+        <div class="sb-logo">PETRO<span>PUB</span></div>
+        <!-- <div class="sb-role-tag">Administração</div> -->
+      </div>
+      <button class="sb-tog" id="sb-close" onclick="closeSB()">✕</button>
+      <!-- <button class="sb-tog" id="sb-col" onclick="toggleCol()">◀</button> -->
+    </div>
+    <div class="sb-user">
+      <div class="ava ava-dk"><?=$userInitials?></div>
+      <div class="sb-ui">
+        <div class="sb-un"><?=$userName?></div>
+        <div class="sb-ue"><?=$userEmail?></div>
+      </div>
+    </div>
+    <div class="nav-s">
+      <div class="nav-l">Visão Geral</div>
+      <a href="users.php" class="nav-i" data-tip="Utilizadores">
+        <span class="ni"><i class="fa fa-users"></i></span><span class="nt">Utilizadores</span>
+      </a>
+      <a href="articles.php" class="nav-i act" data-tip="Documentos">
+        <span class="ni"><i class="fa fa-book"></i></span><span class="nt">Documentos</span>
+      </a>
+      <a href="opportunities.php" class="nav-i" data-tip="Oportunidades">
+        <span class="ni"><i class="fa fa-list"></i></span><span class="nt">Oportunidades</span>
+      </a>
+      <a href="library.php" class="nav-i">
+        <span class="ni"><i class="fa fa-book"></i></span><span class="nt">Biblioteca</span>
+      </a>
+    </div>
+    <div class="nav-s">
+      <a href="opportunity-approve.php" class="nav-i" data-tip="Avaliações">
+        <span class="ni"><i class="fa fa-comment-o"></i></span
+        ><span class="nt">Revisão das Oportunidades</span
+        >
+      </a>
+      <a href="admin-contacts.php" class="nav-i" data-tip="Avaliações">
+        <span class="ni"><i class="fa fa-phone"></i></span
+        ><span class="nt">Mensagens de Contacto</span
+        >
+      </a>
+      <div class="nav-i" data-tip="Publicação">
+        <span class="ni"><i class="fa fa-file"></i></span><span class="nt">Meus Documentos</span>
+      </div>
+    </div>
+    <div class="sb-foot">
+      <div class="nav-i" data-tip="Sair">
+        <span class="ni">🚪</span><span class="nt">Terminar Sessão</span>
+      </div>
+    </div>
+  </aside>
 
 <div class="main">
   <div class="topbar">
     <div class="tb-l">
       <div>
         <div class="tb-bc"><a href="admin-dashboard.php">Dashboard</a> / Contactos</div>
-        <div class="tb-title">📩 Registos de Contacto</div>
+        <div class="tb-title">Registos de Contacto</div>
       </div>
     </div>
     <div class="tb-r">
       <?php if($newCount > 0): ?>
-      <button class="btn btn-ok btn-sm" onclick="bulkRead()">✅ Marcar todas lidas</button>
+      <button class="btn btn-ok btn-sm" onclick="bulkRead()"><i class="fa fa-check"></i> Marcar todas lidas</button>
       <?php endif; ?>
-      <div class="admin-badge">⚙️ Admin</div>
+      <div class="admin-badge"><i class="fa fa-cog"></i> <?=$userInitials?></div>
     </div>
   </div>
   <div class="page-wrap">
@@ -266,10 +293,10 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
     <div class="stats-row">
       <?php
       $statCards = [
-        ['all',  '📩', 'si-cr', ($cnts['new']??0)+($cnts['read']??0)+($cnts['replied']??0), 'Total de mensagens'],
-        ['new',  '🔴', 'si-er', $cnts['new']??0, 'Novas mensagens'],
-        ['read', '✅', 'si-ok', $cnts['read']??0, 'Lidas / Vistas'],
-        ['replied','📤','si-inf',$cnts['replied']??0, 'Respondidas'],
+        ['all',  '<i class="fa fa-envelope"></i>', 'si-cr', ($cnts['new']??0)+($cnts['read']??0)+($cnts['replied']??0), 'Total de mensagens'],
+        ['new',  '<i class="fa fa-info"></i>', 'si-er', $cnts['new']??0, 'Novas mensagens'],
+        ['read', '<i class="fa fa-check"></i>', 'si-ok', $cnts['read']??0, 'Lidas / Vistas'],
+        ['replied','<i class="fa fa-comment"></i>','si-inf',$cnts['replied']??0, 'Respondidas'],
       ];
       foreach ($statCards as $i=>[$sv,$ico,$cls,$cnt,$lbl]):
       ?>
@@ -285,10 +312,10 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
 
     <!-- TABS -->
     <div class="tab-nav">
-      <a href="<?= buildUrl(['status'=>'all','page'=>1]) ?>"     class="tab-link <?= $status==='all'?'on':'' ?>">📬 Todas <span class="tab-cnt gray"><?= ($cnts['new']??0)+($cnts['read']??0)+($cnts['replied']??0) ?></span></a>
-      <a href="<?= buildUrl(['status'=>'new','page'=>1]) ?>"     class="tab-link <?= $status==='new'?'on':'' ?>">🔴 Novas <span class="tab-cnt"><?= $cnts['new']??0 ?></span></a>
-      <a href="<?= buildUrl(['status'=>'read','page'=>1]) ?>"    class="tab-link <?= $status==='read'?'on':'' ?>">✅ Lidas <span class="tab-cnt ok"><?= $cnts['read']??0 ?></span></a>
-      <a href="<?= buildUrl(['status'=>'replied','page'=>1]) ?>" class="tab-link <?= $status==='replied'?'on':'' ?>">📤 Respondidas <span class="tab-cnt inf"><?= $cnts['replied']??0 ?></span></a>
+      <a href="<?= buildUrl(['status'=>'all','page'=>1]) ?>"     class="tab-link <?= $status==='all'?'on':'' ?>">Todas <span class="tab-cnt gray"><?= ($cnts['new']??0)+($cnts['read']??0)+($cnts['replied']??0) ?></span></a>
+      <a href="<?= buildUrl(['status'=>'new','page'=>1]) ?>"     class="tab-link <?= $status==='new'?'on':'' ?>">Novas <span class="tab-cnt"><?= $cnts['new']??0 ?></span></a>
+      <a href="<?= buildUrl(['status'=>'read','page'=>1]) ?>"    class="tab-link <?= $status==='read'?'on':'' ?>">Lidas <span class="tab-cnt ok"><?= $cnts['read']??0 ?></span></a>
+      <a href="<?= buildUrl(['status'=>'replied','page'=>1]) ?>" class="tab-link <?= $status==='replied'?'on':'' ?>">Respondidas <span class="tab-cnt inf"><?= $cnts['replied']??0 ?></span></a>
     </div>
 
     <!-- SEARCH -->
@@ -299,7 +326,7 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
           <span class="s-ico">🔍</span>
           <input type="text" name="q" value="<?= h($search) ?>" placeholder="Pesquisar por nome, e-mail, assunto…">
         </div>
-        <button type="submit" class="btn btn-cr btn-sm">🔍 Pesquisar</button>
+        <button type="submit" class="btn btn-cr btn-sm"><i class="fa fa-search"></i> Pesquisar</button>
         <?php if ($search): ?><a href="<?= buildUrl(['q'=>'','page'=>1]) ?>" class="btn btn-gh btn-sm">✕ Limpar</a><?php endif; ?>
         <span style="font-size:13px;color:var(--tx-l);margin-left:auto"><?= $total ?> mensagem<?= $total!=1?'s':'' ?></span>
       </div>
@@ -308,7 +335,7 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
     <!-- CONTACT LIST -->
     <?php if (empty($contacts)): ?>
     <div class="empty">
-      <div class="empty-ico">📩</div>
+      <div class="empty-ico"><i class="fa fa-envelope"></i></div>
       <div class="empty-title">Nenhuma mensagem <?= $status!=='all' ? '"'.h($status).'"' : '' ?></div>
       <p style="font-size:14px;color:var(--tx-l);margin-top:8px">
         <?= $search ? 'Tente outros termos de pesquisa.' : 'Nenhum contacto registado ainda.' ?>
@@ -319,9 +346,9 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
       <?php foreach ($contacts as $i => $c):
         $initials = strtoupper(mb_substr($c['name'], 0, 1));
         $statusBadge = match($c['status']) {
-            'new'     => '<span class="badge badge-new">🔴 Nova</span>',
-            'read'    => '<span class="badge badge-read">✅ Lida</span>',
-            'replied' => '<span class="badge badge-replied">📤 Respondida</span>',
+            'new'     => '<span class="badge badge-new">Nova</span>',
+            'read'    => '<span class="badge badge-read">Lida</span>',
+            'replied' => '<span class="badge badge-replied">Respondida</span>',
             default   => '<span class="badge">—</span>',
         };
         $cj = h(json_encode(['id'=>$c['id'],'name'=>$c['name'],'email'=>$c['email'],'subject'=>$c['subject'],'message'=>$c['message']],JSON_UNESCAPED_UNICODE));
@@ -332,21 +359,21 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
             <div class="cc-ava"><?= h($initials) ?></div>
             <div>
               <div class="cc-name"><?= h($c['name']) ?></div>
-              <div class="cc-email">✉️ <?= h($c['email']) ?></div>
-              <div class="cc-subject">📋 <?= h($c['subject']) ?></div>
+              <div class="cc-email"><?= h($c['email']) ?></div>
+              <div class="cc-subject"><?= h($c['subject']) ?></div>
               <div class="cc-meta">
                 <?= $statusBadge ?>
-                <span class="cc-date">🕐 <?= date('d/m/Y H:i', strtotime($c['created_at'])) ?></span>
+                <span class="cc-date"><?= date('d/m/Y H:i', strtotime($c['created_at'])) ?></span>
               </div>
             </div>
           </div>
           <div class="cc-right">
             <div class="cc-actions">
               <?php if ($c['status'] === 'new'): ?>
-              <button class="btn btn-ok btn-xs" onclick="event.stopPropagation();changeStatus(<?= $c['id'] ?>,'read',this)" title="Marcar como lida">✅</button>
+              <button class="btn btn-ok btn-xs" onclick="event.stopPropagation();changeStatus(<?= $c['id'] ?>,'read',this)" title="Marcar como lida"></button>
               <?php endif; ?>
-              <button class="btn btn-cr btn-xs"  onclick="event.stopPropagation();openReply(<?= $cj ?>)"  title="Responder">📩</button>
-              <button class="btn btn-er btn-xs"  onclick="event.stopPropagation();deleteContact(<?= $c['id'] ?>)" title="Eliminar">🗑️</button>
+              <button class="btn btn-cr btn-xs"  onclick="event.stopPropagation();openReply(<?= $cj ?>)"  title="Responder"><i class="fa fa-envelope"></i></button>
+              <button class="btn btn-er btn-xs"  onclick="event.stopPropagation();deleteContact(<?= $c['id'] ?>)" title="Eliminar"><i class="fa fa-trash"></i></button>
             </div>
           </div>
         </div>
@@ -354,11 +381,11 @@ input,select,button{font-family:inherit}a{color:inherit;text-decoration:none}
           <div class="cc-body">
             <div class="cc-msg"><?= h($c['message']) ?></div>
             <div class="cc-reply-row">
-              <button class="btn btn-cr btn-sm" onclick="openReply(<?= $cj ?>)">📩 Responder por e-mail</button>
+              <button class="btn btn-cr btn-sm" onclick="openReply(<?= $cj ?>)">Responder por e-mail</button>
               <?php if ($c['status'] !== 'replied'): ?>
-              <button class="btn btn-wn btn-sm" onclick="changeStatus(<?= $c['id'] ?>,'replied',null,true)">📤 Marcar como respondida</button>
+              <button class="btn btn-wn btn-sm" onclick="changeStatus(<?= $c['id'] ?>,'replied',null,true)">Marcar como respondida</button>
               <?php endif; ?>
-              <a href="mailto:<?= h($c['email']) ?>?subject=Re: <?= urlencode($c['subject']) ?>" class="btn btn-gh btn-sm">✉️ Abrir no cliente de e-mail</a>
+              <a href="mailto:<?= h($c['email']) ?>?subject=Re: <?= urlencode($c['subject']) ?>" class="btn btn-gh btn-sm">Abrir no cliente de e-mail</a>
             </div>
           </div>
         </div>

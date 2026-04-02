@@ -5,11 +5,11 @@ $documentId = $_GET['flex-direction'];
 $documentId = decrypt($documentId);
 
 if (!isset($_SESSION['jwt_auth'])) {
-    header('Location: auth.php');
+    header('Location: index.php');
     exit;
 }
 
-if (isset($_SESSION['jwt_auth']) && $_SESSION['type_auth'] == "ADMIN") {
+if (isset($_SESSION['jwt_auth']) && $_SESSION['type_auth'] != "ADMIN") {
     header('Location: library.php');
     exit;
 }

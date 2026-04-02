@@ -49,7 +49,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                 <a 
                     href="upload-document.php?sdjbjvnjnsdjvjncvnjdn47y894rhuhihwu849u9i32jnjdsn=huhu93439u593u ufiohuw9r4 hudy3gh8jjrbfjhu34hr" 
                     class="btn btn-primary">
-                    <span>📤</span> Submeter Artigo
+                    <span>📤</span> Submeter Documento
                 </a>
                 <div class="icon-btn">🔔<span class="notif-dot"></span></div>
                 <a href="logout.php" class="avatar gold" style="width:38px;height:38px;font-size:13px;cursor:pointer">Sair</a>
@@ -93,7 +93,7 @@ $userInitials = strtoupper(substr($userName, 0, 2));
                                 <td>   
                                     <div>
                                         <!-- <button class="btn btn-success btn-sm" style="margin-bottom: 5px;">✓ Ver Detalhes</button> <br> -->
-                                        <button class="btn btn-ghost btn-sm" style="margin-bottom: 5px;">✎ Editar</button> <br>
+                                        <button class="btn btn-ghost btn-sm" style="margin-bottom: 5px;" onclick="location.href='edit-document.php?id=<?=encrypt($article['id'])?>'">✎ Editar</button> <br>
                                         <button class="btn btn-ghost btn-sm" style="color:#E53E3E;" onclick="deleteArticle('<?=$article['id']?>')">✕ Excluir</button>
                                     </div>
                                 </td>

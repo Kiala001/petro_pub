@@ -2,6 +2,7 @@
 
 interface DocumentRepository {
     public function save(Document $document);
+    public function saveInfo(InfoContact $infoContact);
     public function updateStatus(Document $document);
     public function findById($id);
     public function findByUserId($userId);
@@ -49,13 +50,29 @@ class DocumentRepositoryImpl implements DocumentRepository {
             $document->getPubMode(),
             $document->getStatus(),
             $document->getVersion(),
-            NULL,
+            $document->getBookMode(),
             NULL,
             NULL,
             $document->getScheduleDate(),
             $document->getScheduleTime(),
             $document->getCreatedAt()->format('Y-m-d H:i:s'),
             $document->getUpdatedAt()->format('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function saveInfo(InfoContact $infoContact) {
+        $stmt = $this->connection->prepare('
+        INSERT INTO info_contact (
+            id, document_id, tel, whatsapp, email
+            ) VALUES (?, ?, ?, ?, ?)
+            ');
+            
+        $stmt->execute([
+            $infoContact->getId(),
+            $infoContact->getDocumentId(),
+            $infoContact->getTel(),
+            $infoContact->getWhatsapp(),
+            $infoContact->getEmail()
         ]);
     }
 
@@ -124,7 +141,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
     public function update(Document $document) {
         $stmt = $this->connection->prepare('
             UPDATE documents 
-            SET title = ?, price_kz = ?, is_paid = ?, status = ?, 
+            SET title = ?, price = ?, is_paid = ?, status = ?, 
                 version = ?, plagiarism_score = ?, updated_at = ?
             WHERE id = ?
         ');

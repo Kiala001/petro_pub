@@ -16,23 +16,34 @@ class DocumentService {
         try {
             
             // Validar tipo de arquivo
-            $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $validExtension = ['pdf', 'application/pdf'];
-            if (!in_array($fileType, $validExtension)) {
-                throw new DomainException('Extensão de arquivo não permitido, apenas PDF.');
-            }
-            
-            // Gerar caminho de arquivo
-            $fileName = $this->generateFileName($file['name']);
-            $filePath = $this->uploadDir . '/' . $fileName;
-            
-            // Gerar caminho de arquivo
-            $fileNameCover = null;
-            if (isset($cover)) {
-                $fileNameCover = $this->generateFileName($cover['name']);
-                $filePathCover = self::uploadCoverDir . '/' . $fileNameCover;
+            $coverType = strtolower(pathinfo($cover['name'], PATHINFO_EXTENSION));
+            $coverValidExtension = ['jpg', 'png', 'jpeg'];
+            if (!in_array($coverType, $coverValidExtension)) {
+                throw new DomainException('Extensão de capa não permitido, apenas JPG, JPEG e PNG.');
             }
         
+            // Gerar caminho de arquivo
+            $fileNameCover = $this->generateFileName($cover['name']);
+            $filePathCover = self::uploadCoverDir . '/' . $fileNameCover;
+            
+            $fileName = NULL;
+            $filePath = NULL;
+            if ($data['book_mode'] == 'digital') {
+                if (isset($file['name'])) {
+                    $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    $validExtension = ['pdf', 'application/pdf'];
+                    if (!in_array($fileType, $validExtension)) {
+                        throw new DomainException('Extensão de arquivo não permitido, apenas PDF.');
+                    }
+                } else {
+                    throw new DomainException('Precisa carregar arquivo para documento digital.');
+                }
+                
+                // Gerar caminho de arquivo
+                $fileName = $this->generateFileName($file['name']);
+                $filePath = $this->uploadDir . '/' . $fileName;
+            }
+            
             // Criar documento
             $documentId = new ID("DOC");
             $document = new Document(
@@ -53,9 +64,10 @@ class DocumentService {
                 $data['sched_date'],
                 $data['sched_time'],
                 $data['price'],
-                $data['location']
+                $data['location'],
+                $data['book_mode']
             );
-
+            
             if ($data['pubMode'] == 'immediate') {
                 $document->addScheduleDate(NULL);
                 $document->addScheduleTime(NULL);
@@ -64,7 +76,7 @@ class DocumentService {
             if ($role == 'ADMIN') {
                 if ($data['pubMode'] != 'immediate') {
                     $now = date('Y-m-d');
-
+                    
                     if ($data['sched_date'] > $now) {
                         $document->programmingAdmin();
                     }
@@ -74,18 +86,25 @@ class DocumentService {
             }
             
             // Mover os arquivos
-            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-                throw new DomainException('Erro ao fazer upload do documento');
+            if (!move_uploaded_file($cover['tmp_name'], $filePathCover)) {
+                throw new DomainException('Erro ao fazer upload da capa do documento');
             }
             
-            if (isset($cover)) {
-                if (!move_uploaded_file($cover['tmp_name'], $filePathCover)) {
-                    throw new DomainException('Erro ao fazer upload da capa do documento');
+            if (isset($file)) {
+                if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+                    throw new DomainException('Erro ao fazer upload do documento');
                 }
             }
             
             $this->documentRepository->save($document);
             
+            if ($data['book_mode'] == 'fisico') { 
+                $infoId = new ID("INF");
+                $InfoContact = new InfoContact($infoId->getValue(), $documentId->getValue(), $data['phone'], $data['whatsapp'], $data['email_contact']);
+                
+                $this->documentRepository->saveInfo($InfoContact);
+            }
+
             return [
                 'success' => true,
                 'document_id' => $documentId,

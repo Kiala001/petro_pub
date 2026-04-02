@@ -1,5 +1,27 @@
 <?php
 
+class InfoContact {
+    private $id;
+    private $documentId;
+    private $tel;
+    private $whatsapp;
+    private $email;
+
+    public function __construct($id, $documentId, $tel, $whatsapp, $email) { 
+        $this->id = $id;
+        $this->documentId = $documentId;
+        $this->tel = $tel;
+        $this->whatsapp = $whatsapp;
+        $this->email = $email;
+    }
+
+    public function getId() { return $this->id; }
+    public function getDocumentId() { return $this->documentId; }
+    public function getTel() { return $this->tel; }
+    public function getWhatsapp() { return $this->whatsapp; }
+    public function getEmail() { return $this->email; }
+}
+
 class Document {
     private $id;
     private $userId;
@@ -24,6 +46,7 @@ class Document {
     private $expiresAt;
     private $accessMode;
     private $pubMode;
+    private $bookMode;
     private $sched_date;
     private $sched_time;
     private $plagiarismScore;
@@ -57,7 +80,8 @@ class Document {
         $sched_date,
         $sched_time,
         $price,
-        $location
+        $location,
+        $bookMode
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -68,7 +92,6 @@ class Document {
         $this->course = $course;
         $this->summary = $summary;
         $this->keywords = $keywords;
-        $this->validateFileType($fileType);
         $this->filePath = $filePath;
         $this->fileSize = $fileSize;
         $this->fileType = $fileType;
@@ -76,6 +99,7 @@ class Document {
         $this->status = self::STATUS_PENDING;
         $this->version = 1;
         $this->pubMode = $pubMode;
+        $this->bookMode = $bookMode;
         $this->sched_date = $sched_date;
         $this->sched_time = $sched_time;
         $this->priceKz = $price;
@@ -113,6 +137,7 @@ class Document {
     public function getScheduleTime() { return $this->sched_time; }
     public function getAccessMode() { return $this->accessMode; }
     public function getPubMode() { return $this->pubMode; }
+    public function getBookMode() { return $this->bookMode; }
     public function getUserId() { return $this->userId; }
     public function getCategoryId() { return $this->categoryId; }
     public function getTitle() { return $this->title; }
